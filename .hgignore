@@ -1,0 +1,8 @@
+syntax: regexp
+src/*.class
+build/*
+WebContent/WEB-INF/classes/*.java
+.externalToolBuilders/*
+syntax: glob
+*.class
+*.orig

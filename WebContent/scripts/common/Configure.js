@@ -19,6 +19,13 @@ requirejs.config({
         'libs/Bootstrap/js/bootstrap.min' : {
             deps : ['libs/JQuery/js/jquery'],
             exports: 'Bootstrap'
+        },
+        'scripts/common/Layer' : {
+            deps : ['libs/OpenLayers/OpenLayers'],
+            exports: 'Layer'
+        },
+        'libs/OpenLayers/OpenLayers' : {
+            exports: 'OpenLayers'
         }
     }
 });

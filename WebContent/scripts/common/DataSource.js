@@ -3,7 +3,7 @@
  * Esta clase contiene varialbles estaticas que contiene información
  * las configuraciones necesarias.
  *
- * @autor Maximiliano Báez <mbaez@konecta.com.py>
+ * @author <a href="mailto:mxbg.py@gmail.com">Maximiliano Báez</a>
  */
 DataSource = {
     /**
@@ -11,7 +11,6 @@ DataSource = {
      */
     //projectionCode : "EPSG:4326",
     projectionCode : "EPSG:900913",
-    //projection : new OpenLayers.Projection(this.projectionCode),
 
     /**
      * Las configuraciones de la capa
@@ -25,7 +24,7 @@ DataSource = {
         styleMap : null
     },
     baseLayerConf : {
-        name: 'colombia',
+        name: 'MapaColombia',
         workspace : "tesis"
     }
 };
@@ -34,8 +33,8 @@ DataSource = {
 /**
  * La direcion del geoserver de konecta, acceso atravez de internet
  */
-//server : "http://octavius.konecta.com.py:8080",
-DataSource.server = "http://localhost:8080";
+DataSource.server = "http://octavius.konecta.com.py:8080";
+//DataSource.server = "http://localhost:8080";
 /**
  * La url del servidor con el proxy del servidor, todas las peticiones
  * http, excepto el login y logout, pasan atravez del proxy para

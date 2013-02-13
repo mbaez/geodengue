@@ -40,12 +40,12 @@ define(["libs/JQuery/js/jquery",
             },
             initOpenLayersMap : function(){
                 var maxExtent = new OpenLayers.Bounds(
-                    -8200730, 456586.25,
-                    -8191024, 465691.75
+                    -8200730, 456498.1875,
+                    -8190695.5, 465909.03125
                 );
                 // se instancia el mapa
                 var mapOptions = {
-                    //numZoomLevels : 21,
+                    numZoomLevels : 21,
                     projection : new OpenLayers.Projection(DataSource.projectionCode),
                     //maxResolution:  config.maxResolution,
                     maxExtend : maxExtent,
@@ -55,12 +55,12 @@ define(["libs/JQuery/js/jquery",
                 //inicializa el map
                 this.map = new OpenLayers.Map("map", mapOptions);
                 var layersNames = [ DataSource.baseLayerConf];
-                var baseLayer = new Layer.WMS(layersNames, null, true);
+                var baseLayer = new Layer.WMS({
+                    names : layersNames,
+                    base : true
+                });
                 this.map.addLayers(baseLayer);
-                this.map.addLayers(
-                    new Layer.WMS([DataSource.larvitrampasLayerConf]),
-                    null, false
-                );
+                this.map.addLayers(new Layer.WMS({names:[DataSource.larvitrampasLayerConf]}));
                 // Se añade el switch para las capas
                 this.map.addControl(new OpenLayers.Control.Navigation());
                 this.map.addControl(new OpenLayers.Control.LayerSwitcher());

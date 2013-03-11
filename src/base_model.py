@@ -6,15 +6,17 @@ utilizados para realizar las operaciones correspondientes.
 """
 __author__ = "Maximiliano Báez"
 __mail__ = "mxbg.py@gmail.com"
+
 class Bounds :
-"""
-Clase para representar la extensión de los puntos. La extensión de se
-encuentra compuesta por un conjunto de puntos
-    x_min : El minimo valor de x
-    x_max : El máximo valor de x
-    y_min : El minimo valor de y
-    y_max : El máximo valor de y
-"""
+    """
+    Clase para representar la extensión de los puntos. La extensión de se
+    encuentra compuesta por un conjunto de puntos
+        x_min : El minimo valor de x
+        x_max : El máximo valor de x
+        y_min : El minimo valor de y
+        y_max : El máximo valor de y
+    """
+
     def __init__(self, x_min=0, x_max=0, y_min=0, y_max=0):
         self.x_min = x_min;
         self.y_min = y_min;
@@ -39,11 +41,13 @@ encuentra compuesta por un conjunto de puntos
         self.y_max = y_array.max();
 
 
+import numpy
+
 class Grid :
-"""
-Clase para representar la grilla de puntos en 3 dimensiones (x,y,z). Un
-grilla esta compuesta por n puntos.
-"""
+    """
+    Clase para representar la grilla de puntos en 3 dimensiones (x,y,z). Un
+    grilla esta compuesta por n puntos.
+    """
     def __init__ (self, x=[], y=[], z=[]) :
         self.x = x;
         self.y = y;
@@ -60,3 +64,28 @@ grilla esta compuesta por n puntos.
         bounds = Bounds();
         bounds.parse_array(self.x, self.y);
         return bounds;
+
+    def gen_grid (self, cols, rows) :
+        """
+        Este método se encarga de generar un grid con `col*rows` puntos.
+        Los puntos generados son equidistantes entre sí.
+
+        @type  cols : Integer
+        @param cols : La cantidad de columnas del nuevo grid.
+
+        @type  rows : Integer
+        @param rows : La cantidad de filas del nuevo grid.
+
+        @rtype  : Grid
+        @return : La grilla generada con los nuevos puntos.
+
+        """
+        bounds = self.get_bounds();
+        xi = numpy.linspace(bounds.x_min, bounds.x_max, cols);
+        yi = numpy.linspace(bounds.y_min, bounds.y_max, rows);
+        #genera la matriz de coordenadas
+        xi, yi = numpy.meshgrid(xi, yi)
+        # Copia los subarrays en un un array de una dimensión
+        xi, yi = xi.flatten(), yi.flatten();
+        #se retorna el nuevo grid generado.
+        return Grid(xi, yi);

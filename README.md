@@ -16,3 +16,11 @@ Librerías utilizadas
 * **Bootstrap** : Componentes html5, css3, javascript.
 * **OpenLayers** : Para acceder a los layers via WFS y WMS.
 * **Jasmin** : BDD (Behavior Driven Development). Test de unidades.
+
+Configurar entorno de desarrollo en Python
+---
+sudo pip install flask
+sudo easy_install scipy
+sudo easy_install numpy
+
+[opcional] sudo apt-get build-dep python-matplotlib

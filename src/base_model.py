@@ -89,3 +89,25 @@ class Grid :
         xi, yi = xi.flatten(), yi.flatten();
         #se retorna el nuevo grid generado.
         return Grid(xi, yi);
+
+    def distanceTo(self,grid):
+        """
+        Calcula la distancia entre los puntos pertenecientes a grilla
+        actual y la grilla especificada.
+
+        @type  grid : Grid
+        @param grid : La grilla de puntos entre la que se
+
+        @rtype ndarray
+        @return La matriz de distancia entre la grilla de puntos.
+        """
+        obs = numpy.vstack((self.x, self.y)).T
+        interp = numpy.vstack((grid.x, grid.y)).T
+
+        # Make a distance matrix between pairwise observations
+        # Note: from <http://stackoverflow.com/questions/1871536>
+        # (Yay for ufuncs!)
+        d0 = numpy.subtract.outer(obs[:,0], interp[:,0])
+        d1 = numpy.subtract.outer(obs[:,1], interp[:,1])
+        #Given the “legs” of a right triangle, return its hypotenuse.
+        return numpy.hypot(d0, d1)

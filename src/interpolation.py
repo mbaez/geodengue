@@ -11,23 +11,41 @@ import numpy as np
 from scipy.interpolate import Rbf
 
 class Idw :
-    """
-    Representa el método de interpolación de Ponderación de la inversa de
-    la distancia (IDW), este estima los puntos del modelo realizando una
-    asignación de pesos a los datos del entorno en función inversa a la
-    distancia que los separa del punto en cuestión.
-    """
-    def simple_idw(self, x, y, z, xi, yi):
-        dist = self.distance_matrix(x,y, xi,yi)
+
+    def simple_idw(self, src, grid, p=2):
+        """
+        Representa el método de interpolación de Ponderación de la inversa
+        de la distancia (IDW), este estima los puntos del modelo realizando
+        una asignación de pesos a los datos del entorno en función inversa
+        a la distancia que los separa del punto en cuestión.
+
+        @type  src : Grid
+        @param src : La grilla de puntos de observación.
+
+        @type  grid : Grid
+        @param grid : La grilla de puntos autogenerados que se desea
+                interpolar.
+
+        @type  p : Float
+        @param p : Es el parámetro del exponente que controla que tan
+                rápido los pesos de los puntos tienden a cero (al
+                aumentar su valor) conforme aumenta la distancia del
+                sitio de interpolación.
+
+        @rtype ndarray
+        @return Un array con los valores calculados para la altura (Z)
+                que corresponden a los puntos interpolados.
+        """
+        dist = src.distanceTo(grid)
 
         # In IDW, weights are 1 / distance
-        weights = 1.0 / dist
+        weights = 1.0 / (dist ** p)
 
         # Make weights sum to one
         weights /= weights.sum(axis=0)
-
+        print weights.T
         # Multiply the weights for each interpolated point by all observed Z-values
-        zi = np.dot(weights.T, z)
+        zi = np.dot(weights.T, src.z)
         return zi
 
     def linear_rbf(self, x, y, z, xi, yi):
@@ -42,20 +60,3 @@ class Idw :
         # Multiply the weights for each interpolated point by the distances
         zi =  np.dot(dist.T, weights)
         return zi
-
-
-    def scipy_idw(self, x, y, z, xi, yi):
-        interp = Rbf(x, y, z, function='linear')
-        return interp(xi, yi)
-
-    def distance_matrix(self,x0, y0, x1, y1):
-        obs = np.vstack((x0, y0)).T
-        interp = np.vstack((x1, y1)).T
-
-        # Make a distance matrix between pairwise observations
-        # Note: from <http://stackoverflow.com/questions/1871536>
-        # (Yay for ufuncs!)
-        d0 = np.subtract.outer(obs[:,0], interp[:,0])
-        d1 = np.subtract.outer(obs[:,1], interp[:,1])
-
-        return np.hypot(d0, d1)

@@ -10,7 +10,7 @@ __mail__ = "mxbg.py@gmail.com"
 import numpy as np
 from scipy.interpolate import Rbf
 
-class Idw :
+class Interpotalion :
 
     def simple_idw(self, src, grid, p=2):
         """
@@ -43,7 +43,6 @@ class Idw :
 
         # Make weights sum to one
         weights /= weights.sum(axis=0)
-        print weights.T
         # Multiply the weights for each interpolated point by all observed Z-values
         zi = np.dot(weights.T, src.z)
         return zi

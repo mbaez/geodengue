@@ -6,7 +6,6 @@ utilizados para realizar las operaciones correspondientes.
 """
 __author__ = "Maximiliano Báez"
 __mail__ = "mxbg.py@gmail.com"
-
 class Bounds :
     """
     Clase para representar la extensión de los puntos. La extensión de se
@@ -65,7 +64,7 @@ class Grid :
         bounds.parse_array(self.x, self.y);
         return bounds;
 
-    def gen_grid (self, cols, rows) :
+    def extend (self, cols, rows) :
         """
         Este método se encarga de generar un grid con `col*rows` puntos.
         Los puntos generados son equidistantes entre sí.
@@ -111,3 +110,16 @@ class Grid :
         d1 = numpy.subtract.outer(obs[:,1], interp[:,1])
         #Given the “legs” of a right triangle, return its hypotenuse.
         return numpy.hypot(d0, d1)
+
+    def __str__(self):
+        grid = [];
+        xx = self.x.tolist();
+        yy = self.y.tolist();
+        zz = self.z.tolist();
+        for i in range(len(xx)):
+            point = { 'x' : xx[i],'y' : yy[i],'z' : zz[i] };
+            grid.append(point);
+
+        import json
+        return json.dumps({'grid' : grid });
+

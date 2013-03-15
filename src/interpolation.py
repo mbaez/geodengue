@@ -8,6 +8,7 @@ __author__ = "Maximiliano Báez"
 __mail__ = "mxbg.py@gmail.com"
 
 import numpy as np
+import math
 from scipy.interpolate import Rbf
 
 class Interpotalion :
@@ -59,3 +60,30 @@ class Interpotalion :
         # Multiply the weights for each interpolated point by the distances
         zi =  np.dot(dist.T, weights)
         return zi
+
+
+    def voronoi(self, src, grid):
+        """
+        """
+        #image = Image.new("RGB", (width, height))
+        #putpixel = image.putpixel
+        imgx, imgy = image.size
+        nx = []
+        ny = []
+        nr = []
+        ng = []
+        nb = []
+        for y in range(imgy):
+            for x in range(imgx):
+                dmin = math.hypot(imgx-1, imgy-1)
+                j = -1
+                for i in range(num_cells):
+                    d = math.hypot(nx[i]-x, ny[i]-y)
+                    if d < dmin:
+                        dmin = d
+                        j = i
+                #putpixel((x, y), (nr[j], ng[j], nb[j]))
+        image.save("VoronoiDiagram.png", "PNG")
+            image.show()
+
+#generate_voronoi_diagram(500, 500, 25)

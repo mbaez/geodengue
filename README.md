@@ -17,10 +17,10 @@ Librerías utilizadas
 * **OpenLayers** : Para acceder a los layers via WFS y WMS.
 * **Jasmin** : BDD (Behavior Driven Development). Test de unidades.
 
-Configurar entorno de desarrollo en Python
+Install dependencias
 ---
+sudo apt-get install python-pip
 sudo pip install flask
 sudo easy_install scipy
 sudo easy_install numpy
-
-[opcional] sudo apt-get build-dep python-matplotlib
+sudo apt-get build-dep python-matplotlib

@@ -61,10 +61,8 @@ class Interpotalion :
         zi =  np.dot(dist.T, weights)
         return zi
 
-
+"""
     def voronoi(self, src, grid):
-        """
-        """
         #image = Image.new("RGB", (width, height))
         #putpixel = image.putpixel
         imgx, imgy = image.size
@@ -84,6 +82,7 @@ class Interpotalion :
                         j = i
                 #putpixel((x, y), (nr[j], ng[j], nb[j]))
         image.save("VoronoiDiagram.png", "PNG")
-            image.show()
+        image.show()
 
 #generate_voronoi_diagram(500, 500, 25)
+"""

@@ -112,14 +112,17 @@ class Grid :
         return numpy.hypot(d0, d1)
 
     def __str__(self):
+        import geojson
         grid = [];
         xx = self.x.tolist();
         yy = self.y.tolist();
         zz = self.z.tolist();
         for i in range(len(xx)):
-            point = { 'x' : xx[i],'y' : yy[i],'z' : zz[i] };
-            grid.append(point);
-
-        import json
-        return json.dumps({'grid' : grid });
-
+            point = geojson.Point([xx[i], yy[i]]);
+            print point
+            feature =  geojson.Feature(i, point,{'cantidad':zz[i]});
+            #point = { 'x' : xx[i],'y' : yy[i],'z' : zz[i] };
+            grid.append(feature);
+            print feature
+        coll = geojson.FeatureCollection(grid)
+        return geojson.dumps(coll);

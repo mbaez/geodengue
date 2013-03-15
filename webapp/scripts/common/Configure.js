@@ -24,6 +24,10 @@ requirejs.config({
             deps : ['libs/OpenLayers/OpenLayers'],
             exports: 'Layer'
         },
+        'scripts/common/Style' : {
+            deps : ['libs/OpenLayers/OpenLayers'],
+            exports: 'Style'
+        },
         'libs/OpenLayers/OpenLayers' : {
             exports: 'OpenLayers'
         }
@@ -72,4 +76,3 @@ require(['libs/backbone'],function(Backbone) {
 
     Backbone.history.start();
 });
-

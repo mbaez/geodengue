@@ -22,17 +22,20 @@ define([    'libs/JQuery/js/jquery',
         var vector_layer = new OpenLayers.Layer.Vector();
         thiz.mapPanel.map.addLayer(vector_layer);
         var style = new Style.Layer('/geodengue/sld/pixel.xml');
-        //vector_layer.styleMap = style.styleMap;
-        $.get(
-            '/geodengue/rest/larvitrampas/interpolar/idw',
-            function(data){
+        vector_layer.styleMap = style.styleMap;
+        $.ajax({
+            type: "GET",
+            cache: false,
+            dataType:"text",
+            url : '/geodengue/rest/larvitrampas/interpolar/idw',
+            success : function(data){
                 vector_layer.addFeatures(geojson_format.read(data));
             }
-        );
+        });
     };
 
     thiz.mapPanel = new MapView ({el : $("#incioContent")});
-    thiz.interpolarIdw();
+    //thiz.interpolarIdw();
     // se retorna el json que contiene los metodos de los eventos
     return thiz;
 });

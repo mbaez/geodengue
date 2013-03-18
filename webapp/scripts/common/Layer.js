@@ -133,7 +133,7 @@ Layer = {
                     }
                     this.strategies[1].save();
                 },
-                displayInLayerSwitcher: false
+                displayInLayerSwitcher: true
             }
         );
     },
@@ -151,7 +151,7 @@ Layer = {
     WMS : function(options){
         //direccion del servidor al cual se le realizan las peticiones de las
         //capas via WMS
-        var server = DataSource.host + "wms";
+        var server = DataSource.host ;
         //var server = DataSource.host + "gwc/service/wms";
         //formato en el que el servidor retorna el mapa
         var format = 'image/png';
@@ -159,11 +159,6 @@ Layer = {
         var layers = [];
         options.transparent = true;
         options.format = format;
-        if(options["filter"]){
-            var filter_1_1 = new OpenLayers.Format.Filter({version: "1.1.0"});
-            var xml = new OpenLayers.Format.XML();
-            options['filter'] = xml.write(filter_1_1.write(options.filter));
-        }
         if(!options["base"]){
             options.base =false;
         }
@@ -171,9 +166,13 @@ Layer = {
         // se construyen las capas
         for(var i=0; i<names.length; i++){
             var name = names[i].name;
-            options['layers'] = name;
+            options['LAYERS'] = name;
             layers[i] = new OpenLayers.Layer.WMS(
-                name, server, options, {attribution:""});
+                name,
+                server + names[i].workspace+ "/wms",
+                options,
+                {attribution:""}
+            );
 
             layers[i].transitionEffect = 'resize';
             layers[i].isBaseLayer = options.base;

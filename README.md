@@ -24,3 +24,5 @@ sudo pip install flask
 sudo easy_install scipy
 sudo easy_install numpy
 sudo apt-get build-dep python-matplotlib
+sudo apt-get install  python-psycopg2
+

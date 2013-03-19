@@ -4,10 +4,10 @@
 #Se impotan los modulos.
 from base_model import *
 from interpolation import *
-from idw_test import Invdisttree
-
+from interpolation import *
 __author__ = "Maximiliano Báez"
 __mail__ = "mxbg.py@gmail.com"
+
 def import_csv (filename):
     import csv
     import numpy as np
@@ -25,13 +25,12 @@ def import_csv (filename):
             np.array(z,dtype=np.float),\
             np.array(c,dtype=np.float)
 
-
 class GisController :
 
     def __init__(self):
         pass;
 
-    def method_idw (self, cols=50, rows=50) :
+    def method_idw (self, cols=100, rows=100) :
         #print "obteniendo los datos"
         x, y, z, c = import_csv('data/larvitrampas.csv')
         muestras = Grid(x, y, z);
@@ -45,11 +44,24 @@ class GisController :
         #interpolated_grid = interpolated_grid.reshape(cols, rows)
         grid.z = interpolated_grid
         #print "done."
-
         return grid;
+
+    def method_voronoi (self) :
+        print "obteniendo los datos"
+        x, y, z, c = import_csv('data/larvitrampas.csv')
+        muestras = Grid(x, y, z);
+        #genera los n puntos
+        alg = Interpotalion()
+        # Calculate IDW
+        print "Interpolando voronoi"
+        grid = GridPolygon(alg.voronoi(muestras))
+        #~ print grid
+        print "done."
+        return grid;
+
 if __name__ == "__main__":
     gis = GisController();
-    resp = gis.method_idw();
+    resp = gis.method_voronoi();
     print "parsing"
     print "" + str(resp)
     print "end.."

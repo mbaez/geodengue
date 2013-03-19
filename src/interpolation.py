@@ -13,7 +13,7 @@ from scipy.interpolate import Rbf
 
 class Interpotalion :
 
-    def simple_idw(self, src, grid, p=2):
+    def simple_idw(self, src, grid, p=1.7):
         """
         Representa el método de interpolación de Ponderación de la inversa
         de la distancia (IDW), este estima los puntos del modelo realizando
@@ -48,41 +48,22 @@ class Interpotalion :
         zi = np.dot(weights.T, src.z)
         return zi
 
-    def linear_rbf(self, x, y, z, xi, yi):
-        dist = self.distance_matrix(x,y, xi,yi)
+    def voronoi(self, src):
+        poligon = []
 
-        # Mutual pariwise distances between observations
-        internal_dist = self.distance_matrix(x,y, x,y)
+        for i in range(len(src.y)):
+            poligon.append([]);
 
-        # Now solve for the weights such that mistfit at the observations is minimized
-        weights = np.linalg.solve(internal_dist, z)
+        for y in range(len(src.y)):
+            dmin = math.hypot(len(src.x)-1, len(src.y)-1)
+            #~ print dmin
+            j = -1
+            for i in range(len(src.x)):
+                d = math.hypot(src.x[i]-src.x[y], src.y[i]-src.y[y])
+                print str(d) + ' < ' + str(dmin)
+                if d < dmin:
+                    dmin = d
+                    j = i
+            poligon[j].append([src.x[j],src.y[j]])
+        return poligon
 
-        # Multiply the weights for each interpolated point by the distances
-        zi =  np.dot(dist.T, weights)
-        return zi
-
-"""
-    def voronoi(self, src, grid):
-        #image = Image.new("RGB", (width, height))
-        #putpixel = image.putpixel
-        imgx, imgy = image.size
-        nx = []
-        ny = []
-        nr = []
-        ng = []
-        nb = []
-        for y in range(imgy):
-            for x in range(imgx):
-                dmin = math.hypot(imgx-1, imgy-1)
-                j = -1
-                for i in range(num_cells):
-                    d = math.hypot(nx[i]-x, ny[i]-y)
-                    if d < dmin:
-                        dmin = d
-                        j = i
-                #putpixel((x, y), (nr[j], ng[j], nb[j]))
-        image.save("VoronoiDiagram.png", "PNG")
-        image.show()
-
-#generate_voronoi_diagram(500, 500, 25)
-"""

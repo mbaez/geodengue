@@ -1,6 +1,6 @@
 #! /usr/bin/env python
 # -*- coding: utf-8 -*-
-from flask import Flask
+from flask import Flask, request
 from controller import *
 """
 Este modulo define la interfaz de los servicios rest.
@@ -21,7 +21,10 @@ def interpolate_idw(metodo):
     gis = GisController();
     if metodo == 'idw' :
         resp = gis.method_idw();
-        return str(resp)
+    elif metodo == 'voronoi' :
+        resp = gis.method_voronoi()
+
+    return str(resp)
 
 
 if __name__ == '__main__':

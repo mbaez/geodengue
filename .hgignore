@@ -5,3 +5,4 @@ syntax: glob
 *.class
 *.orig
 *.pyc
+start.sh

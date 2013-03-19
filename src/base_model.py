@@ -119,10 +119,23 @@ class Grid :
         zz = self.z.tolist();
         for i in range(len(xx)):
             point = geojson.Point([xx[i], yy[i]]);
-            print point
             feature =  geojson.Feature(i, point,{'cantidad':zz[i]});
             #point = { 'x' : xx[i],'y' : yy[i],'z' : zz[i] };
             grid.append(feature);
-            print feature
+        coll = geojson.FeatureCollection(grid)
+        return geojson.dumps(coll);
+
+class GridPolygon :
+    def __init__(self, points) :
+        self.points = points
+
+    def __str__(self):
+        import geojson
+        grid = [];
+        for i in range(len(self.points)) :
+            polygon = geojson.Polygon(self.points[i])
+            feature =  geojson.Feature(i, polygon,{});
+            #point = { 'x' : xx[i],'y' : yy[i],'z' : zz[i] };
+            grid.append(feature);
         coll = geojson.FeatureCollection(grid)
         return geojson.dumps(coll);

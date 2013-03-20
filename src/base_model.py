@@ -52,6 +52,28 @@ class Grid :
         self.y = y;
         self.z = z;
 
+    def parse (self, data) :
+        """
+        Este método se encarga de transformar un diccionario y inicializar
+        el grid.
+
+        @type data : Dictionaries
+        @param data: El diccionario con lo s datos a procesar.
+
+        """
+        x,y,z =[],[],[];
+        # se separan los datos en array indepedientes
+        for i in range(len(data)):
+            #~ print data[i]
+            x.append(data[i]['x']);
+            y.append(data[i]['y']);
+            z.append(data[i]['cantidad']);
+
+        # se inicializa el array
+        self.x = numpy.array(x, dtype=numpy.float)
+        self.y = numpy.array(y, dtype=numpy.float)
+        self.z = numpy.array(z, dtype=numpy.float)
+
     def get_bounds(self):
         """
         Este método se encarga de obtener la extensión de la grilla de
@@ -110,6 +132,18 @@ class Grid :
         d1 = numpy.subtract.outer(obs[:,1], interp[:,1])
         #Given the “legs” of a right triangle, return its hypotenuse.
         return numpy.hypot(d0, d1)
+
+    def to_dict(self, args) :
+        grid = []
+        x = self.x.tolist();
+        y = self.y.tolist();
+        z = self.z.tolist();
+        for i in range(len(x)):
+            point = {'x' :x[i], 'y': y[i], 'cantidad':z[i]}
+            data = dict(point.items() + args.items())
+            grid.append(data)
+
+        return grid
 
     def __str__(self):
         import geojson

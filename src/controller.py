@@ -3,7 +3,7 @@
 
 #Se impotan los modulos.
 from base_model import *
-from interpolation import *
+from db_manager import *
 from interpolation import *
 __author__ = "Maximiliano Báez"
 __mail__ = "mxbg.py@gmail.com"
@@ -30,21 +30,43 @@ class GisController :
     def __init__(self):
         pass;
 
-    def method_idw (self, cols=100, rows=100) :
-        #print "obteniendo los datos"
-        x, y, z, c = import_csv('data/larvitrampas.csv')
-        muestras = Grid(x, y, z);
+    def method_idw (self, id_muestras=1, cols=100, rows=100) :
+        #~ print "obteniendo los datos"
+        #x, y, z, c = import_csv('data/larvitrampas.csv')
+        dao = PuntosControlModel()
+        data = dao.get_by(id_muestras);
+        #~ print "construyendo la grilla"
+        #~ print data
+        muestras = Grid();
+        muestras.parse(data);
         #genera los n puntos
-        #print "generando los puntos a interpolar"
+        #~ print "generando los puntos a interpolar"
         grid = muestras.extend(cols, rows);
         alg = Interpotalion()
         # Calculate IDW
-        #print "Interpolando idw"
+        #~ print "Interpolando idw"
         interpolated_grid = alg.simple_idw(muestras,grid)
         #interpolated_grid = interpolated_grid.reshape(cols, rows)
         grid.z = interpolated_grid
-        #print "done."
+        detalles = {
+            'id_muestra' : id_muestras,
+            'descripcion': 'Método utilizado SIMPLE IDW'
+        }
+        self.__persist_grid__(grid, detalles);
+        #~ print "done."
         return grid;
+
+    def __persist_grid__(self, grid, args) :
+           cabecera = InterpolacionModel()
+           detalle = PuntosInterpoladosModel()
+           # se persite la cabecera
+           cursor = cabecera.persist(args);
+           # se obtiene el id de la cabecera recién persitida
+           id_cabecera = cursor.fetchone()[0];
+           # se consturye el dic con parametros extras
+           params = {'id_interpolacion' : id_cabecera}
+           # se persite los detalles
+           detalle.persist(grid.to_dict(params))
 
     def method_voronoi (self) :
         print "obteniendo los datos"
@@ -61,8 +83,6 @@ class GisController :
 
 if __name__ == "__main__":
     gis = GisController();
-    resp = gis.method_voronoi();
+    resp = gis.method_idw();
     print "parsing"
-    print "" + str(resp)
     print "end.."
-

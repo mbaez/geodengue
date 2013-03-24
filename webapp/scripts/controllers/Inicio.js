@@ -17,9 +17,9 @@ define([    'libs/JQuery/js/jquery',
     "use strict";
     var thiz ={};
 
-    thiz.interpolarIdw = function(){
+    thiz.interpolarIdw = function(metodo){
         var geojson_format = new OpenLayers.Format.GeoJSON();
-        var vector_layer = new OpenLayers.Layer.Vector();
+        var vector_layer = new OpenLayers.Layer.Vector(metodo);
         thiz.mapPanel.map.addLayer(vector_layer);
         var style = new Style.Layer('/geodengue/sld/pixel.xml');
         vector_layer.styleMap = style.styleMap;
@@ -27,7 +27,7 @@ define([    'libs/JQuery/js/jquery',
             type: "GET",
             cache: false,
             dataType:"text",
-            url : '/geodengue/rest/larvitrampas/interpolar/idw',
+            url : '/geodengue/rest/larvitrampas/interpolar/'+metodo,
             success : function(data){
                 vector_layer.addFeatures(geojson_format.read(data));
             }
@@ -35,7 +35,8 @@ define([    'libs/JQuery/js/jquery',
     };
 
     thiz.mapPanel = new MapView ({el : $("#incioContent")});
-    //thiz.interpolarIdw();
+    thiz.interpolarIdw("voronoi");
+    thiz.interpolarIdw("idw");
     // se retorna el json que contiene los metodos de los eventos
     return thiz;
 });

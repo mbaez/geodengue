@@ -7,6 +7,7 @@
     <UserStyle>
      <Name>default</Name>
       <FeatureTypeStyle>
+          <!-- Muy Bajo-->
         <Rule>
             <ogc:Filter>
                 <ogc:PropertyIsGreaterThanOrEqualTo>
@@ -17,9 +18,9 @@
             <PointSymbolizer>
               <Graphic>
                <Mark>
-                 <WellKnownName>square</WellKnownName>
+                 <WellKnownName>circle</WellKnownName>
                  <Fill>
-                   <CssParameter name="fill">#FFFF82</CssParameter>
+                   <CssParameter name="fill">#FAF183</CssParameter>
                   <CssParameter name="fill-opacity"><ogc:Literal>0.7</ogc:Literal></CssParameter>
                  </Fill>
                </Mark>
@@ -38,9 +39,9 @@
             <PointSymbolizer>
               <Graphic>
                <Mark>
-                 <WellKnownName>square</WellKnownName>
+                 <WellKnownName>circle</WellKnownName>
                  <Fill>
-                   <CssParameter name="fill">#FFFF00</CssParameter>
+                   <CssParameter name="fill">#FAD151</CssParameter>
                   <CssParameter name="fill-opacity"><ogc:Literal>0.7</ogc:Literal></CssParameter>
                  </Fill>
                </Mark>
@@ -59,9 +60,9 @@
             <PointSymbolizer>
               <Graphic>
                <Mark>
-                 <WellKnownName>square</WellKnownName>
+                 <WellKnownName>circle</WellKnownName>
                  <Fill>
-                   <CssParameter name="fill">#FFA500</CssParameter>
+                   <CssParameter name="fill">#F2A82E</CssParameter>
                   <CssParameter name="fill-opacity"><ogc:Literal>0.7</ogc:Literal></CssParameter>
                  </Fill>
                </Mark>
@@ -80,9 +81,9 @@
             <PointSymbolizer>
               <Graphic>
                <Mark>
-                 <WellKnownName>square</WellKnownName>
+                 <WellKnownName>circle</WellKnownName>
                  <Fill>
-                   <CssParameter name="fill">#FF5B1C</CssParameter>
+                   <CssParameter name="fill">#A95124</CssParameter>
                   <CssParameter name="fill-opacity"><ogc:Literal>0.7</ogc:Literal></CssParameter>
                  </Fill>
                </Mark>
@@ -101,9 +102,9 @@
             <PointSymbolizer>
               <Graphic>
                <Mark>
-                 <WellKnownName>square</WellKnownName>
+                 <WellKnownName>circle</WellKnownName>
                  <Fill>
-                   <CssParameter name="fill">#FF0000</CssParameter>
+                   <CssParameter name="fill">#630C0E</CssParameter>
                  <CssParameter name="fill-opacity"><ogc:Literal>0.7</ogc:Literal></CssParameter>
                  </Fill>
                </Mark>

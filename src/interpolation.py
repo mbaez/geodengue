@@ -37,7 +37,7 @@ class Interpotalion :
         @return Un array con los valores calculados para la altura (Z)
                 que corresponden a los puntos interpolados.
         """
-        dist = src.distanceTo(grid)
+        dist = src.distance_to(grid)
 
         # In IDW, weights are 1 / distance
         weights = 1.0 / (dist ** p)
@@ -48,22 +48,22 @@ class Interpotalion :
         zi = np.dot(weights.T, src.z)
         return zi
 
-    def voronoi(self, src):
-        poligon = []
 
-        for i in range(len(src.y)):
-            poligon.append([]);
-
-        for y in range(len(src.y)):
-            dmin = math.hypot(len(src.x)-1, len(src.y)-1)
-            #~ print dmin
-            j = -1
-            for i in range(len(src.x)):
-                d = math.hypot(src.x[i]-src.x[y], src.y[i]-src.y[y])
-                print str(d) + ' < ' + str(dmin)
+    def voronoi (self, src, grid):
+        """
+        """
+        grid_len = len(grid)
+        z_list = [];
+        for i in range(len(grid)):
+            dmin = math.hypot(grid_len-1, grid_len-1)
+            index = -1
+            z = 0;
+            for j in range(len(src)):
+                d = math.hypot(src.x[j]-grid.x[i], src.y[j]-grid.y[i])
                 if d < dmin:
                     dmin = d
-                    j = i
-            poligon[j].append([src.x[j],src.y[j]])
-        return poligon
-
+                    index = j
+                    z = src.z[j]
+            #se añade la altura estimada
+            z_list.insert(i, z);
+        return np.array(z_list, dtype=np.float)

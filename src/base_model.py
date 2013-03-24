@@ -111,7 +111,7 @@ class Grid :
         #se retorna el nuevo grid generado.
         return Grid(xi, yi);
 
-    def distanceTo(self,grid):
+    def distance_to(self,grid):
         """
         Calcula la distancia entre los puntos pertenecientes a grilla
         actual y la grilla especificada.
@@ -133,7 +133,7 @@ class Grid :
         #Given the “legs” of a right triangle, return its hypotenuse.
         return numpy.hypot(d0, d1)
 
-    def to_dict(self, args) :
+    def to_dict(self, args):
         grid = []
         x = self.x.tolist();
         y = self.y.tolist();
@@ -145,6 +145,9 @@ class Grid :
 
         return grid
 
+    def __len__(self) :
+        return len(self.x)
+
     def __str__(self):
         import geojson
         grid = [];
@@ -154,21 +157,6 @@ class Grid :
         for i in range(len(xx)):
             point = geojson.Point([xx[i], yy[i]]);
             feature =  geojson.Feature(i, point,{'cantidad':zz[i]});
-            #point = { 'x' : xx[i],'y' : yy[i],'z' : zz[i] };
-            grid.append(feature);
-        coll = geojson.FeatureCollection(grid)
-        return geojson.dumps(coll);
-
-class GridPolygon :
-    def __init__(self, points) :
-        self.points = points
-
-    def __str__(self):
-        import geojson
-        grid = [];
-        for i in range(len(self.points)) :
-            polygon = geojson.Polygon(self.points[i])
-            feature =  geojson.Feature(i, polygon,{});
             #point = { 'x' : xx[i],'y' : yy[i],'z' : zz[i] };
             grid.append(feature);
         coll = geojson.FeatureCollection(grid)

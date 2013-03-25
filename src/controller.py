@@ -10,23 +10,6 @@ from interpolation import *
 __author__ = "Maximiliano Báez"
 __mail__ = "mxbg.py@gmail.com"
 
-def import_csv (filename):
-    import csv
-    import numpy as np
-    x,y,z,c =[],[],[],[];
-    with open(filename, 'rb') as f:
-        mycsv = csv.reader(f,delimiter=',')
-        for row in mycsv:
-            z.append(float(row[1]))
-            x.append(float(row[2]))
-            y.append(float(row[3]))
-            c.append([float(row[1]),float(row[2])])
-
-    return np.array(x, dtype=np.float),\
-            np.array(y,dtype=np.float),\
-            np.array(z,dtype=np.float),\
-            np.array(c,dtype=np.float)
-
 class GisController :
 
     def __init__(self, id_muestras=1):
@@ -103,12 +86,10 @@ class GisController :
         plt.show()
 
 
-
-
 if __name__ == "__main__":
     gis = GisController();
-    resp = gis.method_voronoi(100,100);
-    #~ resp = gis.method_idw(100,100)
+    #~ resp = gis.method_voronoi(100,100);
+    resp = gis.method_idw(100,100)
     print "parsing"
     #~ print resp
     gis.plot(resp, 100,100)

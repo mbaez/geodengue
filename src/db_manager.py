@@ -187,6 +187,6 @@ class PuntosInterpoladosModel :
 
 if __name__ == "__main__" :
     #~ dic = da.get_by(1)
-    #~ a = InterpolacionModel()
+    a = InterpolacionModel()
     #~ cursor = a.persist({'id_muestra': 1, 'descripcion': 'test'})
     #~ print cursor.fetchone()[0]

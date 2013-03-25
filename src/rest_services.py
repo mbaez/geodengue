@@ -20,9 +20,9 @@ def api_root():
 def interpolate_idw(metodo):
     gis = GisController();
     if metodo == 'idw' :
-        resp = gis.method_idw();
+        resp = gis.method_idw(50, 50);
     elif metodo == 'voronoi' :
-        resp = gis.method_voronoi()
+        resp = gis.method_voronoi(50, 50);
 
     return str(resp)
 

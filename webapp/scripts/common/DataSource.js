@@ -33,8 +33,8 @@ DataSource = {
 /**
  * La direcion del geoserver de konecta, acceso atravez de internet
  */
-DataSource.server = "http://octavius.konecta.com.py:8080";
-//DataSource.server = "http://localhost:8080";
+//~ DataSource.server = "http://octavius.konecta.com.py:8080";
+DataSource.server = "http://localhost:8080";
 /**
  * La url del servidor con el proxy del servidor, todas las peticiones
  * http, excepto el login y logout, pasan atravez del proxy para

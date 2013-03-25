@@ -1,6 +1,6 @@
 GeoDengue
 ===
-Proyecto de tesis de la carrega de Ingeniería en Informática de la Facultad Politecnica de la Universidad Nacional de Asunción.
+Proyecto de tesis de la carrera de Ingeniería en Informática de la Facultad Politecnica de la Universidad Nacional de Asunción.
 
 Autores
 ---
@@ -17,12 +17,19 @@ Librerías utilizadas
 * **OpenLayers** : Para acceder a los layers via WFS y WMS.
 * **Jasmin** : BDD (Behavior Driven Development). Test de unidades.
 
-Install dependencias
+Dependencias
 ---
-sudo apt-get install python-pip
-sudo pip install flask
+* **Librerias bases**
+
+```sh
+sudo easy_install flask
 sudo easy_install scipy
 sudo easy_install numpy
-sudo apt-get build-dep python-matplotlib
-sudo apt-get install  python-psycopg2
+sudo apt-get install python-psycopg2
+```
+* **Librerias para PDI** :
 
+```sh
+sudo apt-get install libopencv-*
+sudo apt-get install python-opencv
+```

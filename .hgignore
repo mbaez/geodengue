@@ -1,8 +1,0 @@
-syntax: regexp
-src/*.class
-build/*
-syntax: glob
-*.class
-*.orig
-*.pyc
-start.sh

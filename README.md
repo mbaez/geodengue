@@ -25,6 +25,7 @@ Dependencias
 sudo easy_install flask
 sudo easy_install scipy
 sudo easy_install numpy
+sudo easy_install gsconfig
 sudo apt-get install python-psycopg2
 ```
 * **Librerias para PDI** :

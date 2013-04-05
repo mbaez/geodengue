@@ -3,6 +3,7 @@
 import matplotlib
 import matplotlib.pyplot as plt
 import matplotlib.cm as cm
+import numpy as np
 #Se impotan los modulos.
 from base_model import *
 from db_manager import *
@@ -13,11 +14,10 @@ __mail__ = "mxbg.py@gmail.com"
 class GisController :
 
     def __init__(self, id_muestras=1):
-                #~ print "obteniendo los datos"
-        #x, y, z, c = import_csv('data/larvitrampas.csv')
+        print "obteniendo los datos"
         dao = PuntosControlModel()
         data = dao.get_by(id_muestras);
-        #~ print "construyendo la grilla"
+        print "construyendo la grilla"
         #~ print data
         self.id_muestras = id_muestras;
         self.muestras = Grid();
@@ -25,11 +25,11 @@ class GisController :
 
     def method_idw (self, cols=300, rows=300) :
         #genera los n puntos
-        #~ print "generando los puntos a interpolar"
+        print "generando los puntos a interpolar"
         grid = self.muestras.extend(cols, rows);
         alg = Interpotalion()
         # Calculate IDW
-        #~ print "Interpolando idw"
+        print "Interpolando idw"
         interpolated_grid = alg.simple_idw(self.muestras,grid)
         #interpolated_grid = interpolated_grid.reshape(cols, rows)
         grid.z = interpolated_grid
@@ -68,29 +68,37 @@ class GisController :
     def plot(self, grid, cols=300, rows=300):
         #djet = cmap_discretize(cm.jet, 1)
         bounds = grid.get_bounds()
-        points = grid
-        #~ points = self.muestras;
-        plt.figure()
+        #~ points = grid
+        points = self.muestras;
+        #~ plt.figure()
         #~ plt.imshow(grid, extent=(x.min(), x.max(), y.max(), y.min()), cmap=djet)
-        z =  grid.z.reshape(cols, rows)
-        #~ print len(grid.z)
-        #~ print grid.z.tolist()
-        z =  grid.z;
-        print len(z)
-        #~ plt.imshow(z, extent=(bounds.x_min, bounds.x_max, bounds.y_max, bounds.y_min))
+        print grid.z
+        z =  grid.z.reshape((cols, rows))
+        print z[0][4]
+        #~ print np.flipud(z)
+        #~ print bounds.x_min, bounds.x_max, bounds.y_max, bounds.y_min
+        #~ z =  grid.z;
+        plt.imshow(z, extent=(bounds.x_min, bounds.x_max, bounds.y_max, bounds.y_min))
         #~ plt.imshow(z)
         plt.hold(True)
         plt.scatter(points.x,points.y,c=points.z)
         plt.colorbar()
         plt.title('IDW')
-        plt.show()
+        #~ plt.show()
 
+    def to_file (self, grid, cols=300, rows=300) :
+        fo = open("/home/mbaez/Aplicaciones/geoserver2.3/data/coverages/arc_sample/test.asc", "wb")
+        fo.write( grid.to_raster(cols, rows));
+        fo.close();
 
 if __name__ == "__main__":
     gis = GisController();
-    #~ resp = gis.method_voronoi(100,100);
-    resp = gis.method_idw(100,100)
+    col= row = 800
+    print "starting..."
+    #~ resp = gis.method_voronoi(col,row);
+    resp = gis.method_idw(col,row)
     print "parsing"
     #~ print resp
-    gis.plot(resp, 100,100)
+    #~ gis.plot(resp, col,row)
+    gis.to_file(resp,col,row)
     print "end.."

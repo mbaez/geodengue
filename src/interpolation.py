@@ -56,13 +56,11 @@ class Interpotalion :
         z_list = [];
         for i in range(len(grid)):
             dmin = math.hypot(grid_len-1, grid_len-1)
-            index = -1
             z = 0;
             for j in range(len(src)):
                 d = math.hypot(src.x[j]-grid.x[i], src.y[j]-grid.y[i])
                 if d < dmin:
                     dmin = d
-                    index = j
                     z = src.z[j]
             #se añade la altura estimada
             z_list.insert(i, z);

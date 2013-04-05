@@ -133,7 +133,47 @@ class Grid :
         #Given the “legs” of a right triangle, return its hypotenuse.
         return numpy.hypot(d0, d1)
 
+    def to_raster (self, cols, rows, nodata_value=-9999):
+        """
+        Se encarga de generar un capa raster en el formato
+        <a href="http://en.wikipedia.org/wiki/Esri_grid">Esri grid.</a>
+
+
+        @type  cols : Integer
+        @param cols : La cantidad de columnas de la matriz
+
+        @type  rows : Integer
+        @param rows : La cantidad de filas de la matiz
+
+        @rtype String
+        @return Un string que representa la capa raster en el formato
+                de esri grid.
+        """
+        # se gira la matriz
+        z = numpy.flipud(self.z.reshape((cols, rows)))
+        # se obtiene la extensión del grid
+        bounds = self.get_bounds()
+        # Se calcula el size de la celda
+        size = abs((bounds.x_max - bounds.x_min)/cols)
+        #~ size = 100
+        # Se construye la cabecera del raster
+        out = "ncols\t" + str(cols)
+        out += "\nnrows\t" + str(rows)
+        out += "\nxllcorner\t" + str(bounds.x_min)
+        out += "\nyllcorner\t" + str(bounds.y_min)
+        out += "\ncellsize\t" + str(size)
+        out += "\nNODATA_value\t"+ str(nodata_value)
+        # Se construye la matriz con las alturas
+        for i in range(rows) :
+            out += "\n"
+            for j in range(cols) :
+                out += str(z[i][j]) + " "
+        # se retorna el raster como un string
+        return out
+
     def to_dict(self, args):
+        """
+        """
         grid = []
         x = self.x.tolist();
         y = self.y.tolist();
@@ -146,9 +186,13 @@ class Grid :
         return grid
 
     def __len__(self) :
+        """
+        """
         return len(self.x)
 
     def __str__(self):
+        """
+        """
         import geojson
         grid = [];
         xx = self.x.tolist();
@@ -157,7 +201,6 @@ class Grid :
         for i in range(len(xx)):
             point = geojson.Point([xx[i], yy[i]]);
             feature =  geojson.Feature(i, point,{'cantidad':zz[i]});
-            #point = { 'x' : xx[i],'y' : yy[i],'z' : zz[i] };
             grid.append(feature);
         coll = geojson.FeatureCollection(grid)
         return geojson.dumps(coll);

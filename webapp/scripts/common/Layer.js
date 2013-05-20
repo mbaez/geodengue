@@ -51,10 +51,10 @@ Layer = {
      */
     Protocol : function(options){
         var params = {
-            url:  DataSource.host + service,
+            url:  DataSource.host + options.service,
             version: "1.1.0",
             //featureNS : DataSource.workspace,
-            featureType: options.layerName,
+            featureType: options.name,
             geometryName: options.geometryName,
             srsName: DataSource.projectionCode
         };
@@ -89,7 +89,7 @@ Layer = {
      */
     Vector : function(options){
         if(!options["geometryName"] && !options["featureNS"]){
-            return new OpenLayers.Layer.Vector(options.layerName,
+            return new OpenLayers.Layer.Vector(options.name,
                     {displayInLayerSwitcher: false});
         }
         //se construye el strategy
@@ -102,7 +102,7 @@ Layer = {
         var strategySave =  new Layer.StrategySave();
         //se construye el protocolo
         var protocol = null;
-        protocol = new Layer.Protocol(options)
+        protocol = new Layer.Protocol(params)
 
         if(params['callback']){
             protocol.read({
@@ -111,7 +111,7 @@ Layer = {
         }
 
         //Se construye la capa del tipo vector
-        return new OpenLayers.Layer.Vector(layerName,
+        return new OpenLayers.Layer.Vector(options.name,
             {
                 strategies : [fixed, strategySave],
                 protocol: protocol,
@@ -139,13 +139,16 @@ Layer = {
     },
 
     /**
-     * Obtiene las capas del servidor mediante el protocolo WMS.
+     * Construye los layers para obtener los datos del servidor mediante
+     * el potocolo WMS.
+     * @function
      *
      * @author <a href="mailto:mxbg.py@gmail.com">Maximiliano Báez</a>
      * @params options {Object}
-     * @config {Array} names Un array con los nombres de las capas a construir
-     * @config {OpenLayers.Filter} [filter] Un filtro para acotar la capa
+     * @config {Array}[names] Un array con los nombres de las capas a construir
+     * @config {String}[name] Un string con el nombre de la capa a construir
      * @config {Boolean} [base] Establece si es o no una capa base
+     *
      * @return {Array} La lista de capas WMS obtenidas.
      */
     WMS : function(options){
@@ -157,23 +160,29 @@ Layer = {
         var format = 'image/png';
         // nombre de las capas que se solicitan al servidor
         var layers = [];
-        options.transparent = true;
-        options.format = format;
-        if(!options["base"]){
-            options.base =false;
+        //se validan los parametros del constructor
+        if(typeof options.base == "undefined"){
+            options.base = false;
         }
+        if(typeof options.names == "undefined"){
+            options.names = [];
+        }
+        if (typeof options.name != "undefined"){
+            options.names = [options.name];
+        }
+        //se preparan los parametros
         var names = options.names;
+        var config = {format : "image/png",transparent : true};
         // se construyen las capas
         for(var i=0; i<names.length; i++){
-            var name = names[i].name;
-            options['LAYERS'] = name;
+            //se establece el nombre del layer
+            config.LAYERS =  names[i].name;
+            //se construye el layer wms
             layers[i] = new OpenLayers.Layer.WMS(
-                name,
+                config.LAYERS,
                 server + names[i].workspace+ "/wms",
-                options,
-                {attribution:""}
+                config
             );
-
             layers[i].transitionEffect = 'resize';
             layers[i].isBaseLayer = options.base;
         }

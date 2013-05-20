@@ -9,9 +9,12 @@ DataSource = {
     /**
      * Sistema de proyecciones del mapa
      */
-    //projectionCode : "EPSG:4326",
-    projectionCode : "EPSG:900913",
-
+    projectionCode : "EPSG:4326",
+    //~ projectionCode : "EPSG:900913",
+    maxExtent : [
+        -60.60455146882159, -27.40893277789768,
+        -54.2972992541837, -21.032259302736406
+    ],
     /**
      * Las configuraciones de la capa
      */
@@ -24,7 +27,7 @@ DataSource = {
         styleMap : null
     },
     baseLayerConf : {
-        name: 'MapaColombia',
+        name: 'MapasPy',
         workspace : "tesis"
     }
 };

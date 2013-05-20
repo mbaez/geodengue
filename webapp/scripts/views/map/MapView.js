@@ -21,8 +21,6 @@ define(["libs/JQuery/js/jquery",
             initialize: function() {
                 this.render();
             },
-            events : {
-            },
             /**
              * Este metodo se encarga de contruir el view a partir del
              * template.
@@ -39,34 +37,29 @@ define(["libs/JQuery/js/jquery",
                 return this;
             },
             initOpenLayersMap : function(){
-                var maxExtent = new OpenLayers.Bounds(
-                    -8200730, 456498.1875,
-                    -8190695.5, 465909.03125
-                );
+                var maxExtent =  new OpenLayers.Bounds(DataSource.maxExtent);
                 // se instancia el mapa
                 var mapOptions = {
                     numZoomLevels : 21,
-                    projection : new OpenLayers.Projection(DataSource.projectionCode),
-                    //maxResolution:  config.maxResolution,
+                    //~ controls : [],
                     maxExtend : maxExtent,
+                    projection: DataSource.projectionCode,
                     units : 'm'
-                    //size : new OpenLayers.Size(150, 150)
                 };
                 //inicializa el map
                 this.map = new OpenLayers.Map("map", mapOptions);
-                var layersNames = [ DataSource.baseLayerConf];
+                //se construye el base layer
                 var baseLayer = new Layer.WMS({
-                    names : layersNames,
+                    name : DataSource.baseLayerConf,
                     base : true
                 });
                 this.map.addLayers(baseLayer);
-                this.map.addLayers(new Layer.WMS({names:[DataSource.larvitrampasLayerConf]}));
                 // Se añade el switch para las capas
-                this.map.addControl(new OpenLayers.Control.Navigation());
                 this.map.addControl(new OpenLayers.Control.LayerSwitcher());
-                //this.map.addControl(new OpenLayers.Control.CacheRead());
-                //this.map.addControl(new OpenLayers.Control.CacheWrite());
-                this.map.zoomToExtent(maxExtent)
+                this.map.addControl(new OpenLayers.Control.CacheRead());
+                this.map.addControl(new OpenLayers.Control.CacheWrite());
+                //se realiza un zoom  para que centrar el mapa
+                this.map.zoomToExtent(maxExtent);
             }
         });
     }

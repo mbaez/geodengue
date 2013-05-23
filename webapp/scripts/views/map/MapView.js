@@ -33,10 +33,18 @@ define(["libs/JQuery/js/jquery",
             render: function () {
                 var compTmpl = _.template(tmpl,{});
                 this.$el.html(compTmpl);
-                this.initOpenLayersMap();
+                this.initMap();
                 return this;
             },
-            initOpenLayersMap : function(){
+            /**
+             * Este metodo se encarga de inicializar el mapa de OpenLayers
+             * @function
+             *
+             * @public
+             * @name views.map.MapView#initOpenLayersMap
+             * @author <a href="mailto:mxbg.py@gmail.com">Maximiliano Báez</a>
+             */
+            initMap : function(){
                 var maxExtent =  new OpenLayers.Bounds(DataSource.maxExtent);
                 // se instancia el mapa
                 var mapOptions = {

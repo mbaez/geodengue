@@ -52,20 +52,17 @@ Layer = {
     Protocol : function(options){
         var params = {
             url:  DataSource.host + options.service,
-            version: "1.1.0",
-            //featureNS : DataSource.workspace,
             featureType: options.name,
+            version: "1.1.0",
+            featureNS : options.featureNS,
             geometryName: options.geometryName,
             srsName: DataSource.projectionCode
         };
-        if(options["featureNS"]){
-            params['featureNS'] = options.featureNS;
-        }
 
         if(options["filter"]){
             params['filter'] = options.filter;
         }
-        return new  OpenLayers.Protocol.WFS(options);
+        return new OpenLayers.Protocol.WFS(params);
     },
 
     /**
@@ -89,8 +86,9 @@ Layer = {
      */
     Vector : function(options){
         if(!options["geometryName"] && !options["featureNS"]){
-            return new OpenLayers.Layer.Vector(options.name,
-                    {displayInLayerSwitcher: false});
+            return new OpenLayers.Layer.Vector(options.name,{
+                displayInLayerSwitcher: false
+            });
         }
         //se construye el strategy
         var params = {};
@@ -101,8 +99,7 @@ Layer = {
         var fixed = new OpenLayers.Strategy.Fixed();
         var strategySave =  new Layer.StrategySave();
         //se construye el protocolo
-        var protocol = null;
-        protocol = new Layer.Protocol(params)
+        var protocol = new Layer.Protocol(params);
 
         if(params['callback']){
             protocol.read({

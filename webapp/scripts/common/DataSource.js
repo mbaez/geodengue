@@ -15,20 +15,24 @@ DataSource = {
         -60.60455146882159, -27.40893277789768,
         -54.2972992541837, -21.032259302736406
     ],
+
     /**
      * Las configuraciones de la capa
      */
-    larvitrampasLayerConf : {
-        name: 'larvitrampas',
+    puntosControlLayerConf : {
+        name: 'PuntosControl',
         //filterColumn : "",
         geometryName: 'the_geom',
-        featureNS : "py.com.tesis.dengue" ,
-        workspace : "tesis",
-        styleMap : null
+        featureNS : "py.com.geodengue" ,
+        workspace : "geodengue"
     },
+
+    /**
+     * Configuraciones de la capa base.
+     */
     baseLayerConf : {
         name: 'MapasPy',
-        workspace : "tesis"
+        workspace : "geodengue"
     }
 };
 
@@ -37,7 +41,7 @@ DataSource = {
  * La direcion del geoserver de konecta, acceso atravez de internet
  */
 //~ DataSource.server = "http://octavius.konecta.com.py:8080";
-DataSource.server = "http://localhost:8080";
+DataSource.server = "http://localhost/geodengue";
 /**
  * La url del servidor con el proxy del servidor, todas las peticiones
  * http, excepto el login y logout, pasan atravez del proxy para

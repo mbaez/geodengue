@@ -28,6 +28,10 @@ requirejs.config({
             deps : ['libs/OpenLayers/OpenLayers'],
             exports: 'Layer'
         },
+        'scripts/common/Control' : {
+            deps : ['libs/OpenLayers/OpenLayers'],
+            exports: 'Control'
+        },
         'scripts/common/Style' : {
             deps : ['libs/OpenLayers/OpenLayers'],
             exports: 'Style'

@@ -90,7 +90,7 @@ GeoDengue.getUrlParams = function(url) {
  * Este método se encarga de obtener todos los parametros de la url que
  * se encuentran el el hash y los carga en un json.
  *
- * @author <a href="mailto:mbaez@konecta.com.py">Maximiliano Báez</a>
+ * @author <a href="mailto:mxbg.py@gmail.com">Maximiliano Báez</a>
  */
 GeoDengue.getHashParams = function(){
     return GeoDengue.getUrlParams(document.location.hash)
@@ -99,7 +99,7 @@ GeoDengue.getHashParams = function(){
 
 /**
  *
- * @author <a href="mailto:mbaez@konecta.com.py">Maximiliano Báez</a>
+ * @author <a href="mailto:mxbg.py@gmail.com">Maximiliano Báez</a>
  */
 require(['libs/backbone',
         'libs/backbone.page',

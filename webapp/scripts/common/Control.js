@@ -30,17 +30,16 @@ Control = {
      * se agregue un feature a la capa
      */
     DrawPointFeature : function (vectorLayer,handler){
-        var funcionHandler = null;
-
-        if(handler){
-            funcionHandler = handler;
+        var params = {
+            handlerOptions: {multi: false}
         }
+        //si cuenta con un handler
+        if(typeof handler == "function"){
+            params.funcionHandler = handler;
+        }
+        //se retorna el control de openlayers ya inicializado.
         return new OpenLayers.Control.DrawFeature(
-            vectorLayer,
-            OpenLayers.Handler.Point,{
-                handlerOptions: {multi: false},
-                featureAdded: funcionHandler
-            }
+            vectorLayer, OpenLayers.Handler.Point, params
         );
     },
 
@@ -69,6 +68,6 @@ Control = {
      * trabajar.
      */
     DeleteFeature :function(vectorLayer) {
-        return new OpenLayers.Control.DeleteFeature(vectorLayer);
+        return new OpenLayers.Control.SelectFeature(vectorLayer);
     }
 };

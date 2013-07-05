@@ -15,7 +15,6 @@ Librerías utilizadas
 * **Underscore** : Microtemplating. Generación dinámica de html en el browser.
 * **Bootstrap** : Componentes html5, css3, javascript.
 * **OpenLayers** : Para acceder a los layers via WFS y WMS.
-* **Jasmin** : BDD (Behavior Driven Development). Test de unidades.
 
 Dependencias
 ---

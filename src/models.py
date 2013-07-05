@@ -57,9 +57,8 @@ class Grid :
         Este método se encarga de transformar un diccionario y inicializar
         el grid.
 
-        @type data : Dictionaries
         @param data: El diccionario con lo s datos a procesar.
-
+        @type data : Dictionaries
         """
         x,y,z =[],[],[];
         # se separan los datos en array indepedientes
@@ -79,8 +78,8 @@ class Grid :
         Este método se encarga de obtener la extensión de la grilla de
         puntos.
 
-        @rtype  : Bounds
-        @return : La extensión de la grilla de puntos.
+        @return: La extensión de la grilla de puntos.
+        @rtype: Bounds
         """
         bounds = Bounds();
         bounds.parse_array(self.x, self.y);
@@ -91,15 +90,14 @@ class Grid :
         Este método se encarga de generar un grid con `col*rows` puntos.
         Los puntos generados son equidistantes entre sí.
 
-        @type  cols : Integer
         @param cols : La cantidad de columnas del nuevo grid.
+        @type  cols : Integer
 
-        @type  rows : Integer
         @param rows : La cantidad de filas del nuevo grid.
+        @type  rows : Integer
 
-        @rtype  : Grid
-        @return : La grilla generada con los nuevos puntos.
-
+        @return: La grilla generada con los nuevos puntos.
+        @rtype: Grid
         """
         bounds = self.get_bounds();
         xi = numpy.linspace(bounds.x_min, bounds.x_max, cols);
@@ -116,11 +114,11 @@ class Grid :
         Calcula la distancia entre los puntos pertenecientes a grilla
         actual y la grilla especificada.
 
-        @type  grid : Grid
         @param grid : La grilla de puntos entre la que se
+        @type  grid : Grid
 
-        @rtype ndarray
-        @return La matriz de distancia entre la grilla de puntos.
+        @return: La matriz de distancia entre la grilla de puntos.
+        @rtype: ndarray
         """
         obs = numpy.vstack((self.x, self.y)).T
         interp = numpy.vstack((grid.x, grid.y)).T
@@ -138,16 +136,16 @@ class Grid :
         Se encarga de generar un capa raster en el formato
         <a href="http://en.wikipedia.org/wiki/Esri_grid">Esri grid.</a>
 
-
-        @type  cols : Integer
         @param cols : La cantidad de columnas de la matriz
+        @type  cols : Integer
 
-        @type  rows : Integer
         @param rows : La cantidad de filas de la matiz
+        @type  rows : Integer
 
-        @rtype String
-        @return Un string que representa la capa raster en el formato
+        @return: Un string que representa la capa raster en el formato
                 de esri grid.
+        @rtype: String
+
         """
         # se gira la matriz
         z = numpy.flipud(self.z.reshape((cols, rows)))
@@ -204,3 +202,9 @@ class Grid :
             grid.append(feature);
         coll = geojson.FeatureCollection(grid)
         return geojson.dumps(coll);
+
+class Enum(set):
+    def __getattr__(self, name):
+        if name in self:
+            return name
+        raise AttributeError

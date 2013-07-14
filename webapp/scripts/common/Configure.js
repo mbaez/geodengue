@@ -125,7 +125,7 @@ require(['libs/backbone',
             // referencia a si mismo
             var thiz = this;
             // Se cargar el page correspondiente
-            require(['scripts/controllers' + params['#'] ],
+            require(['scripts/pages' + params['#'] ],
                 function(Page) {
                     if(thiz.current != null){
                         //se cierra el page para desasociar los eventos

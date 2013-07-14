@@ -59,7 +59,7 @@ Layer = {
             srsName: DataSource.projectionCode
         };
 
-        if(options["filter"]){
+        if(typeof options.filter != "undefined"){
             params['filter'] = options.filter;
         }
         return new OpenLayers.Protocol.WFS(params);

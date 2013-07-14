@@ -61,6 +61,7 @@ define(['libs/JQuery/js/jquery',
             //se retorna la referencia al view.
             return this;
         },
+
         initLayers : function(){
             this.puntosControl = new Layer.Vector(DataSource.puntosControlLayerConf);
             //se crean los controles para las operaciones

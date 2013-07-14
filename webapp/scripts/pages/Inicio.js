@@ -32,6 +32,7 @@ define(['libs/JQuery/js/jquery',
         initialize : function(){
             this.render();
         },
+
          /**
          * Este metodo se encarga de contruir de incializar el page a
          * partir del template y cargar los views correspondientes.
@@ -42,31 +43,9 @@ define(['libs/JQuery/js/jquery',
          */
         render : function(){
             this.$el.html(template);
-            var mapPanel = new MapView ({el : $("#incioContent")});
             var view = new NavbarView ({el : $("#appHeader")});
             //se retorna la referencia al view.
             return this;
         }
-    /*
-        thiz.interpolarIdw = function(metodo){
-            $.ajax({
-                type: "GET",
-                cache: false,
-                dataType:"text",
-                url : '/geodengue/rest/larvitrampas/interpolar/'+metodo,
-                success : function(data){
-                    var conf = JSON.parse(data)
-                    var baseLayer = new Layer.WMS({
-                        names : [conf]
-                    });
-                    thiz.mapPanel.map.addLayers(baseLayer);
-                }
-            });
-        };
-    */
-
-        //~ thiz.interpolarIdw("voronoi");
-        //~ thiz.interpolarIdw("idw");
-        // se retorna el json que contiene los metodos de los eventos
     });
 });

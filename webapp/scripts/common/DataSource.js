@@ -20,7 +20,7 @@ DataSource = {
      * Las configuraciones de la capa
      */
     puntosControlLayerConf : {
-        name: 'PuntosControl',
+        name: 'puntos_control',
         //filterColumn : "",
         geometryName: 'the_geom',
         featureNS : "py.com.geodengue" ,

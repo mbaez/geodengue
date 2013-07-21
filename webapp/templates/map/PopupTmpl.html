@@ -1,0 +1,22 @@
+<form id="mapPopup"  class="form-horizontal">
+    <%_.forEach(data.fields, function(field){%>
+      <div class="control-group">
+        <label class="control-label" for="<%= field.id%>"><%=field.label%></label>
+        <div class="controls">
+            <input id="<%= field.id%>"
+            <%if(typeof field.type == "undefined" ){%>
+            type="text"
+            <%}else{%>
+            type="<%=field.type%>"
+            <%}%>
+            placeholder="<%= field.placeholder%>">
+        </div>
+      </div>
+
+  <%});%>
+   <div class="control-group">
+        <div class="controls">
+          <a class="btn" id="aceptar">Aceptar</a>
+        </div>
+      </div>
+</form>

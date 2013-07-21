@@ -40,7 +40,12 @@ define(["libs/backbone",
                 for(var i=0; i< this.data.fields.length; i++){
                     var id = this.data.fields[i].id;
                     var value = feature.attributes[id];
-                    $("#"+id ).val(value);
+                    if(this.data.fields[i].type == "date"){
+                        value = new Date(value);
+                        document.getElementById(id).valueAsDate = value;
+                    }else{
+                        $("#"+id ).val(value);
+                    }
                 }
             },
 
@@ -56,13 +61,13 @@ define(["libs/backbone",
                     var value = $("#"+id ).val();
                     feature.attributes[id] = value;
                 }
-                feature.state = OpenLayers.State.UPDATE;
+                feature.state = this.data.state;
             },
 
             onClose : function() {
                 this.data.mapPanel.map.removePopup(this.popup);
                 this.popup.destroy();
-                //~ $("#mapPopup").remove();
+                $("#mapPopup").remove();
             },
             /**
              * Este metodo se encarga de contruir el view a partir del

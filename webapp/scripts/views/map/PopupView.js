@@ -26,18 +26,43 @@ define(["libs/backbone",
 
 
             onAceptar : function(events){
+                this.putAttributes();
+                this.onClose();
+            },
+
+            /**
+             * Añade los valores de los atributos del feature al popup
+             * @autor Maximiliano Báez <mbaez@konecta.com.py>
+             */
+            showAttributes : function(){
+                var attributes = {};
+                var feature = this.data.feature;
+                for(var i=0; i< this.data.fields.length; i++){
+                    var id = this.data.fields[i].id;
+                    var value = feature.attributes[id];
+                    $("#"+id ).val(value);
+                }
+            },
+
+            /**
+             * Añade los valores del form del popup al feature.
+             * @autor Maximiliano Báez <mbaez@konecta.com.py>
+             */
+            putAttributes : function(){
+                var attributes = {};
+                var feature = this.data.feature;
                 for(var i=0; i< this.data.fields.length; i++){
                     var id = this.data.fields[i].id;
                     var value = $("#"+id ).val();
-                    this.data.feature.attributes[id] = value;
+                    feature.attributes[id] = value;
                 }
-                this.data.feature.state = "Update";
-                this.onClose();
+                feature.state = OpenLayers.State.UPDATE;
             },
 
             onClose : function() {
                 this.data.mapPanel.map.removePopup(this.popup);
                 this.popup.destroy();
+                //~ $("#mapPopup").remove();
             },
             /**
              * Este metodo se encarga de contruir el view a partir del
@@ -48,17 +73,21 @@ define(["libs/backbone",
              * @name #render
              */
             render: function () {
+                var thiz = this;
                 var compTmpl = _.template(tmpl,{data:this.data});
                 this.popup = new OpenLayers.Popup.FramedCloud(
                     "chicken",
                     this.data.feature.geometry.getBounds().getCenterLonLat(),
                     null, compTmpl,
-                    null, true, null);
+                    null, true, function(){
+                       thiz.onClose();
+                    });
                 this.data.mapPanel.map.addPopup(this.popup);
                 var thiz = this;
-                $("#aceptar" ).click(function(){
+                $("#aceptar").click(function(){
                     thiz.onAceptar();
                 });
+                this.showAttributes();
                 return this;
             }
 

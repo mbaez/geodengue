@@ -74,7 +74,7 @@ define(['libs/JQuery/js/jquery',
                     mapPanel :thiz.mapPanel,
                     fields : [
                      { label : "Codigo", id:"codigo", placeholder:"Ingrese el nombre"},
-                     { label : "Id Muestra", id:"id_muestra", placeholder:"Ingrese el nombre"},
+                     { label : "Id Muestra", id:"id_muestras", placeholder:"Ingrese el nombre"},
                      { label : "Descripcion", id:"descripcion", placeholder:"Ingrese el nombre"}
                      //~ { label : "Fecha", id:"fecha_instalacion", placeholder:"" , type : "date"}
                     ]

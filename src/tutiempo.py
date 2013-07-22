@@ -1,6 +1,9 @@
 #! /usr/bin/env python
 # -*- coding: utf-8 -*-
-
+#~ http://espanol.weather.com/weather/almanacHourly-Asuncion-PAXX0001:1:PA?day=1
+LOCALIDADES_HISTORIAL_HORA ={
+    "Asuncion" : 'http://espanol.weather.com/weather/almanacHourly-Asuncion-PAXX0001:1:PA?day=1'
+}
 LOCALIDADES_HORA ={
     "Asuncion" : 'tiempo/Asuncion_Aeropuerto/SGAS.htm?datos=por-horas'
 }
@@ -20,15 +23,16 @@ class TuTiempo:
 
     def __init__(self,  localidad, fecha):
         print localidad
-        self.localidad_hora = LOCALIDADES_HORA[localidad]
-        self.localidad_dia = LOCALIDADES_DIA[localidad].replace('mm-yyyy', fecha);
+        self.localidad_hora = TuTiempo.URL_BASE +LOCALIDADES_HORA[localidad]
+        self.localidad_historial_hora = LOCALIDADES_HISTORIAL_HORA[localidad]
+        self.localidad_dia = TuTiempo.URL_BASE + LOCALIDADES_DIA[localidad].replace('mm-yyyy', fecha);
 
 
     def download_page(self, domain) :
         """
         Descarga el hmtl de la página en forma de string.
         """
-        url = TuTiempo.URL_BASE + domain
+        url =  domain
         print url
         usock = urllib2.urlopen(url)
         data = usock.read()
@@ -55,12 +59,12 @@ class TuTiempo:
                 for td in tr.cssselect('th'):
                     val = td.text_content()
                     attr = td.attrib["class"]
-                    tr_els[i][attr] = val;
+                    tr_els[i][attr] = val.encode("utf-8").strip();
 
                 for td in tr.cssselect('td'):
                     val = td.text_content()
                     attr = td.attrib["class"]
-                    tr_els[i][attr] = val;
+                    tr_els[i][attr] = val.encode("utf-8").strip();
                 i+=1
 
         for i in range(len(tr_els) ):
@@ -83,8 +87,35 @@ class TuTiempo:
                     val = unicode(val)
                     if val.isnumeric() :
                         value = float(val)
-                    #se añade el elemento al array
+                    #~ #se añade el elemento al array
                     tr_els[i].append(value);
+                i+=1
+
+        for i in range(len(tr_els) ):
+            for j in range(len(tr_els[i])):
+                print str(tr_els[i][j]) + "\t",
+            print "\n"
+
+    def process_dom_hora_history (self) :
+        """
+        Procesa el dom de la página que contiene el historial del
+        clima por hora.
+        """
+        root = self.get_dom(self.localidad_historial_hora)
+        tr_els = []
+        i=0
+        for elem in root.cssselect('table.tblAlmanacHourly'):
+            for tr in elem.cssselect('tr'):
+                tr_els.insert(i,[]);
+                for td in tr.cssselect('td'):
+                    value = 0
+                    #se verifica que el elemento sea numerico
+                    val = td.text_content()
+                    val = val.encode("utf-8").strip()
+                    #~ if val.isnumeric() :
+                    #~ value = float(val)
+                    #se añade el elemento al array
+                    tr_els[i].append(val);
                 i+=1
 
         for i in range(len(tr_els) ):
@@ -97,4 +128,5 @@ class TuTiempo:
 if __name__ == "__main__":
     clima = TuTiempo("Asuncion", "07-2013")
     clima.process_dom_dia();
-    clima.process_dom_hora();
+    #~ clima.process_dom_hora();
+    #~ clima.process_dom_hora_history();

@@ -27,6 +27,7 @@ sudo easy_install numpy
 sudo easy_install gsconfig
 sudo apt-get install python-psycopg2
 sudo pip install cssselect
+sudo apt-get install python-lxml
 ```
 * **Librerias para PDI** :
 

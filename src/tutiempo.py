@@ -1,36 +1,28 @@
 #! /usr/bin/env python
 # -*- coding: utf-8 -*-
 
-#~ http://espanol.weather.com/weather/almanacHourly-Asuncion-PAXX0001:1:PA?day=N
-#~ Se traen los datos de N días antes de la fecha actual
-#~ Se pueden obtener datos de años pasados por hora
-#~ No trae datos de las precipitaciones, se debe complementar con datos
-#~ de tutiempo
-
+#~ URL = 'http://www.tutiempo.net/tiempo/Asuncion_Aeropuerto/SGAS.htm?datos=por-horas'
 LOCALIDADES_HORA ={
     "Asuncion" : 'tiempo/Asuncion_Aeropuerto/SGAS.htm?datos=por-horas'
 }
-
-LOCALIDADES_DIA = {
-    "Asuncion": 'clima/Asuncion_Aeropuerto/mm-yyyy/862180.htm'
+# Datos utilizads para contruir los queryparams para realizar el get
+API_DATA = {
+    "appid" : "2d9be00662629ff5c269672af48013d8",
+    "type" : "day",
+    "id" : "3439389",
+    "mode" : "json"
 }
-
-#~ URL = 'http://www.tutiempo.net/tiempo/Asuncion_Aeropuerto/SGAS.htm?datos=por-horas'
-#~ URL =  'http://www.tutiempo.net/Asuncion_Aeropuerto/SGAS.htm?datos=por-horas'
+# URLs de las fuentes de información de datos climaticos
+API_URL = "http://api.openweathermap.org/data/2.5";
+TUTIEMPO_URL = 'http://www.tutiempo.net/'
 
 import lxml.html
 import urllib2
 
 class TuTiempo:
-    URL_BASE = 'http://www.tutiempo.net/'
 
     def __init__(self,  localidad, fecha):
-        print localidad
-        print localidad
-        self.localidad_hora = TuTiempo.URL_BASE +LOCALIDADES_HORA[localidad]
-        self.localidad_historial_hora = LOCALIDADES_HISTORIAL_HORA[localidad]
-        self.localidad_dia = TuTiempo.URL_BASE + LOCALIDADES_DIA[localidad].replace('mm-yyyy', fecha);
-
+        self.localidad_hora = TUTIEMPO_URL +LOCALIDADES_HORA[localidad]
 
     def download_page(self, domain) :
         """
@@ -52,7 +44,14 @@ class TuTiempo:
 
     def process_dom_hora (self) :
         """
-        Procesa el dom de la página de clima por hora
+        Procesa el dom de la página de clima por hora.
+        0 Hora : "hh:mm"
+        1 Predicción : imagen
+        2 Temp : N°C
+        3 Viento : imagen N km/h
+        4 H : N%
+        5 Nubes : N%
+        6 Precip : N mm
         """
         root = self.get_dom(self.localidad_hora)
         tr_els = []
@@ -74,62 +73,75 @@ class TuTiempo:
         for i in range(len(tr_els) ):
             print str(tr_els[i])
 
-    def process_dom_dia (self) :
+    def build_url_params (self, args={}):
         """
-        Procesa el dom de la página de clima por día
+        Se encarga de construir el query string para la url.
         """
-        root = self.get_dom(self.localidad_dia)
-        tr_els = []
-        i=0
-        for elem in root.cssselect('table.TablaClima'):
-            for tr in elem.cssselect('tr'):
-                tr_els.insert(i,[]);
-                for td in tr.cssselect('td'):
-                    value = 0
-                    #se verifica que el elemento sea numerico
-                    val = td.text_content()
-                    val = unicode(val)
-                    if val.isnumeric() :
-                        value = float(val)
-                    #se añade el elemento al array
-                    tr_els[i].append(value);
-                i+=1
+        params = "?"
+        for key in API_DATA :
+            params += key + "="+ API_DATA[key] + "&"
 
-        for i in range(len(tr_els) ):
-            for j in range(len(tr_els[i])):
-                print str(tr_els[i][j]) + "\t",
-            print "\n"
+        for key in agrs:
+            params += key + "="+ args[key] + "&"
+        return params
 
-    def process_dom_hora_history (self) :
+    def history (self) :
         """
-        Procesa el dom de la página que contiene el historial del
-        clima por hora.
+        Obtiene el historial del clima por hora utilizando los servicios
+        de openweathermap, el servicio respondecon el siguiente JSON:
+        <pre>
+        {   "message": "",
+            "cod": "200",
+            "city_id": 3439389,
+            "calctime": 0.0032,
+            "cnt": 13,
+            "list": [{
+                    "weather": [{
+                            "id": 800,
+                            "main": "Clear",
+                            "description": "Sky is Clear",
+                            "icon": "01n"
+                    }],
+                    "base": "global stations",
+                    "main": {
+                        "temp": 289.15,
+                        "pressure": 1020,
+                        "humidity": 59,
+                        "temp_min": 289.15,
+                        "temp_max": 289.15
+                    },
+                    "wind": {
+                        "speed": 4.6,
+                        "deg": 80
+                    },
+                    "clouds": {
+                        "all": 0
+                    },
+                    "city": {
+                        "zoom": 5,
+                        "country": "PY",
+                        "population": 1000000,
+                        "find": [
+                            "ASUNCION"
+                        ],
+                        "id": 3439389,
+                        "name": "Asuncion"
+                    },
+                    "dt": 1374973200
+                }, ...
+            ]
+        }
+        </pre>
         """
-        root = self.get_dom(self.localidad_historial_hora)
-        tr_els = []
-        i=0
-        for elem in root.cssselect('table.tblAlmanacHourly'):
-            for tr in elem.cssselect('tr'):
-                tr_els.insert(i,[]);
-                for td in tr.cssselect('td'):
-                    value = 0
-                    #se verifica que el elemento sea numerico
-                    val = td.text_content()
-                    val = val.encode("utf-8").strip()
-                    #~ if val.isnumeric() :
-                    #~ value = float(val)
-                    #se añade el elemento al array
-                    tr_els[i].append(val);
-                i+=1
-
-        for i in range(len(tr_els) ):
-            for j in range(len(tr_els[i])):
-                print str(tr_els[i][j]) + "\t",
-            print "\n"
+        args ={
+            "start" : None,
+            "end" : None,
+        }
+        url = API_URL + "/history/city" + self.build_url_params(args);
+        return self.download_page(url);
 
 
 if __name__ == "__main__":
     clima = TuTiempo("Asuncion", "07-2013")
-    clima.process_dom_dia();
-    #~ clima.process_dom_hora();
-    #~ clima.process_dom_hora_history();
+
+    clima.process_dom_hora();

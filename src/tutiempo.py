@@ -18,6 +18,8 @@ TUTIEMPO_URL = 'http://www.tutiempo.net/'
 
 import lxml.html
 import urllib2
+import time
+import datetime
 
 class TuTiempo:
 
@@ -81,7 +83,7 @@ class TuTiempo:
         for key in API_DATA :
             params += key + "="+ API_DATA[key] + "&"
 
-        for key in agrs:
+        for key in args:
             params += key + "="+ args[key] + "&"
         return params
 
@@ -133,9 +135,17 @@ class TuTiempo:
         }
         </pre>
         """
+        # se calcula el rango de fechas
+        now = datetime.datetime.now()
+        # se crea una fecha de 10 dias antes a modo de prueba
+        past = datetime.datetime(year=now.year,month=now.month,day=now.day -10)
+        # se  transforma a unix time
+        end = str(int(time.mktime(now.timetuple())))
+        start = str(int(time.mktime(past.timetuple())))
+
         args ={
-            "start" : None,
-            "end" : None,
+            "start" : start,
+            "end" : end,
         }
         url = API_URL + "/history/city" + self.build_url_params(args);
         return self.download_page(url);
@@ -143,5 +153,5 @@ class TuTiempo:
 
 if __name__ == "__main__":
     clima = TuTiempo("Asuncion", "07-2013")
-
-    clima.process_dom_hora();
+    #~ clima.process_dom_hora();
+    print clima.history();

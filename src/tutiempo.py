@@ -16,6 +16,45 @@ API_DATA = {
 API_URL = "http://api.openweathermap.org/data/2.5";
 TUTIEMPO_URL = 'http://www.tutiempo.net/'
 
+import json    # or `import simplejson as json` if on Python < 2.6
+
+class Dia :
+
+    def __init__( self, data={}):
+        if len(data) >= 6:
+            self.hora = data["hora"]
+            self.presion = None
+            self.precipitacion = data["precipitacion"]
+            self.temperatura = data["temperatura"]
+            self.humedad = data["humedad"]
+            self.viento = data["viento"]
+            self.nuves = data["nuves"]
+
+    def parse( self, data):
+        self.precipitacion = data["rain"]["3h"]
+        self.temperatura = data["main"]["temp"]
+        self.presion = data["main"]["pressure"]
+        self.humedad = data["main"]["humidity"]
+        self.viento = data["wind"]["speed"]
+        self.nuves = data["clouds"]["all"]
+
+class Periodo :
+    def __init__( self):
+        self.horas = []
+
+    def parse_json(self, data) :
+        for day in data["list"] :
+            d = Dia()
+            d.parse(day)
+            self.horas.append(d)
+
+
+    def parse_dic(self , data) :
+        for day in data :
+            self.horas.append(Dia(day))
+
+
+
 import lxml.html
 import urllib2
 import time
@@ -56,24 +95,47 @@ class TuTiempo:
         6 Precip : N mm
         """
         root = self.get_dom(self.localidad_hora)
+
+        attributes = {
+            'hora':'hora',
+            'pp': 'precipitacion',
+            'Temp': 'temperatura',
+            'hr': 'humedad',
+            'vv': 'viento',
+            'prob': 'nuves'
+        }
+        day = -1
         tr_els = []
-        i=0
+        i = 0
         for elem in root.cssselect('div.DatosHorarios table'):
             for tr in elem.cssselect('tr'):
-                tr_els.insert(i,{});
-                for td in tr.cssselect('th'):
-                    val = td.text_content()
-                    attr = td.attrib["class"]
-                    tr_els[i][attr] = val.encode("utf-8").strip();
 
-                for td in tr.cssselect('td'):
+                for td in tr.cssselect('th') :
                     val = td.text_content()
-                    attr = td.attrib["class"]
-                    tr_els[i][attr] = val.encode("utf-8").strip();
-                i+=1
+                    key = td.attrib["class"]
+                    if key == "Dia" :
+                        day += 1
+                        tr_els.insert(day,[])
+                        i = 0
+
+                tr_els[day].insert(i,{})
+
+                for td in tr.cssselect('td') :
+                    val = td.text_content()
+                    key = td.attrib["class"]
+                    if attributes.has_key(key) :
+                        attr = attributes[key]
+                        tr_els[day][i][attr] = val.encode("utf-8").strip()
+
+                # se verifica si se añadieron elementos al array para
+                # incrementar el array.
+                if len(tr_els[day][i]) > 0 :
+                    i += 1
+                else :
+                    tr_els[day].pop(i)
 
         for i in range(len(tr_els) ):
-            print str(tr_els[i])
+            print str(i) +" : "+ str(len(tr_els[i]))
 
     def build_url_params (self, args={}):
         """
@@ -147,11 +209,15 @@ class TuTiempo:
             "start" : start,
             "end" : end,
         }
+
         url = API_URL + "/history/city" + self.build_url_params(args);
-        return self.download_page(url);
+        json_string = self.download_page(url);
+        return json.loads(json_string)
 
 
 if __name__ == "__main__":
     clima = TuTiempo("Asuncion", "07-2013")
     #~ clima.process_dom_hora();
-    print clima.history();
+    periodo = Periodo()
+    periodo.parse_json(clima.history());
+    print periodo.horas

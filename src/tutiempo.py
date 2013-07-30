@@ -31,12 +31,73 @@ class Dia :
             self.nuves = data["nuves"]
 
     def parse( self, data):
-        self.precipitacion = data["rain"]["3h"]
-        self.temperatura = data["main"]["temp"]
-        self.presion = data["main"]["pressure"]
-        self.humedad = data["main"]["humidity"]
-        self.viento = data["wind"]["speed"]
-        self.nuves = data["clouds"]["all"]
+        self._parse_rain_node(data)
+        self._parse_main_node(data)
+        self._parse_wind_node(data)
+        self._parse_clouds_node(data)
+
+
+    def _parse_rain_node (self, data) :
+        """
+        rain         Precipitation volume for period
+            1h   rain in recent hour
+            3h   rain in recent 3 hours
+            6h   rain in recent 6 hours
+            12h  rain in recent 12 hours
+            24h  rain in recent 24 hours
+            day  rain in recent day
+        """
+        attrs = ["1h", "3h", "6h", "12h", "24h", "day"]
+        if data.has_key("rain") :
+            for attr in attrs :
+                if data["rain"].has_key(attr) :
+                   self.precipitacion = data["rain"][attr]
+                   return
+
+        self.precipitacion = 0
+
+    def _parse_main_node (self, data) :
+        """
+        main     temp    Temperature in Kelvin. Subtracted 273.15 from
+                         this figure to convert to Celsius.
+        main     humidity    Humidity in %
+        main     temp_min temp_max   Minimum and maximum temperature
+        main     pressure    Atmospheric pressure in kPa
+        """
+        if data.has_key("main") :
+            if data["main"].has_key("temp") :
+                # se transforma los grados Kelvin a celcius.
+                self.temperatura = float(data["main"]["temp"]) - 273.15
+
+            if data["main"].has_key("pressure") :
+                self.presion = data["main"]["pressure"]
+            else :
+                self.presion = 0
+
+            if data["main"].has_key("humidity") :
+                self.humedad = data["main"]["humidity"]
+            else :
+                self.humedad = 0
+
+    def _parse_wind_node (self, data) :
+        """
+        wind         Wind
+            speed    Wind speed in mps ( m/s )
+            deg  Wind direction in degrees ( meteorological)
+            gust     speed of wind gust
+            var_beg  Wind direction
+            var_end  Wind direction
+        """
+        if data.has_key("wind") and data["wind"].has_key("spedd") :
+            self.viento = data["wind"]["speed"]
+        else :
+            self.viento = 0
+
+    def _parse_clouds_node (self, data) :
+        if data.has_key("clouds") and data["clouds"].has_key("all") :
+            self.nuves = data["clouds"]["all"]
+        else :
+            self.nuves = 0
 
 class Periodo :
     def __init__( self):
@@ -49,9 +110,10 @@ class Periodo :
             self.horas.append(d)
 
 
-    def parse_dic(self , data) :
+    def parse_dict(self , data) :
         for day in data :
-            self.horas.append(Dia(day))
+            for hour in day :
+                self.horas.append(Dia(hour))
 
 
 
@@ -64,6 +126,12 @@ class TuTiempo:
 
     def __init__(self,  localidad, fecha):
         self.localidad_hora = TUTIEMPO_URL +LOCALIDADES_HORA[localidad]
+
+    def get_periodo (self) :
+        periodo = Periodo()
+        periodo.parse_json(self.history());
+        periodo.parse_dict(self.process_dom_hora());
+        return periodo
 
     def download_page(self, domain) :
         """
@@ -134,8 +202,7 @@ class TuTiempo:
                 else :
                     tr_els[day].pop(i)
 
-        for i in range(len(tr_els) ):
-            print str(i) +" : "+ str(len(tr_els[i]))
+        return tr_els
 
     def build_url_params (self, args={}):
         """
@@ -218,6 +285,5 @@ class TuTiempo:
 if __name__ == "__main__":
     clima = TuTiempo("Asuncion", "07-2013")
     #~ clima.process_dom_hora();
-    periodo = Periodo()
-    periodo.parse_json(clima.history());
-    print periodo.horas
+    periodo = clima.get_periodo()
+    print len(periodo.horas)

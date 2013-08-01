@@ -5,7 +5,11 @@
 __author__ = "Maximiliano Báez"
 __mail__ = "mxbg.py@gmail.com"
 
-from models import Enum
+#Se impotan los modulos.
+
+from db_manager import *
+from models import *
+from tutiempo import *
 
 """
 Enum que representa los estados por lo cuales atravieza el individuo.
@@ -123,7 +127,7 @@ class Simulador :
         Se encarga de iniciar el simulador.
         """
         i=0
-        for dia in self.periodo :
+        for dia in self.periodo.horas :
             #~ se procesa cada individuo de la población
             j=0
             for individuo in self.poblacion :
@@ -147,11 +151,23 @@ class Simulador :
 
 
 if __name__ == "__main__" :
+    id_muestras = 1;
+    #se obtiene el historial climatico
+    print "obteniendo los datos climaticos"
+    clima = TuTiempo("Asuncion")
+    periodo = clima.get_periodo()
+    print "obteniendo los datos de la bd"
+    dao = PuntosControlModel()
+    data = dao.get_by(id_muestras);
+    print "construyendo la grilla"
+    #~ print data
+    muestras = Grid();
+    muestras.parse(data);
 
-    evol = Simulador(periodo=range(1,20) )
-    for i in range(100):
+    evol = Simulador(periodo=periodo)
+    for i in range(len(muestras)):
         evol.poblacion.append(Individuo())
-
+    print "iniciando simulación"
     evol.start()
     for ind in evol.poblacion :
         print str(ind)

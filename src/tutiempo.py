@@ -124,7 +124,7 @@ import datetime
 
 class TuTiempo:
 
-    def __init__(self,  localidad, fecha):
+    def __init__(self,  localidad):
         self.localidad_hora = TUTIEMPO_URL +LOCALIDADES_HORA[localidad]
 
     def get_periodo (self) :
@@ -138,7 +138,6 @@ class TuTiempo:
         Descarga el hmtl de la página en forma de string.
         """
         url =  domain
-        print url
         usock = urllib2.urlopen(url)
         data = usock.read()
         usock.close()
@@ -267,7 +266,8 @@ class TuTiempo:
         # se calcula el rango de fechas
         now = datetime.datetime.now()
         # se crea una fecha de 10 dias antes a modo de prueba
-        past = datetime.datetime(year=now.year,month=now.month,day=now.day -10)
+        delta = datetime.timedelta(days=10)
+        past = now - delta;
         # se  transforma a unix time
         end = str(int(time.mktime(now.timetuple())))
         start = str(int(time.mktime(past.timetuple())))
@@ -283,7 +283,7 @@ class TuTiempo:
 
 
 if __name__ == "__main__":
-    clima = TuTiempo("Asuncion", "07-2013")
+    clima = TuTiempo("Asuncion")
     #~ clima.process_dom_hora();
     periodo = clima.get_periodo()
     print len(periodo.horas)

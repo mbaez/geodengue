@@ -12,7 +12,7 @@ __mail__ = "mxbg.py@gmail.com"
 class DBManager :
     def __init__(self):
         self.connection = connect(
-        """ dbname=dengue
+        """ dbname=geodenguedb
             host=localhost
             user=postgres
             password=postgres
@@ -102,7 +102,7 @@ class PuntosControlModel :
         el `id_muestras` definido.
 
             SELECT id,  id_muestras, codigo, descripcion,
-                   cantidad, X(the_geom), Y(the_geom)
+                   cantidad, ST_X(the_geom), ST_Y(the_geom)
             FROM puntos_control
             WHERE id_muestras = :id_muestras
 
@@ -115,9 +115,10 @@ class PuntosControlModel :
         # se definie el query de la consulta.
         sql_string = """
             SELECT id,  id_muestras, codigo, descripcion,
-                cantidad, X(the_geom), Y(the_geom)
+                cantidad, ST_X(the_geom) as x, ST_Y(the_geom) as y
             FROM puntos_control
             WHERE id_muestras = %(id_muestras)s
+                AND fecha_recoleccion is not null
         """
         # se construye el diccionario que contiene los parametros del query.
         args = {'id_muestras' : id_muestras};

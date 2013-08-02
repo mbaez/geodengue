@@ -11,6 +11,7 @@ from db_manager import *
 from models import *
 from tutiempo import *
 
+from random import randint
 """
 Enum que representa los estados por lo cuales atravieza el individuo.
 """
@@ -28,7 +29,7 @@ class Individuo :
     """
     Esta clase contiene la representación de un individuo de la población.
     Un mosquito de la población tiene los siguientes atributos :
-    * Sexo : Macho o hembra
+    * Sexo : Macho o hembra, valor generado aleatoriamente
     * Edad : cantidad de días que lleva vivo el mosquito.
     * Estado : Huevo, Larva, Pupa, Adulto..
     * Ubicación : coordenadas longitud y latitud
@@ -38,8 +39,16 @@ class Individuo :
     * Periodo es el intervalo de tiempo al que será sometido la población inicial a evolución.
     """
     def __init__ (self) :
-        self.sexo = Sexo.HEMBRA
+        # Se genera de forma aleatoria el sexo del mosquito
+        sexo = randint(0, 1)
+        if sexo == 0 :
+            self.sexo = Sexo.MACHO
+        else :
+            self.sexo = Sexo.HEMBRA
+
         self.edad = 0
+        #~ TODO : ver estado inicial para los individuos que probienen de
+        #~ las larvitrampas
         self.estado = Estado.HUEVO
         self.espectativa_vida = 100
         self.coordenadas = None
@@ -49,29 +58,55 @@ class Individuo :
         """
         esta_muerto : si espectativa de vida <= 0, si edad >= 30 dias.
         """
-        return self.espectativa_vida <= 0 or self.edad >= 30
+        return self.espectativa_vida <= 0 or self.edad >= 30*24
 
-    def se_reproduce (self, dia):
+    def se_reproduce (self, hora):
         """
         El mosquito se reproduce si :
         * No está muerto = no
         * Sexo = hembra, temperatura > 18 C
+
+        * Un día cualquiera es día de oviposición, si T>18o C en algún
+        lapso del día, pero si T<18o todo el día, no pone huevos.
+
         """
         return self.esta_muerto() == False \
             and self.sexo == Sexo.HEMBRA \
-            and self.estado == Estado.ADULTO
+            and self.estado == Estado.ADULTO \
+            and hora.temperatura > 18
 
     def buscar_alimento(self):
         """
         Se tiene en cuenta la ubicacion del mosquito adulto y la densidad
         poblacional en dicha ubicación.
+
+        * Día adverso, si T máxima <15oC no vuela (por debajo de este umbral
+        de vuelo, no vuela, no pica, ni ovipone). En definitiva, el potencial
+        climático del vector es función de la temperatura y de la no-ocurrencia
+        de valores por encima o por debajo de umbrales críticos, tanto térmicos
+        como de humedad. Es de notar que para el caso de deficiencias de
+        humedad, lo letal es función de la duración del período.
+
         """
         pass
 
-    def desarrollar(self, dia) :
+    def desarrollar(self, hora) :
         """
+        Cómo le afecta la temperatura : Limitantes para el desarrollo poblacional.
+        Entre ellos, dentro del ambiente abiótico el potencial del vector
+        se ve pautado por:
         """
-        self.espectativa_vida -= 10;
+
+        if hora.temperatura >= 40 or hora.temperatura <= 0 :
+            """
+            Día letal: si ocurre T<0o (T mínima diaria <0o) ó T> 40o C
+            (T máxima diaria >40o C), ó aire muy seco (Cuadro 7.1). Se consideran
+            fenecidas todas las formas adultas, y larvarias en el caso térmico,
+            """
+            self.espectativa_vida -= 4;
+        else :
+            self.espectativa_vida -= 1;
+
         self.edad += 1;
 
 
@@ -127,12 +162,12 @@ class Simulador :
         Se encarga de iniciar el simulador.
         """
         i=0
-        for dia in self.periodo.horas :
+        for hora in self.periodo.horas :
             #~ se procesa cada individuo de la población
             j=0
             for individuo in self.poblacion :
                 #~ Se desarrolla el inidividuo
-                individuo.desarrollar(dia)
+                individuo.desarrollar(hora)
 
                 #~ Se verifica el estado del individuo
                 if(individuo.esta_muerto() == True):
@@ -140,14 +175,14 @@ class Simulador :
                         str(len(self.poblacion))
                     self.poblacion.remove(individuo)
 
-                elif(individuo.se_reproduce(dia) == True) :
-                    huevos = individuo.poner_huevos(dia)
+                elif(individuo.se_reproduce(hora) == True) :
+                    huevos = individuo.poner_huevos(hora)
                     self.poblacion.append(huevos)
                 #~ fin del preiodo
                 j += 1
             #~ fin del preiodo
             i += 1
-            print "dia " + str(i)
+            #~ print "dia " + str(i)
 
 
 if __name__ == "__main__" :
@@ -156,6 +191,7 @@ if __name__ == "__main__" :
     print "obteniendo los datos climaticos"
     clima = TuTiempo("Asuncion")
     periodo = clima.get_periodo()
+
     print "obteniendo los datos de la bd"
     dao = PuntosControlModel()
     data = dao.get_by(id_muestras);
@@ -166,7 +202,8 @@ if __name__ == "__main__" :
 
     evol = Simulador(periodo=periodo)
     for i in range(len(muestras)):
-        evol.poblacion.append(Individuo())
+        for cantidad in range(int(muestras.z[i])) :
+            evol.poblacion.append(Individuo())
     print "iniciando simulación"
     evol.start()
     for ind in evol.poblacion :

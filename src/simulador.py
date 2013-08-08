@@ -35,7 +35,9 @@ class Individuo :
     * Ubicación : coordenadas longitud y latitud
     * Dispositivo de origen : el código del dispositivo de ovipostura de origen.
     * Expectativa de vida : es un valor numérico que varía de acuerdo a las
-        condiciones climáticas a las que es sometido el mosquito.
+            condiciones climáticas a las que es sometido el mosquito.
+    * Ultima oviposición : es el indicador de la utlima fecha en la que el
+            individuo puso huevos.
     * Periodo es el intervalo de tiempo al que será sometido la población inicial a evolución.
     """
     def __init__ (self) :
@@ -53,9 +55,12 @@ class Individuo :
         self.espectativa_vida = 100
         self.coordenadas = None
         self.dispositivo_origen = None
+        self.ultima_oviposicion = 0;
 
     def esta_muerto (self):
         """
+        La supervivencia de los mosquitos depende de la capacidad para alimentarse,
+        reproducirse, protegerse y dispersarse.
         esta_muerto : si espectativa de vida <= 0, si edad >= 30 dias.
         """
         return self.espectativa_vida <= 0 or self.edad >= 30*24
@@ -112,8 +117,45 @@ class Individuo :
 
     def poner_huevos(self, dia) :
         """
+        Generalmente el apareamiento se realiza cuando la hembra busca
+        alimentarse; se ha observado que el ruido que emite al volar es
+        un mecanismo por el cual el macho es atraído.
+
+        Una vez copulada e inseminada la hembra, el esperma que lleva es
+        suficiente para fecundar todos los huevitos que produce durante su
+        existencia, no aceptando otra inseminación adicional.
+
+        Su ciclo para poner huevos es de aproximadamente cada tres días.
+        Su alimentación puede hacerla en cualquier momento (puede picar
+        varias veces a las personas de una casa). Las proteínas contenidas
+        en la sangre le son indispensables para la maduración de los huevos.
+        La variación de temperatura y humedad, así como la latitud pueden
+        hacer variar estos rangos del ciclo de vida de los mosquitos.
+
+        La hembra deposita sus huevos en las paredes de recipientes con
+        agua estancada, limpia y a la sombra. Un solo mosquito puede poner
+         80 a 150 huevos, cuatro veces al día.
         """
-        return []
+
+        #Su ciclo para poner huevos es de aproximadamente cada tres días a
+        # cuatro días
+        ciclo = randint(3, 4)
+        # se verifica la cantidad de días que pasaron desde su ultima
+        # oviposición.
+        if self.ultima_oviposicion % (ciclo * 24) == 0 :
+            # Un solo mosquito puede poner 80 a 150 huevos, cuatro veces
+            # al día.
+            cantidad = randint(80, 150)
+            huevos = []
+            for i in range(cantidad) :
+                huevos.append(Individuo())
+            # se reinicia el contador
+            self.ultima_oviposicion = 1;
+
+            return huevos
+
+        # se aumenta el contador de ultima oviposición
+        self.ultima_oviposicion += 1
 
     def __str__(self):
         return str(self.espectativa_vida) + " - " + str(self.edad )
@@ -177,7 +219,7 @@ class Simulador :
 
                 elif(individuo.se_reproduce(hora) == True) :
                     huevos = individuo.poner_huevos(hora)
-                    self.poblacion.append(huevos)
+                    self.poblacion.extend(huevos)
                 #~ fin del preiodo
                 j += 1
             #~ fin del preiodo

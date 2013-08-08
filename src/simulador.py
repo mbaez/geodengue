@@ -55,7 +55,7 @@ class Individuo :
         self.espectativa_vida = 100
         self.coordenadas = None
         self.dispositivo_origen = None
-        self.ultima_oviposicion = 0;
+        self.ultima_oviposicion = 1;
 
     def esta_muerto (self):
         """
@@ -77,10 +77,10 @@ class Individuo :
         """
         return self.esta_muerto() == False \
             and self.sexo == Sexo.HEMBRA \
-            and self.estado == Estado.ADULTO \
-            and hora.temperatura > 18
+            and hora.temperatura > 18 #~ \ and self.estado == Estado.ADULTO
 
-    def buscar_alimento(self):
+
+    def buscar_alimento(self, hora):
         """
         Se tiene en cuenta la ubicacion del mosquito adulto y la densidad
         poblacional en dicha ubicación.
@@ -93,7 +93,8 @@ class Individuo :
         humedad, lo letal es función de la duración del período.
 
         """
-        pass
+        if hora.temperatura < 15 :
+            return
 
     def desarrollar(self, hora) :
         """
@@ -115,7 +116,7 @@ class Individuo :
         self.edad += 1;
 
 
-    def poner_huevos(self, dia) :
+    def poner_huevos(self, hora) :
         """
         Generalmente el apareamiento se realiza cuando la hembra busca
         alimentarse; se ha observado que el ruido que emite al volar es
@@ -156,6 +157,7 @@ class Individuo :
 
         # se aumenta el contador de ultima oviposición
         self.ultima_oviposicion += 1
+        return None
 
     def __str__(self):
         return str(self.espectativa_vida) + " - " + str(self.edad )
@@ -207,24 +209,28 @@ class Simulador :
         for hora in self.periodo.horas :
             #~ se procesa cada individuo de la población
             j=0
+            nueva_poblacion = []
             for individuo in self.poblacion :
                 #~ Se desarrolla el inidividuo
                 individuo.desarrollar(hora)
 
                 #~ Se verifica el estado del individuo
                 if(individuo.esta_muerto() == True):
-                    print "Esta muerto.. Individiuos restantes :" +\
-                        str(len(self.poblacion))
+                    #~ print "Esta muerto.. Individiuos restantes :" +\
+                        #~ str(len(self.poblacion))
                     self.poblacion.remove(individuo)
 
                 elif(individuo.se_reproduce(hora) == True) :
+                    #~ print "se reproduce :"
                     huevos = individuo.poner_huevos(hora)
-                    self.poblacion.extend(huevos)
+                    if not huevos == None :
+                        nueva_poblacion.extend(huevos)
                 #~ fin del preiodo
                 j += 1
             #~ fin del preiodo
+            self.poblacion.extend(nueva_poblacion)
             i += 1
-            #~ print "dia " + str(i)
+            print "hora " + str(i)
 
 
 if __name__ == "__main__" :

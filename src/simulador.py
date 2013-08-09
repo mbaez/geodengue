@@ -40,7 +40,17 @@ class Individuo :
             individuo puso huevos.
     * Periodo es el intervalo de tiempo al que será sometido la población inicial a evolución.
     """
-    def __init__ (self) :
+    def __init__ (self, **kargs) :
+        """
+        @param kargs: Parametros de inicialización de la clase
+
+        @keyword [estado]: El estado del individuo
+        @keyword [id]: El identificador del punto de control de
+            de origen.
+        @keyword [x]: Coordenada x del dispositivo de origen.
+        @keyword [y]: Coordenada y del dispositivo de origen.
+        @keyword [edad]: La edad del individuo en horas
+        """
         # Se genera de forma aleatoria el sexo del mosquito
         sexo = randint(0, 1)
         if sexo == 0 :
@@ -48,13 +58,14 @@ class Individuo :
         else :
             self.sexo = Sexo.HEMBRA
 
-        self.edad = 0
+        self.edad = kargs.get('edad', 0 );
         #~ TODO : ver estado inicial para los individuos que probienen de
         #~ las larvitrampas
-        self.estado = Estado.HUEVO
+        self.estado = kargs.get('estado', Estado.HUEVO);
         self.espectativa_vida = 100
-        self.coordenadas = None
-        self.dispositivo_origen = None
+        self.coordenada_x = kargs.get('x', None);
+        self.coordenada_y = kargs.get('y', None);
+        self.id_dispositivo = kargs.get('id', None);
         self.ultima_oviposicion = 1;
 
     def esta_muerto (self):
@@ -78,7 +89,6 @@ class Individuo :
         return self.esta_muerto() == False \
             and self.sexo == Sexo.HEMBRA \
             and hora.temperatura > 18 #~ \ and self.estado == Estado.ADULTO
-
 
     def buscar_alimento(self, hora):
         """
@@ -114,7 +124,6 @@ class Individuo :
             self.espectativa_vida -= 1;
 
         self.edad += 1;
-
 
     def poner_huevos(self, hora) :
         """
@@ -160,7 +169,8 @@ class Individuo :
         return None
 
     def __str__(self):
-        return str(self.espectativa_vida) + " - " + str(self.edad )
+        return str(self.estado) + " :  " + str(self.sexo) + " - " +\
+            str(self.espectativa_vida) + " - " + str(self.edad )
 
 
 class Simulador :
@@ -192,13 +202,28 @@ class Simulador :
         #~ se inicializa el atributo periodo
         self.poblacion =  [];
         if kargs.has_key("poblacion") == True:
-            self.poblacion = kargs["poblacion"]
+            self.__init_poblacion__(kargs["poblacion"])
         #~ se inicializa el atributo periodo
         self.historial_clima =[]
         #~ se inicializa el atributo periodo
-        self.periodo = []
-        if kargs.has_key("periodo") == True:
-            self.periodo = kargs["periodo"]
+        self.periodo = kargs.get('periodo',[])
+
+    def __init_poblacion__ (self, grid ):
+        """
+        Este método se encarga de procesar los datos de las muestras y
+        generar los inidividuos para inicializar la población.
+
+        """
+        grid = Grid();
+        grid.parse(data);
+        for i in range(len(grid)):
+            # se obtine la cantidad de individuos
+            cantidad_larvas = int(grid.z[i]);
+            for cantidad in range(cantidad_larvas) :
+                #se inicializa los inidviduos
+
+                indv = Individuo(x=grid.x[i], y=grid.y[i], id=grid.ids[i], estado=Estado.LARVA)
+                self.poblacion.append(indv)
 
 
     def start(self):
@@ -245,13 +270,9 @@ if __name__ == "__main__" :
     data = dao.get_by(id_muestras);
     print "construyendo la grilla"
     #~ print data
-    muestras = Grid();
-    muestras.parse(data);
 
-    evol = Simulador(periodo=periodo)
-    for i in range(len(muestras)):
-        for cantidad in range(int(muestras.z[i])) :
-            evol.poblacion.append(Individuo())
+    evol = Simulador(periodo=periodo, poblacion=data)
+
     print "iniciando simulación"
     evol.start()
     for ind in evol.poblacion :

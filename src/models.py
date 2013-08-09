@@ -60,18 +60,20 @@ class Grid :
         @param data: El diccionario con lo s datos a procesar.
         @type data : Dictionaries
         """
-        x,y,z =[],[],[];
+        x,y,z, ids =[],[],[],[];
         # se separan los datos en array indepedientes
         for i in range(len(data)):
             #~ print data[i]
             x.append(data[i]['x']);
             y.append(data[i]['y']);
             z.append(data[i]['cantidad']);
+            ids.append(data[i]['id']);
 
         # se inicializa el array
         self.x = numpy.array(x, dtype=numpy.float)
         self.y = numpy.array(y, dtype=numpy.float)
         self.z = numpy.array(z, dtype=numpy.float)
+        self.ids =  ids;
 
     def get_bounds(self):
         """

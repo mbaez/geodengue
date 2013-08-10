@@ -1,13 +1,14 @@
 #! /usr/bin/env python
 # -*- coding: utf-8 -*-
-import matplotlib
-import matplotlib.pyplot as plt
-import matplotlib.cm as cm
+#~ import matplotlib
+#~ import matplotlib.pyplot as plt
+#~ import matplotlib.cm as cm
 import numpy as np
 #Se impotan los modulos.
-from base_model import *
+from models import *
 from db_manager import *
 from interpolation import *
+from simulador import *
 __author__ = "Maximiliano Báez"
 __mail__ = "mxbg.py@gmail.com"
 
@@ -16,27 +17,22 @@ class GisController :
     def __init__(self, id_muestras=1):
         print "obteniendo los datos"
         dao = PuntosControlModel()
-        data = dao.get_by(id_muestras);
-        print "construyendo la grilla"
-        #~ print data
-        self.id_muestras = id_muestras;
-        self.muestras = Grid();
-        self.muestras.parse(data);
+        self.data = dao.get_by(id_muestras);
 
     def method_idw (self, cols=300, rows=300) :
+        print "construyendo la grilla"
+        #~ print data
+        muestras = Grid();
+        muestras.parse(self.data);
         #genera los n puntos
         print "generando los puntos a interpolar"
-        grid = self.muestras.extend(cols, rows);
+        grid = muestras.extend(cols, rows);
         alg = Interpotalion()
         # Calculate IDW
         print "Interpolando idw"
-        interpolated_grid = alg.simple_idw(self.muestras,grid)
+        interpolated_grid = alg.simple_idw(muestras,grid)
         #interpolated_grid = interpolated_grid.reshape(cols, rows)
         grid.z = interpolated_grid
-        detalles = {
-            'id_muestra' : self.id_muestras,
-            'descripcion': 'Método utilizado SIMPLE IDW'
-        }
         #~ self.__persist_grid__(grid, detalles);
         #~ print "done."
         return grid;
@@ -54,16 +50,39 @@ class GisController :
        detalle.persist(grid.to_dict(params))
 
     def method_voronoi (self, cols=300, rows=300) :
-        grid = self.muestras.extend(cols, rows);
+        print "construyendo la grilla"
+        #~ print data
+        muestras = Grid();
+        muestras.parse(self.data);
+        grid = muestras.extend(cols, rows);
         #genera los n puntos
         alg = Interpotalion()
         # Calculate IDW
         print "Interpolando voronoi"
-        interpolated_grid = alg.voronoi(self.muestras, grid)
+        interpolated_grid = alg.voronoi(muestras, grid)
         grid.z = interpolated_grid
         #~ print grid
         print "done."
         return grid;
+
+    def method_evolutive (self, cols=300, rows=300):
+        print "obteniendo los datos climaticos"
+        clima = TuTiempo("Asuncion")
+        periodo = clima.get_periodo()
+        #~ print data
+        evol = Simulador(periodo=periodo, poblacion=self.data)
+        print "iniciando simulación"
+        evol.start()
+        muestras_evol = evol.to_grid();
+        print "generando los puntos a interpolar"
+        grid = muestras_evol.extend(cols, rows);
+        alg = Interpotalion()
+        # Calculate IDW
+        print "Interpolando idw"
+        interpolated_grid = alg.simple_idw(muestras_evol,grid)
+        #interpolated_grid = interpolated_grid.reshape(cols, rows)
+        grid.z = interpolated_grid
+        return grid
 
     def plot(self, grid, cols=300, rows=300):
         #djet = cmap_discretize(cm.jet, 1)
@@ -86,19 +105,20 @@ class GisController :
         plt.title('IDW')
         #~ plt.show()
 
-    def to_file (self, grid, cols=300, rows=300) :
-        fo = open("/home/mbaez/Aplicaciones/geoserver2.3/data/coverages/arc_sample/test.asc", "wb")
+    def to_file (self, grid, cols=300, rows=300,suffix ="") :
+        fo = open("/home/mbaez/Aplicaciones/geoserver2.3/data/coverages/arc_sample/test_"+suffix+".asc", "wb")
         fo.write( grid.to_raster(cols, rows));
         fo.close();
 
 if __name__ == "__main__":
     gis = GisController();
-    col= row = 800
+    col= row = 300
     print "starting..."
     #~ resp = gis.method_voronoi(col,row);
-    resp = gis.method_idw(col,row)
+    #~ resp = gis.method_idw(col,row)
+    resp = gis.method_evolutive(col,row)
     print "parsing"
     #~ print resp
     #~ gis.plot(resp, col,row)
-    gis.to_file(resp,col,row)
+    gis.to_file(resp,col,row, "evol")
     print "end.."

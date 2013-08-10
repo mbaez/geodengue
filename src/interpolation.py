@@ -9,7 +9,6 @@ __mail__ = "mxbg.py@gmail.com"
 
 import numpy as np
 import math
-from scipy.interpolate import Rbf
 
 class Interpotalion :
 

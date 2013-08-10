@@ -34,10 +34,12 @@ class Bounds :
         @type  y_array : Array
         @param y_array : Lista de puntos correspondientes al eje y
         """
-        self.x_min = x_array.min();
-        self.y_min = y_array.min();
-        self.x_max = x_array.max();
-        self.y_max = y_array.max();
+        if len(x_array) == len(y_array) and len(x_array) > 0 :
+            self.x_min = x_array.min();
+            self.y_min = y_array.min();
+            self.x_max = x_array.max();
+            self.y_max = y_array.max();
+
 
 
 import numpy
@@ -173,6 +175,8 @@ class Grid :
 
     def to_dict(self, args):
         """
+        Este metodo se encarga de generar un diccionario de los atributos
+        de la clase.
         """
         grid = []
         x = self.x.tolist();
@@ -186,13 +190,9 @@ class Grid :
         return grid
 
     def __len__(self) :
-        """
-        """
         return len(self.x)
 
     def __str__(self):
-        """
-        """
         import geojson
         grid = [];
         xx = self.x.tolist();

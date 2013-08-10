@@ -66,6 +66,7 @@ class Individuo :
         self.coordenada_x = kargs.get('x', None);
         self.coordenada_y = kargs.get('y', None);
         self.id_dispositivo = kargs.get('id', None);
+        self.index = kargs.get('index', None);
         self.ultima_oviposicion = 1;
 
     def esta_muerto (self):
@@ -158,7 +159,8 @@ class Individuo :
             cantidad = randint(80, 150)
             huevos = []
             for i in range(cantidad) :
-                huevos.append(Individuo())
+
+                huevos.append(self.get_child())
             # se reinicia el contador
             self.ultima_oviposicion = 1;
 
@@ -168,7 +170,16 @@ class Individuo :
         self.ultima_oviposicion += 1
         return None
 
+    def get_child (self):
+        """
+        Este método se encarga de obtener el hijo del inidividuo, el hijo
+        hedea de su padre todos sus atributos.
+        """
+        return Individuo(x=self.coordenada_x, y=self.coordenada_y, \
+                    id=self.id_dispositivo, index=self.index)
+
     def __str__(self):
+
         return str(self.estado) + " :  " + str(self.sexo) + " - " +\
             str(self.espectativa_vida) + " - " + str(self.edad )
 
@@ -208,7 +219,7 @@ class Simulador :
         #~ se inicializa el atributo periodo
         self.periodo = kargs.get('periodo',[])
 
-    def __init_poblacion__ (self, grid ):
+    def __init_poblacion__ (self, data ):
         """
         Este método se encarga de procesar los datos de las muestras y
         generar los inidividuos para inicializar la población.
@@ -222,8 +233,12 @@ class Simulador :
             for cantidad in range(cantidad_larvas) :
                 #se inicializa los inidviduos
 
-                indv = Individuo(x=grid.x[i], y=grid.y[i], id=grid.ids[i], estado=Estado.LARVA)
+                indv = Individuo(x=grid.x[i], y=grid.y[i], \
+                    id=grid.ids[i], estado=Estado.LARVA, index=i)
+
                 self.poblacion.append(indv)
+
+        self.__grid = grid
 
 
     def start(self):
@@ -244,6 +259,7 @@ class Simulador :
                     #~ print "Esta muerto.. Individiuos restantes :" +\
                         #~ str(len(self.poblacion))
                     self.poblacion.remove(individuo)
+                    pass
 
                 elif(individuo.se_reproduce(hora) == True) :
                     #~ print "se reproduce :"
@@ -255,7 +271,35 @@ class Simulador :
             #~ fin del preiodo
             self.poblacion.extend(nueva_poblacion)
             i += 1
-            print "hora " + str(i)
+            #~ print "hora " + str(i)
+
+    def to_grid (self):
+        key_map = {}
+        data_array = []
+        for individuo in self.poblacion :
+            if not key_map.has_key(individuo.id_dispositivo) :
+                # se obtiene los datos
+                data = {}
+                data['x'] = individuo.coordenada_x
+                data['y'] = individuo.coordenada_y
+                data['id'] = individuo.id_dispositivo
+                data['index'] = individuo.index
+                data['cantidad'] = 1
+                #se añade el elemento al array
+                data_array.append(data)
+                # se añade el indice al array
+                key_map[individuo.id_dispositivo] = len(data_array) -1
+            else :
+                index = key_map[individuo.id_dispositivo]
+                # se incrementa la cantidad de larvas
+                data_array[index]['cantidad'] += 1
+        #se ordenan los datos
+        new_list = sorted(data_array, key=lambda k: k['index'])
+        # se realiza el parse a grid
+        grid = Grid();
+        grid.parse(new_list)
+        # se retorna la referencia al grid
+        return grid;
 
 
 if __name__ == "__main__" :

@@ -35,10 +35,22 @@ class Individuo :
     * Ubicación : coordenadas longitud y latitud
     * Dispositivo de origen : el código del dispositivo de ovipostura de origen.
     * Expectativa de vida : es un valor numérico que varía de acuerdo a las
-        condiciones climáticas a las que es sometido el mosquito.
+            condiciones climáticas a las que es sometido el mosquito.
+    * Ultima oviposición : es el indicador de la utlima fecha en la que el
+            individuo puso huevos.
     * Periodo es el intervalo de tiempo al que será sometido la población inicial a evolución.
     """
-    def __init__ (self) :
+    def __init__ (self, **kargs) :
+        """
+        @param kargs: Parametros de inicialización de la clase
+
+        @keyword [estado]: El estado del individuo
+        @keyword [id]: El identificador del punto de control de
+            de origen.
+        @keyword [x]: Coordenada x del dispositivo de origen.
+        @keyword [y]: Coordenada y del dispositivo de origen.
+        @keyword [edad]: La edad del individuo en horas
+        """
         # Se genera de forma aleatoria el sexo del mosquito
         sexo = randint(0, 1)
         if sexo == 0 :
@@ -46,16 +58,21 @@ class Individuo :
         else :
             self.sexo = Sexo.HEMBRA
 
-        self.edad = 0
+        self.edad = kargs.get('edad', 0 );
         #~ TODO : ver estado inicial para los individuos que probienen de
         #~ las larvitrampas
-        self.estado = Estado.HUEVO
+        self.estado = kargs.get('estado', Estado.HUEVO);
         self.espectativa_vida = 100
-        self.coordenadas = None
-        self.dispositivo_origen = None
+        self.coordenada_x = kargs.get('x', None);
+        self.coordenada_y = kargs.get('y', None);
+        self.id_dispositivo = kargs.get('id', None);
+        self.index = kargs.get('index', None);
+        self.ultima_oviposicion = 1;
 
     def esta_muerto (self):
         """
+        La supervivencia de los mosquitos depende de la capacidad para alimentarse,
+        reproducirse, protegerse y dispersarse.
         esta_muerto : si espectativa de vida <= 0, si edad >= 30 dias.
         """
         return self.espectativa_vida <= 0 or self.edad >= 30*24
@@ -72,10 +89,9 @@ class Individuo :
         """
         return self.esta_muerto() == False \
             and self.sexo == Sexo.HEMBRA \
-            and self.estado == Estado.ADULTO \
-            and hora.temperatura > 18
+            and hora.temperatura > 18 #~ \ and self.estado == Estado.ADULTO
 
-    def buscar_alimento(self):
+    def buscar_alimento(self, hora):
         """
         Se tiene en cuenta la ubicacion del mosquito adulto y la densidad
         poblacional en dicha ubicación.
@@ -88,7 +104,8 @@ class Individuo :
         humedad, lo letal es función de la duración del período.
 
         """
-        pass
+        if hora.temperatura < 15 :
+            return
 
     def desarrollar(self, hora) :
         """
@@ -109,14 +126,62 @@ class Individuo :
 
         self.edad += 1;
 
+    def poner_huevos(self, hora) :
+        """
+        Generalmente el apareamiento se realiza cuando la hembra busca
+        alimentarse; se ha observado que el ruido que emite al volar es
+        un mecanismo por el cual el macho es atraído.
 
-    def poner_huevos(self, dia) :
+        Una vez copulada e inseminada la hembra, el esperma que lleva es
+        suficiente para fecundar todos los huevitos que produce durante su
+        existencia, no aceptando otra inseminación adicional.
+
+        Su ciclo para poner huevos es de aproximadamente cada tres días.
+        Su alimentación puede hacerla en cualquier momento (puede picar
+        varias veces a las personas de una casa). Las proteínas contenidas
+        en la sangre le son indispensables para la maduración de los huevos.
+        La variación de temperatura y humedad, así como la latitud pueden
+        hacer variar estos rangos del ciclo de vida de los mosquitos.
+
+        La hembra deposita sus huevos en las paredes de recipientes con
+        agua estancada, limpia y a la sombra. Un solo mosquito puede poner
+         80 a 150 huevos, cuatro veces al día.
         """
+
+        #Su ciclo para poner huevos es de aproximadamente cada tres días a
+        # cuatro días
+        ciclo = randint(3, 4)
+        # se verifica la cantidad de días que pasaron desde su ultima
+        # oviposición.
+        if self.ultima_oviposicion % (ciclo * 24) == 0 :
+            # Un solo mosquito puede poner 80 a 150 huevos, cuatro veces
+            # al día.
+            cantidad = randint(80, 150)
+            huevos = []
+            for i in range(cantidad) :
+
+                huevos.append(self.get_child())
+            # se reinicia el contador
+            self.ultima_oviposicion = 1;
+
+            return huevos
+
+        # se aumenta el contador de ultima oviposición
+        self.ultima_oviposicion += 1
+        return None
+
+    def get_child (self):
         """
-        return []
+        Este método se encarga de obtener el hijo del inidividuo, el hijo
+        hedea de su padre todos sus atributos.
+        """
+        return Individuo(x=self.coordenada_x, y=self.coordenada_y, \
+                    id=self.id_dispositivo, index=self.index)
 
     def __str__(self):
-        return str(self.espectativa_vida) + " - " + str(self.edad )
+
+        return str(self.estado) + " :  " + str(self.sexo) + " - " +\
+            str(self.espectativa_vida) + " - " + str(self.edad )
 
 
 class Simulador :
@@ -148,13 +213,32 @@ class Simulador :
         #~ se inicializa el atributo periodo
         self.poblacion =  [];
         if kargs.has_key("poblacion") == True:
-            self.poblacion = kargs["poblacion"]
+            self.__init_poblacion__(kargs["poblacion"])
         #~ se inicializa el atributo periodo
         self.historial_clima =[]
         #~ se inicializa el atributo periodo
-        self.periodo = []
-        if kargs.has_key("periodo") == True:
-            self.periodo = kargs["periodo"]
+        self.periodo = kargs.get('periodo',[])
+
+    def __init_poblacion__ (self, data ):
+        """
+        Este método se encarga de procesar los datos de las muestras y
+        generar los inidividuos para inicializar la población.
+
+        """
+        grid = Grid();
+        grid.parse(data);
+        for i in range(len(grid)):
+            # se obtine la cantidad de individuos
+            cantidad_larvas = int(grid.z[i]);
+            for cantidad in range(cantidad_larvas) :
+                #se inicializa los inidviduos
+
+                indv = Individuo(x=grid.x[i], y=grid.y[i], \
+                    id=grid.ids[i], estado=Estado.LARVA, index=i)
+
+                self.poblacion.append(indv)
+
+        self.__grid = grid
 
 
     def start(self):
@@ -165,24 +249,57 @@ class Simulador :
         for hora in self.periodo.horas :
             #~ se procesa cada individuo de la población
             j=0
+            nueva_poblacion = []
             for individuo in self.poblacion :
                 #~ Se desarrolla el inidividuo
                 individuo.desarrollar(hora)
 
                 #~ Se verifica el estado del individuo
                 if(individuo.esta_muerto() == True):
-                    print "Esta muerto.. Individiuos restantes :" +\
-                        str(len(self.poblacion))
+                    #~ print "Esta muerto.. Individiuos restantes :" +\
+                        #~ str(len(self.poblacion))
                     self.poblacion.remove(individuo)
+                    pass
 
                 elif(individuo.se_reproduce(hora) == True) :
+                    #~ print "se reproduce :"
                     huevos = individuo.poner_huevos(hora)
-                    self.poblacion.append(huevos)
+                    if not huevos == None :
+                        nueva_poblacion.extend(huevos)
                 #~ fin del preiodo
                 j += 1
             #~ fin del preiodo
+            self.poblacion.extend(nueva_poblacion)
             i += 1
-            #~ print "dia " + str(i)
+            #~ print "hora " + str(i)
+
+    def to_grid (self):
+        key_map = {}
+        data_array = []
+        for individuo in self.poblacion :
+            if not key_map.has_key(individuo.id_dispositivo) :
+                # se obtiene los datos
+                data = {}
+                data['x'] = individuo.coordenada_x
+                data['y'] = individuo.coordenada_y
+                data['id'] = individuo.id_dispositivo
+                data['index'] = individuo.index
+                data['cantidad'] = 1
+                #se añade el elemento al array
+                data_array.append(data)
+                # se añade el indice al array
+                key_map[individuo.id_dispositivo] = len(data_array) -1
+            else :
+                index = key_map[individuo.id_dispositivo]
+                # se incrementa la cantidad de larvas
+                data_array[index]['cantidad'] += 1
+        #se ordenan los datos
+        new_list = sorted(data_array, key=lambda k: k['index'])
+        # se realiza el parse a grid
+        grid = Grid();
+        grid.parse(new_list)
+        # se retorna la referencia al grid
+        return grid;
 
 
 if __name__ == "__main__" :
@@ -197,15 +314,10 @@ if __name__ == "__main__" :
     data = dao.get_by(id_muestras);
     print "construyendo la grilla"
     #~ print data
-    muestras = Grid();
-    muestras.parse(data);
 
-    evol = Simulador(periodo=periodo)
-    for i in range(len(muestras)):
-        for cantidad in range(int(muestras.z[i])) :
-            evol.poblacion.append(Individuo())
+    evol = Simulador(periodo=periodo, poblacion=data)
+
     print "iniciando simulación"
     evol.start()
     for ind in evol.poblacion :
         print str(ind)
-

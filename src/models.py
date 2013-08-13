@@ -34,10 +34,12 @@ class Bounds :
         @type  y_array : Array
         @param y_array : Lista de puntos correspondientes al eje y
         """
-        self.x_min = x_array.min();
-        self.y_min = y_array.min();
-        self.x_max = x_array.max();
-        self.y_max = y_array.max();
+        if len(x_array) == len(y_array) and len(x_array) > 0 :
+            self.x_min = x_array.min();
+            self.y_min = y_array.min();
+            self.x_max = x_array.max();
+            self.y_max = y_array.max();
+
 
 
 import numpy
@@ -60,18 +62,20 @@ class Grid :
         @param data: El diccionario con lo s datos a procesar.
         @type data : Dictionaries
         """
-        x,y,z =[],[],[];
+        x,y,z, ids =[],[],[],[];
         # se separan los datos en array indepedientes
         for i in range(len(data)):
             #~ print data[i]
             x.append(data[i]['x']);
             y.append(data[i]['y']);
             z.append(data[i]['cantidad']);
+            ids.append(data[i]['id']);
 
         # se inicializa el array
         self.x = numpy.array(x, dtype=numpy.float)
         self.y = numpy.array(y, dtype=numpy.float)
         self.z = numpy.array(z, dtype=numpy.float)
+        self.ids =  ids;
 
     def get_bounds(self):
         """
@@ -171,6 +175,8 @@ class Grid :
 
     def to_dict(self, args):
         """
+        Este metodo se encarga de generar un diccionario de los atributos
+        de la clase.
         """
         grid = []
         x = self.x.tolist();
@@ -184,13 +190,9 @@ class Grid :
         return grid
 
     def __len__(self) :
-        """
-        """
         return len(self.x)
 
     def __str__(self):
-        """
-        """
         import geojson
         grid = [];
         xx = self.x.tolist();

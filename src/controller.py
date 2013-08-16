@@ -9,6 +9,7 @@ from models import *
 from db_manager import *
 from interpolation import *
 from simulador import *
+from geoserver import *
 __author__ = "Maximiliano Báez"
 __mail__ = "mxbg.py@gmail.com"
 
@@ -110,6 +111,20 @@ class GisController :
         fo.write( grid.to_raster(cols, rows));
         fo.close();
 
+    def to_geoserver (self, grid, cols=300, rows=300, suffix="") :
+        geo =  Geoserver()
+        #~ se crea el sotre para el layer
+        store = geo.create_coverage_store(suffix);
+        layer_name="{0}.asc".format(store);
+        #~ se mueve genera el layer en la carpeta temporal
+        src_file = geo.tmp_buffer(store, grid.to_raster(cols, rows));
+        #~ se añade el layer al geoserver
+        geo.upload_file(src_file, layer_name)
+        #~  se publica el layer
+        geo.publish_coverage(store);
+        #~ se retorna el nombre del layer
+        return store
+
 if __name__ == "__main__":
     gis = GisController();
     col= row = 300
@@ -120,5 +135,7 @@ if __name__ == "__main__":
     print "parsing"
     #~ print resp
     #~ gis.plot(resp, col,row)
-    gis.to_file(resp,col,row, "evol")
+    #~ gis.to_file(resp,col,row)
+    layer = gis.to_geoserver(resp, col, row, "evol")
+    print layer
     print "end.."

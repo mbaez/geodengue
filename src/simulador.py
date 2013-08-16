@@ -17,6 +17,7 @@ Enum que representa los estados por lo cuales atravieza el individuo.
 """
 Estado = Enum(["HUEVO", "LARVA","PUPA","ADULTO"])
 
+
 """
 Sexo válidos del individuo
 """
@@ -26,6 +27,7 @@ Sexo = Enum(["MACHO", "HEMBRA"])
 Representación de un individuo de la población.
 """
 class Individuo :
+    INDEX_IND = 1
     """
     Esta clase contiene la representación de un individuo de la población.
     Un mosquito de la población tiene los siguientes atributos :
@@ -62,12 +64,14 @@ class Individuo :
         #~ TODO : ver estado inicial para los individuos que provienen de
         #~ las larvitrampas
         self.estado = kargs.get('estado', Estado.HUEVO);
-        self.espectativa_vida = 100
+        self.espectativa_vida = 100.0
         self.coordenada_x = kargs.get('x', None);
         self.coordenada_y = kargs.get('y', None);
         self.id_dispositivo = kargs.get('id', None);
         self.index = kargs.get('index', None);
-        self.ultima_oviposicion = 1;
+        self.ultima_oviposicion = 0;
+        self._id = Individuo.INDEX_IND
+        Individuo.INDEX_IND += 1
 
     def esta_muerto (self):
         """
@@ -75,7 +79,7 @@ class Individuo :
         reproducirse, protegerse y dispersarse.
         esta_muerto : si espectativa de vida <= 0, si edad >= 30 dias.
         """
-        return self.espectativa_vida <= 0 or self.edad >= 30*24
+        return (self.espectativa_vida <= 0 or self.edad >= 30*24 )
 
     def se_reproduce (self, hora):
         """
@@ -89,7 +93,8 @@ class Individuo :
         """
         return self.esta_muerto() == False \
             and self.sexo == Sexo.HEMBRA \
-            and hora.temperatura > 18 and self.estado == Estado.ADULTO
+            and hora.temperatura > 1 \
+            and self.estado == Estado.ADULTO
 
     def buscar_alimento(self, hora):
         """
@@ -118,18 +123,32 @@ class Individuo :
             larva   4 a 14 dias
             pupa    1 a 4 dias
         """
-        #~ random entre 0 y 1
-        estado = randint(0, 1)
         #~ si se encuentra dentro del rango
-        if self.edad > 2*24 and self.edad < 5*24 :
-            if estado == 1 :
+        if self.edad < 5*24 and self.estado == Estado.HUEVO:
+            print "\t try larva id={2} :  vida={0} : edad={1}".format(self.espectativa_vida , self.edad, self._id)
+            estado = randint(2, 5) * 24
+            if estado <= self.edad :
+                print "to larva id={2} :  vida={0} : edad={1}".format(self.espectativa_vida , self.edad, self._id)
                 self.estado = Estado.LARVA
-        elif self.edad > 4*24 and self.edad < 14*24 :
-            if estado == 1 :
+                self.espectativa_vida = 100.0
+
+        elif self.edad < 14*24 and self.estado == Estado.LARVA:
+            print "\t try pupa id={2} :  vida={0} : edad={1}".format(self.espectativa_vida , self.edad, self._id)
+            estado = randint(4, 14) * 24
+            if estado <= self.edad :
+                print "to pupa id={2} :  vida={0} : edad={1}".format(self.espectativa_vida , self.edad, self._id)
                 self.estado = Estado.PUPA
-        elif self.edad > 14*24 and self.edad < 19*24 :
-            if estado == 1 :
+                self.espectativa_vida = 100.0
+
+        elif self.edad < 19*24 and self.estado == Estado.PUPA:
+            print "\t try adulto id={2} :  vida={0} : edad={1}".format(self.espectativa_vida , self.edad, self._id)
+            estado = randint(14, 19) * 24
+            if estado <= self.edad :
+                print "to adulto id={2} :  vida={0} : edad={1}".format(self.espectativa_vida , self.edad, self._id)
                 self.estado = Estado.ADULTO
+                self.espectativa_vida = 100.0
+        else :
+            print "id={2} :  vida={0} : edad={1}".format(self.espectativa_vida , self.edad, self._id)
 
         """
         Cómo le afecta la temperatura : Limitantes para el desarrollo poblacional.
@@ -142,9 +161,9 @@ class Individuo :
             (T máxima diaria >40o C), ó aire muy seco. Se consideran
             fenecidas todas las formas adultas, y larvarias en el caso térmico,
             """
-            self.espectativa_vida -= 4;
+            self.espectativa_vida -= 3.0;
         else :
-            self.espectativa_vida -= 1;
+            self.espectativa_vida -= 0.3;
 
         self.edad += 1;
 
@@ -278,20 +297,22 @@ class Simulador :
 
                 #~ Se verifica el estado del individuo
                 if(individuo.esta_muerto() == True):
-                    #~ print "Esta muerto.. Individiuos restantes :" +\
-                        #~ str(len(self.poblacion))
+                    print "Esta muerto.. : " + str(hora.temperatura)
                     self.poblacion.remove(individuo)
                     pass
 
                 elif(individuo.se_reproduce(hora) == True) :
-                    #~ print "se reproduce :"
+                    print "se reproduce :" + str(hora.temperatura)
                     huevos = individuo.poner_huevos(hora)
                     if not huevos == None :
+                        print "puso huevos :" + str(hora.temperatura)
                         nueva_poblacion.extend(huevos)
                 #~ fin del preiodo
                 j += 1
             #~ fin del preriodo
             self.poblacion.extend(nueva_poblacion)
+            i+= 1
+            print "New perido " + str(i) + "\n"
 
         self.stats()
 

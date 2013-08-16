@@ -93,7 +93,7 @@ class Individuo :
         """
         return self.esta_muerto() == False \
             and self.sexo == Sexo.HEMBRA \
-            and hora.temperatura > 1 \
+            and hora.temperatura > 18 \
             and self.estado == Estado.ADULTO
 
     def buscar_alimento(self, hora):
@@ -125,30 +125,43 @@ class Individuo :
         """
         #~ si se encuentra dentro del rango
         if self.edad < 5*24 and self.estado == Estado.HUEVO:
-            print "\t try larva id={2} :  vida={0} : edad={1}".format(self.espectativa_vida , self.edad, self._id)
+            print "\t try larva id={2} :  vida={0} : edad={1}".\
+                format(self.espectativa_vida , self.edad, self._id)
+
             estado = randint(2, 5) * 24
             if estado <= self.edad :
-                print "to larva id={2} :  vida={0} : edad={1}".format(self.espectativa_vida , self.edad, self._id)
+                print "to larva id={2} :  vida={0} : edad={1}".\
+                    format(self.espectativa_vida , self.edad, self._id)
+
                 self.estado = Estado.LARVA
                 self.espectativa_vida = 100.0
 
         elif self.edad < 14*24 and self.estado == Estado.LARVA:
-            print "\t try pupa id={2} :  vida={0} : edad={1}".format(self.espectativa_vida , self.edad, self._id)
+            print "\t try pupa id={2} :  vida={0} : edad={1}".\
+                format(self.espectativa_vida , self.edad, self._id)
+
             estado = randint(4, 14) * 24
             if estado <= self.edad :
-                print "to pupa id={2} :  vida={0} : edad={1}".format(self.espectativa_vida , self.edad, self._id)
+                print "to pupa id={2} :  vida={0} : edad={1}".\
+                    format(self.espectativa_vida , self.edad, self._id)
+
                 self.estado = Estado.PUPA
                 self.espectativa_vida = 100.0
 
         elif self.edad < 19*24 and self.estado == Estado.PUPA:
-            print "\t try adulto id={2} :  vida={0} : edad={1}".format(self.espectativa_vida , self.edad, self._id)
+            print "\t try adulto id={2} :  vida={0} : edad={1}".\
+                format(self.espectativa_vida , self.edad, self._id)
+
             estado = randint(14, 19) * 24
             if estado <= self.edad :
-                print "to adulto id={2} :  vida={0} : edad={1}".format(self.espectativa_vida , self.edad, self._id)
+                print "to adulto id={2} :  vida={0} : edad={1}".\
+                    format(self.espectativa_vida , self.edad, self._id)
+
                 self.estado = Estado.ADULTO
                 self.espectativa_vida = 100.0
         else :
-            print "id={2} :  vida={0} : edad={1}".format(self.espectativa_vida , self.edad, self._id)
+            print "id={2} :  vida={0} : edad={1}".\
+                format(self.espectativa_vida , self.edad, self._id)
 
         """
         Cómo le afecta la temperatura : Limitantes para el desarrollo poblacional.
@@ -161,9 +174,17 @@ class Individuo :
             (T máxima diaria >40o C), ó aire muy seco. Se consideran
             fenecidas todas las formas adultas, y larvarias en el caso térmico,
             """
-            self.espectativa_vida -= 3.0;
+            self.espectativa_vida -= 4.3;
         else :
-            self.espectativa_vida -= 0.3;
+            """
+            En el mejor de los casos y en condiciones optimas el individuo
+            llegaría a los 30 días. Teniendo en cuenta que su espectativa
+            de vida es 100, se debería disminuir su espectativa de vida
+            según el siguiente cálculo:
+
+               delta = 100/(30*24)
+            """
+            self.espectativa_vida -= 0.1389
 
         self.edad += 1;
 

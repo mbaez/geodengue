@@ -192,7 +192,13 @@ class TuTiempo:
                     key = td.attrib["class"]
                     if attributes.has_key(key) :
                         attr = attributes[key]
-                        tr_els[day][i][attr] = val.encode("utf-8").strip()
+                        value = val.encode("utf-8").strip()
+
+                        if attr == attributes["Temp"] :
+                            value = value.replace("°C","").strip()
+                            value = float(value)
+
+                        tr_els[day][i][attr] = value
 
                 # se verifica si se añadieron elementos al array para
                 # incrementar el array.

@@ -59,7 +59,7 @@ class Individuo :
             self.sexo = Sexo.HEMBRA
 
         self.edad = kargs.get('edad', 0 );
-        #~ TODO : ver estado inicial para los individuos que probienen de
+        #~ TODO : ver estado inicial para los individuos que provienen de
         #~ las larvitrampas
         self.estado = kargs.get('estado', Estado.HUEVO);
         self.espectativa_vida = 100
@@ -89,7 +89,7 @@ class Individuo :
         """
         return self.esta_muerto() == False \
             and self.sexo == Sexo.HEMBRA \
-            and hora.temperatura > 18 #~ \ and self.estado == Estado.ADULTO
+            and hora.temperatura > 18 and self.estado == Estado.ADULTO
 
     def buscar_alimento(self, hora):
         """
@@ -109,15 +109,37 @@ class Individuo :
 
     def desarrollar(self, hora) :
         """
+        Se verifica si el individuo debe o no cambiar de estado segun su
+        edad.
+        El cambio de estado esta determinado de forma randomica bajo los
+        siguientes parametros.
+            Estado  Tiempo promedio
+            huevo   2 a 3 dias
+            larva   4 a 14 dias
+            pupa    1 a 4 dias
+        """
+        #~ random entre 0 y 1
+        estado = randint(0, 1)
+        #~ si se encuentra dentro del rango
+        if self.edad > 2*24 and self.edad < 5*24 :
+            if estado == 1 :
+                self.estado = Estado.LARVA
+        elif self.edad > 4*24 and self.edad < 14*24 :
+            if estado == 1 :
+                self.estado = Estado.PUPA
+        elif self.edad > 14*24 and self.edad < 19*24 :
+            if estado == 1 :
+                self.estado = Estado.ADULTO
+
+        """
         Cómo le afecta la temperatura : Limitantes para el desarrollo poblacional.
         Entre ellos, dentro del ambiente abiótico el potencial del vector
         se ve pautado por:
         """
-
         if hora.temperatura >= 40 or hora.temperatura <= 0 :
             """
             Día letal: si ocurre T<0o (T mínima diaria <0o) ó T> 40o C
-            (T máxima diaria >40o C), ó aire muy seco (Cuadro 7.1). Se consideran
+            (T máxima diaria >40o C), ó aire muy seco. Se consideran
             fenecidas todas las formas adultas, y larvarias en el caso térmico,
             """
             self.espectativa_vida -= 4;
@@ -268,10 +290,11 @@ class Simulador :
                         nueva_poblacion.extend(huevos)
                 #~ fin del preiodo
                 j += 1
-            #~ fin del preiodo
+            #~ fin del preriodo
             self.poblacion.extend(nueva_poblacion)
-            i += 1
-            #~ print "hora " + str(i)
+
+        self.stats()
+
 
     def to_grid (self):
         key_map = {}
@@ -301,6 +324,43 @@ class Simulador :
         # se retorna la referencia al grid
         return grid;
 
+    def stats( self ) :
+        """
+        Metodo para analizar el comportamiento global de la pobacion
+        Tomando en cuenta la poblacion inicial se analiza durante un periodo
+        de tiempo
+            cantidad de hembras y machos
+            cantidad de individuos en el estado huevo
+            cantidad de individuos en el estado larva
+            cantidad de individuos en el estado pupa
+            cantidad de individuos en el estado adulto
+        """
+        #~ inicializamos el diccionario con los valores que contabilizaremos
+        stats_dic = {}
+        stats_dic['macho'] = 0
+        stats_dic['hembra'] = 0
+        stats_dic['huevo'] = 0
+        stats_dic['larva'] = 0
+        stats_dic['pupa'] = 0
+        stats_dic['adulto'] = 0
+
+        for individuo in self.poblacion :
+            if individuo.sexo == Sexo.MACHO :
+                stats_dic['macho'] += 1
+            else :
+                stats_dic['hembra'] += 1
+
+            if individuo.estado == Estado.HUEVO :
+                stats_dic['huevo'] += 1
+            elif individuo.estado == Estado.LARVA :
+                stats_dic['larva'] += 1
+            elif individuo.estado == Estado.PUPA :
+                stats_dic['pupa'] += 1
+            else :
+                stats_dic['adulto'] += 1
+
+        for k in stats_dic.keys() :
+            print( 'nro de ' + str(k) + ' = ' + str(stats_dic[k]))
 
 if __name__ == "__main__" :
     id_muestras = 1;
@@ -319,6 +379,7 @@ if __name__ == "__main__" :
 
     print "iniciando simulación"
     evol.start()
+    """
     for ind in evol.poblacion :
         print str(ind)
-
+    """

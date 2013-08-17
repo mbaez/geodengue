@@ -73,9 +73,22 @@ class Individuo :
         """
         La supervivencia de los mosquitos depende de la capacidad para alimentarse,
         reproducirse, protegerse y dispersarse.
-        esta_muerto : si espectativa de vida <= 0, si edad >= 30 dias.
+            Estado  Tiempo promedio
+            huevo   2 a 3 dias
+            larva   4 a 14 dias
+            pupa    1 a 4 dias
+            adulto  si espectativa de vida <= 0, si edad >= 30 dias.
         """
-        return (self.espectativa_vida <= 0 or self.edad >= 30*24 )
+        if self.estado == Estado.ADULTO :
+            return (self.espectativa_vida <= 0 or self.edad >= 30*24 )
+
+        elif self.estado == Estado.LARVA :
+            return (self.espectativa_vida <= 0 or self.edad > 14 * 24 )
+
+        elif self.estado == Estado.PUPA :
+            return (self.espectativa_vida <= 0 or self.edad > 19*24 )
+        else :
+            return self.espectativa_vida <= 0
 
     def se_reproduce (self, hora):
         """

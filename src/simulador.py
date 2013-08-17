@@ -69,7 +69,6 @@ class Simulador :
     def start(self):
         """
         Se encarga de iniciar el simulador.
-
         """
         i=0
         for hora in self.periodo.horas :
@@ -103,10 +102,17 @@ class Simulador :
 
 
     def to_grid (self):
+        """
+        Este método se encarga de traducir la población de inidviduos
+        a un grid interpolable.
+
+        Los adultos no son incluidos en el conteo de individuos.
+        """
         key_map = {}
         data_array = []
         for individuo in self.poblacion :
-            if not key_map.has_key(individuo.id_dispositivo) :
+            if not key_map.has_key(individuo.id_dispositivo) \
+                and not individuo.estado == Estado.ADULTO:
                 # se obtiene los datos
                 data = {}
                 data['x'] = individuo.coordenada_x
@@ -118,7 +124,7 @@ class Simulador :
                 data_array.append(data)
                 # se añade el indice al array
                 key_map[individuo.id_dispositivo] = len(data_array) -1
-            else :
+            elif not individuo.estado == Estado.ADULTO:
                 index = key_map[individuo.id_dispositivo]
                 # se incrementa la cantidad de larvas
                 data_array[index]['cantidad'] += 1

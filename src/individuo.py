@@ -132,6 +132,7 @@ class Individuo :
         elif self.estado == Estado.ADULTO :
             self.__desarrollar_adulto(hora)
 
+        #~ Se incrementa la edad del individuo
         self.edad += 1;
 
     def __desarrollar_huevo(self, hora) :
@@ -145,17 +146,13 @@ class Individuo :
         """
         #~ se verifica si el individuo puede realizar un cambio de estado
         if self.edad < 5*24 :
-            print "\t try larva id={2} :  vida={0} : edad={1}".\
-                format(self.espectativa_vida , self.edad, self._id)
-
             estado = randint(2, 5) * 24
             if estado <= self.edad :
-                print "to larva id={2} :  vida={0} : edad={1}".\
-                    format(self.espectativa_vida , self.edad, self._id)
+                print str(self)
 
                 self.estado = Estado.LARVA
                 self.espectativa_vida = 100.0
-                """
+        """
         TODO Como afecta las condiciones climáticas al desarrollo del huevo ?
         """
         self.espectativa_vida -= 0.1389
@@ -176,8 +173,7 @@ class Individuo :
         if self.edad < 14*24  :
             estado = randint(4, 14) * 24
             if estado <= self.edad :
-                print "to pupa id={2} :  vida={0} : edad={1}".\
-                    format(self.espectativa_vida , self.edad, self._id)
+                print str(self)
 
                 self.estado = Estado.PUPA
                 self.espectativa_vida = 100.0
@@ -200,8 +196,7 @@ class Individuo :
         if self.edad < 19*24 :
             estado = randint(14, 19) * 24
             if estado <= self.edad :
-                print "to adulto id={2} :  vida={0} : edad={1}".\
-                    format(self.espectativa_vida , self.edad, self._id)
+                print str(self)
 
                 self.estado = Estado.ADULTO
                 self.espectativa_vida = 100.0
@@ -293,7 +288,11 @@ class Individuo :
                     id=self.id_dispositivo, index=self.index)
 
     def __str__(self):
-
-        return str(self.estado) + " :  " + str(self.sexo) + " - " +\
-            str(self.espectativa_vida) + " - " + str(self.edad )
+        """
+        Metodo que se encarga de traducir la clase a un string
+        """
+        return str(self.estado) + "(" + str(self.sexo) + ")" + \
+            "vida=" + str(self.espectativa_vida) + \
+            " edad=" + str(self.edad) + \
+            " id=" +str(self._id)
 

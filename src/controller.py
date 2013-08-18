@@ -9,6 +9,7 @@ from models import *
 from db_manager import *
 from interpolation import *
 from simulador import *
+from tutiempo import *
 from geoserver import *
 __author__ = "Maximiliano Báez"
 __mail__ = "mxbg.py@gmail.com"
@@ -131,7 +132,7 @@ if __name__ == "__main__":
     print "starting..."
     #~ resp = gis.method_voronoi(col,row);
     #~ resp = gis.method_idw(col,row)
-    resp = gis.method_evolutive(col,row)
+    resp = gis.method_evolutive()
     print "parsing"
     #~ print resp
     #~ gis.plot(resp, col,row)

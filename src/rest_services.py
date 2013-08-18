@@ -26,6 +26,16 @@ def interpolate_idw(metodo):
 
     return str(resp)
 
+@app.route('/muestras/<muestra>/evolucionar', methods=['POST'])
+def evolutive(muestra):
+    col= row = 300
+    gis = GisController(muestra);
+    print "starting..."
+    resp = gis.method_evolutive()
+    print "parsing"
+    layer = gis.to_geoserver(resp, col, row, "evol")
+    return layer
+
 
 if __name__ == '__main__':
     app.run()

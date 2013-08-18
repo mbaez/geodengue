@@ -78,7 +78,7 @@ class Geoserver :
                 "name": "",
                 "nativeName": "",
                 "title": "",
-                "srs": "EPSG:404000",
+                "srs": "EPSG:4326",
                 "enabled": "true"
             }
         }

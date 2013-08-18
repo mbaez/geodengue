@@ -4,7 +4,7 @@
  * @author <a href="mailto:mbaez@konecta.com.py">Maximiliano Báez</a>
  * @name controllers.Inicio
  */
-define(['libs/JQuery/js/jquery',
+define(['libs/jquery',
         'libs/underscore',
         'libs/backbone',
         //se importa el template html del page

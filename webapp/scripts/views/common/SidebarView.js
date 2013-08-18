@@ -4,7 +4,7 @@
  * @author <a href="mailto:mxbg.py@gmail.com">Maximiliano Báez</a>
  * @name views.common.SideBarView
  */
-define(["libs/JQuery/js/jquery",
+define(["libs/jquery",
         "libs/underscore",
         "libs/backbone",
         //se incluye el template

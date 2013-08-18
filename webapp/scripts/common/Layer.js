@@ -157,18 +157,17 @@ Layer = {
         var format = 'image/png';
         // nombre de las capas que se solicitan al servidor
         var layers = [];
+        var names = []
         //se validan los parametros del constructor
         if(typeof options.base == "undefined"){
             options.base = false;
         }
-        if(typeof options.names == "undefined"){
-            options.names = [];
-        }
-        if (typeof options.name != "undefined"){
-            options.names = [options.name];
+        if(typeof options.length != "undefined"){
+            names = options;
+        }else if (typeof options.name != "undefined"){
+            names = [options];
         }
         //se preparan los parametros
-        var names = options.names;
         var config = {format : "image/png",transparent : true};
         // se construyen las capas
         for(var i=0; i<names.length; i++){

@@ -32,7 +32,8 @@ DataSource = {
      */
     baseLayerConf : {
         name: 'MapasPy',
-        workspace : "geodengue"
+        workspace : "geodengue",
+        base : true
     },
 
     /**

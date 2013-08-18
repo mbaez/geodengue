@@ -57,10 +57,7 @@ define(["libs/jquery",
                 //inicializa el map
                 this.map = new OpenLayers.Map("map", mapOptions);
                 //se construye el base layer
-                var baseLayer = new Layer.WMS({
-                    name : DataSource.baseLayerConf,
-                    base : true
-                });
+                var baseLayer = new Layer.WMS(DataSource.baseLayerConf);
                 this.map.addLayers(baseLayer);
                 // Se añade el switch para las capas
                 this.map.addControl(new OpenLayers.Control.LayerSwitcher());

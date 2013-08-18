@@ -68,21 +68,24 @@ define(['libs/jquery',
             this.model.set({idMuestra : 1});
             // se añade el handler del model
             this.model.on('ready', this.onProcesoReady, this);
-            this.model.on('error', this.error, this);
+            this.model.on('sync', this.onProcesoReady, this);
+            this.model.on('error', this.onError, this);
             // se hace el post
-            this.model.save(null ,GeoDengue.callback);
+            this.model.save(null, GeoDengue.callback);
         },
 
         onProcesoReady : function(){
             $(".btn").button("reset");
             var conf = $.extend({}, DataSource.rasterLayerConf);
             conf.name = this.model.get("layer");
-            var raster = new Layer.WMS(conf);
-            this.map.addLayers(raster);
+            console.log(conf);
+            var raster = new Layer.WMS([conf]);
+            this.mapPanel.map.addLayers(raster);
         },
 
-        error : function(){
-            console.log("Error");
+        onError : function(){
+            console.error("Error");
+            console.log(this.model);
         },
 
          /**

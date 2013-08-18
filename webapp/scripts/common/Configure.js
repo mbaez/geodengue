@@ -225,7 +225,9 @@ Setup = {
             if (params.type !== 'GET' && !Backbone.emulateJSON) {
               params.processData = false;
             }
-
+            params.headers = {
+                "Content-type" : "application/json"
+            }
             /*
              * Se añade el parametro para que no se cacheen las peticiones
              * ajax.
@@ -242,10 +244,11 @@ Setup = {
  *
  * @author <a href="mailto:mxbg.py@gmail.com">Maximiliano Báez</a>
  */
-require(['libs/backbone',
+require(['libs/underscore',
+        'libs/backbone',
         'libs/backbone.page',
         "libs/bootstrap"],
-    function(Backbone,BPage,Bootstrap) {
+    function(_, Backbone,BPage,Bootstrap) {
 
     Setup.sync();
 

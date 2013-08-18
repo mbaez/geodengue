@@ -34,7 +34,9 @@ def evolutive(muestra):
     resp = gis.method_evolutive()
     print "parsing"
     layer = gis.to_geoserver(resp, col, row, "evol")
-    return layer
+    res = {}
+    res["layer"] = layer
+    return str(res)
 
 
 if __name__ == '__main__':

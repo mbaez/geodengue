@@ -1,7 +1,8 @@
 #! /usr/bin/env python
 # -*- coding: utf-8 -*-
-from flask import Flask, request
+from flask import Flask, request, Response
 from controller import *
+import json
 """
 Este modulo define la interfaz de los servicios rest.
 """
@@ -36,8 +37,8 @@ def evolutive(muestra):
     layer = gis.to_geoserver(resp, col, row, "evol")
     res = {}
     res["layer"] = layer
-    return str(res)
+    return Response(json.dumps(res), mimetype='application/json')
 
 
 if __name__ == '__main__':
-    app.run()
+    app.run(debug=True)

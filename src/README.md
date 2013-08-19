@@ -4,13 +4,16 @@ GeoDengue Server
 Dependencias
 ---
 * **Librerias bases**
+
 ```sh
 sudo easy_install scipy
 sudo apt-get install python-numpy
 sudo easy_install gsconfig
 sudo apt-get install python-psycopg2
 ```
+
 * **Servicios REST** :
+
 ```sh
 sudo easy_install flask
 ```

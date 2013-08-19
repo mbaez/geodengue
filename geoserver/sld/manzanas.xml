@@ -1,0 +1,607 @@
+<StyledLayerDescriptor version="1.0.0"
+    xmlns="http://www.opengis.net/sld" xmlns:ogc="http://www.opengis.net/ogc"
+    xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.opengis.net/sld http://schemas.opengis.net/sld/1.0-.0/StyledLayerDescriptor.xsd">
+    <NamedLayer>
+        <Name>UMANZANAS</Name>
+        <UserStyle>
+            <Name>default</Name>
+            <!-- Regla por defecto -->
+            <FeatureTypeStyle>
+                <Rule>
+                    <MaxScaleDenominator>32000</MaxScaleDenominator>
+                    <PolygonSymbolizer>
+                        <Fill>
+                            <CssParameter name="fill">#F4F3F0</CssParameter>
+                        </Fill>
+                        <Stroke>
+                            <CssParameter name="stroke">#E4E4DC</CssParameter>
+                            <CssParameter name="stroke-width">1</CssParameter>
+                        </Stroke>
+                    </PolygonSymbolizer>
+                </Rule>
+            </FeatureTypeStyle>
+
+            <!-- Regla para las manzanas grandes con arboles -->
+            <FeatureTypeStyle>
+                <Rule>
+                    <Filter>
+                        <ogc:Or>
+                            <ogc:PropertyIsLike wildCard="*" singleChar="."
+                                escape="!">
+                                <ogc:PropertyName>OBSERVACIO</ogc:PropertyName>
+                                <ogc:Literal>*PASEO*</ogc:Literal>
+                            </ogc:PropertyIsLike>
+
+                            <ogc:PropertyIsLike wildCard="*" singleChar="."
+                                escape="!">
+                                <ogc:PropertyName>OBSERVACIO</ogc:PropertyName>
+                                <ogc:Literal>*PLAZA*</ogc:Literal>
+                            </ogc:PropertyIsLike>
+
+                            <ogc:PropertyIsLike wildCard="*" singleChar="."
+                                escape="!">
+                                <ogc:PropertyName>DESCLOCA</ogc:PropertyName>
+                                <ogc:Literal>*PLAZA*</ogc:Literal>
+                            </ogc:PropertyIsLike>
+
+                            <ogc:PropertyIsLike wildCard="*" singleChar="."
+                                escape="!">
+                                <ogc:PropertyName>DESCLOCA</ogc:PropertyName>
+                                <ogc:Literal>*BOTANICO*</ogc:Literal>
+                            </ogc:PropertyIsLike>
+
+                            <ogc:PropertyIsLike wildCard="*" singleChar="."
+                                escape="!">
+                                <ogc:PropertyName>DESCLOCA</ogc:PropertyName>
+                                <ogc:Literal>*U GUAZU</ogc:Literal>
+                            </ogc:PropertyIsLike>
+
+                            <ogc:PropertyIsLike wildCard="*" singleChar="."
+                                escape="!">
+                                <ogc:PropertyName>OBSERVACIO</ogc:PropertyName>
+                                <ogc:Literal>*PARQUE*</ogc:Literal>
+                            </ogc:PropertyIsLike>
+
+                            <ogc:PropertyIsLike wildCard="*" singleChar="."
+                                escape="!">
+                                <ogc:PropertyName>DESCLOCA</ogc:PropertyName>
+                                <ogc:Literal>*PARQUE*</ogc:Literal>
+                            </ogc:PropertyIsLike>
+
+                        </ogc:Or>
+                    </Filter>
+                    <PolygonSymbolizer>
+                        <Fill>
+                            <CssParameter name="fill">#C8DFA9</CssParameter>
+                        </Fill>
+                    </PolygonSymbolizer>
+                </Rule>
+            </FeatureTypeStyle>
+
+            <!-- Regla para las manzanas grandes con arboles -->
+            <FeatureTypeStyle>
+                <Rule>
+                    <Filter>
+                        <ogc:Or>
+                            <ogc:PropertyIsLike wildCard="*" singleChar="."
+                                escape="!">
+                                <ogc:PropertyName>OBSERVACIO</ogc:PropertyName>
+                                <ogc:Literal>ROTONDA*</ogc:Literal>
+                            </ogc:PropertyIsLike>
+
+                            <ogc:PropertyIsLike wildCard="*" singleChar="."
+                                escape="!">
+                                <ogc:PropertyName>OBSERVACIO</ogc:PropertyName>
+                                <ogc:Literal>BALDIO*</ogc:Literal>
+                            </ogc:PropertyIsLike>
+
+                            <ogc:PropertyIsLike wildCard="*" singleChar="."
+                                escape="!">
+                                <ogc:PropertyName>OBSERVACIO</ogc:PropertyName>
+                                <ogc:Literal>*ENCAUSADOR*</ogc:Literal>
+                            </ogc:PropertyIsLike>
+
+                            <ogc:And>
+                                <ogc:PropertyIsLike wildCard="*" singleChar="."
+                                    escape="!">
+                                    <ogc:PropertyName>DESCLOCA</ogc:PropertyName>
+                                    <ogc:Literal>HIPODROMO*</ogc:Literal>
+                                </ogc:PropertyIsLike>
+
+                                <ogc:PropertyIsEqualTo>
+                                    <ogc:PropertyName>OBSERVACIO</ogc:PropertyName>
+                                    <ogc:Literal>MANZANA GR</ogc:Literal>
+                                </ogc:PropertyIsEqualTo>
+                            </ogc:And>
+                        </ogc:Or>
+                    </Filter>
+                    <PolygonSymbolizer>
+                        <Fill>
+                            <CssParameter name="fill">#D0C19C</CssParameter>
+                        </Fill>
+                    </PolygonSymbolizer>
+                </Rule>
+            </FeatureTypeStyle>
+
+            <!-- Regla para las manzanas que indican localidades -->
+            <FeatureTypeStyle>
+                <Rule>
+                    <Filter>
+                        <ogc:Or>
+                            <ogc:PropertyIsLike wildCard="*" singleChar="."
+                                escape="!">
+                                <ogc:PropertyName>DESCLOCA</ogc:PropertyName>
+                                <ogc:Literal>AEROPUERTO*</ogc:Literal>
+                            </ogc:PropertyIsLike>
+
+                            <ogc:PropertyIsLike wildCard="*" singleChar="."
+                                escape="!">
+                                <ogc:PropertyName>DESCLOCA</ogc:PropertyName>
+                                <ogc:Literal>*UNIVERSI*</ogc:Literal>
+                            </ogc:PropertyIsLike>
+
+                            <ogc:PropertyIsLike wildCard="*" singleChar="."
+                                        escape="!">
+                                <ogc:PropertyName>DESCLOCA</ogc:PropertyName>
+                                <ogc:Literal>*CARCEL*</ogc:Literal>
+                            </ogc:PropertyIsLike>
+
+                            <ogc:PropertyIsLike wildCard="*" singleChar="."
+                                        escape="!">
+                                <ogc:PropertyName>DESCLOCA</ogc:PropertyName>
+                                <ogc:Literal>*PENITENCIARIA*</ogc:Literal>
+                            </ogc:PropertyIsLike>
+
+                            <ogc:PropertyIsLike wildCard="*" singleChar="."
+                                        escape="!">
+                                <ogc:PropertyName>OBSERVACIO</ogc:PropertyName>
+                                <ogc:Literal>*CARCEL*</ogc:Literal>
+                            </ogc:PropertyIsLike>
+
+                            <ogc:PropertyIsLike wildCard="*" singleChar="."
+                                        escape="!">
+                                <ogc:PropertyName>OBSERVACIO</ogc:PropertyName>
+                                <ogc:Literal>*PENITENCIARIA*</ogc:Literal>
+                            </ogc:PropertyIsLike>
+
+                            <ogc:And>
+                                <ogc:PropertyIsEqualTo>
+                                    <ogc:PropertyName>OBSERVACIO</ogc:PropertyName>
+                                    <ogc:Literal>MANZANA GR</ogc:Literal>
+                                </ogc:PropertyIsEqualTo>
+
+                                <ogc:Or>
+                                    <ogc:PropertyIsLike wildCard="*" singleChar="."
+                                        escape="!">
+                                        <ogc:PropertyName>DESCLOCA</ogc:PropertyName>
+                                        <ogc:Literal>TACUMBU*</ogc:Literal>
+                                    </ogc:PropertyIsLike>
+
+                                    <ogc:PropertyIsLike wildCard="*" singleChar="."
+                                        escape="!">
+                                        <ogc:PropertyName>DESCLOCA</ogc:PropertyName>
+                                        <ogc:Literal>AEROPUERTO*</ogc:Literal>
+                                    </ogc:PropertyIsLike>
+
+                                    <ogc:PropertyIsLike wildCard="*" singleChar="."
+                                        escape="!">
+                                        <ogc:PropertyName>DESCLOCA</ogc:PropertyName>
+                                        <ogc:Literal>TERMINAL*</ogc:Literal>
+                                    </ogc:PropertyIsLike>
+
+                                    <ogc:PropertyIsLike wildCard="*" singleChar="."
+                                        escape="!">
+                                        <ogc:PropertyName>DESCLOCA</ogc:PropertyName>
+                                        <ogc:Literal>*RECOLETA*</ogc:Literal>
+                                    </ogc:PropertyIsLike>
+                                </ogc:Or>
+                            </ogc:And>
+                        </ogc:Or>
+                    </Filter>
+                    <PolygonSymbolizer>
+                        <Fill>
+                            <CssParameter name="fill">#D1CEC5</CssParameter>
+                        </Fill>
+                    </PolygonSymbolizer>
+                </Rule>
+            </FeatureTypeStyle>
+
+            <!-- Regla para los lagos/arroyos o zonas inundadas -->
+            <FeatureTypeStyle>
+                <Rule>
+                    <Filter>
+                        <ogc:Or>
+                            <ogc:PropertyIsLike wildCard="*" singleChar="."
+                                escape="!">
+                                <ogc:PropertyName>OBSERVACIO</ogc:PropertyName>
+                                <ogc:Literal>*LAGO*</ogc:Literal>
+                            </ogc:PropertyIsLike>
+
+                            <ogc:PropertyIsLike wildCard="*" singleChar="."
+                                escape="!">
+                                <ogc:PropertyName>OBSERVACIO</ogc:PropertyName>
+                                <ogc:Literal>*LAGUNA*</ogc:Literal>
+                            </ogc:PropertyIsLike>
+
+                            <ogc:PropertyIsLike wildCard="*" singleChar="."
+                                escape="!">
+                                <ogc:PropertyName>OBSERVACIO</ogc:PropertyName>
+                                <ogc:Literal>*ARROYO*</ogc:Literal>
+                            </ogc:PropertyIsLike>
+
+                            <ogc:PropertyIsLike wildCard="*" singleChar="."
+                                escape="!">
+                                <ogc:PropertyName>OBSERVACIO</ogc:PropertyName>
+                                <ogc:Literal>*INUNDADA*</ogc:Literal>
+                            </ogc:PropertyIsLike>
+
+                        </ogc:Or>
+                    </Filter>
+                    <PolygonSymbolizer>
+                        <Fill>
+                            <CssParameter name="fill">#1E90FF</CssParameter>
+                        </Fill>
+                    </PolygonSymbolizer>
+                </Rule>
+            </FeatureTypeStyle>
+
+            <!-- Reglas personalizadas para el nivel de zoom -->
+            <FeatureTypeStyle>
+                <!--Manzanas de borde blanco para poder diferenciar mejor -->
+                <Rule>
+                    <MinScaleDenominator>32000</MinScaleDenominator>
+                    <MaxScaleDenominator>132000</MaxScaleDenominator>
+                    <PolygonSymbolizer>
+                        <Fill>
+                            <CssParameter name="fill">#F4F3F0</CssParameter>
+                        </Fill>
+                        <Stroke>
+                            <CssParameter name="stroke">#DBDAD8</CssParameter>
+                            <CssParameter name="stroke-width">0.1</CssParameter>
+                        </Stroke>
+                    </PolygonSymbolizer>
+                </Rule>
+
+                <!--Manzanas grandes con detalle de arboles -->
+                <Rule>
+                    <MinScaleDenominator>32000</MinScaleDenominator>
+                    <MaxScaleDenominator>132000</MaxScaleDenominator>
+                    <Filter>
+                        <ogc:Or>
+                            <ogc:PropertyIsLike wildCard="*" singleChar="."
+                                escape="!">
+                                <ogc:PropertyName>OBSERVACIO</ogc:PropertyName>
+                                <ogc:Literal>*PASEO*</ogc:Literal>
+                            </ogc:PropertyIsLike>
+
+                            <ogc:PropertyIsLike wildCard="*" singleChar="."
+                                escape="!">
+                                <ogc:PropertyName>OBSERVACIO</ogc:PropertyName>
+                                <ogc:Literal>*PLAZA*</ogc:Literal>
+                            </ogc:PropertyIsLike>
+
+                            <ogc:PropertyIsLike wildCard="*" singleChar="."
+                                escape="!">
+                                <ogc:PropertyName>DESCLOCA</ogc:PropertyName>
+                                <ogc:Literal>*PLAZA*</ogc:Literal>
+                            </ogc:PropertyIsLike>
+
+                            <ogc:PropertyIsLike wildCard="*" singleChar="."
+                                escape="!">
+                                <ogc:PropertyName>DESCLOCA</ogc:PropertyName>
+                                <ogc:Literal>*BOTANICO*</ogc:Literal>
+                            </ogc:PropertyIsLike>
+
+                            <ogc:PropertyIsLike wildCard="*" singleChar="."
+                                escape="!">
+                                <ogc:PropertyName>DESCLOCA</ogc:PropertyName>
+                                <ogc:Literal>*U GUAZU</ogc:Literal>
+                            </ogc:PropertyIsLike>
+
+                            <ogc:PropertyIsLike wildCard="*" singleChar="."
+                                escape="!">
+                                <ogc:PropertyName>OBSERVACIO</ogc:PropertyName>
+                                <ogc:Literal>*PARQUE*</ogc:Literal>
+                            </ogc:PropertyIsLike>
+
+                            <ogc:PropertyIsLike wildCard="*" singleChar="."
+                                escape="!">
+                                <ogc:PropertyName>DESCLOCA</ogc:PropertyName>
+                                <ogc:Literal>*PARQUE*</ogc:Literal>
+                            </ogc:PropertyIsLike>
+                        </ogc:Or>
+                    </Filter>
+                    <PolygonSymbolizer>
+                        <Fill>
+                            <CssParameter name="fill">#C8DFA9</CssParameter>
+                        </Fill>
+                    </PolygonSymbolizer>
+                </Rule>
+                <!-- Regla para las grandes hipodromo/rotonda -->
+                <Rule>
+                    <MinScaleDenominator>32000</MinScaleDenominator>
+                    <MaxScaleDenominator>132000</MaxScaleDenominator>
+                    <Filter>
+                        <ogc:Or>
+                            <ogc:PropertyIsLike wildCard="*" singleChar="."
+                                escape="!">
+                                <ogc:PropertyName>OBSERVACIO</ogc:PropertyName>
+                                <ogc:Literal>*ROTONDA*</ogc:Literal>
+                            </ogc:PropertyIsLike>
+
+                            <ogc:PropertyIsLike wildCard="*" singleChar="."
+                                escape="!">
+                                <ogc:PropertyName>OBSERVACIO</ogc:PropertyName>
+                                <ogc:Literal>*BALDIO*</ogc:Literal>
+                            </ogc:PropertyIsLike>
+
+                            <ogc:PropertyIsLike wildCard="*" singleChar="."
+                                escape="!">
+                                <ogc:PropertyName>OBSERVACIO</ogc:PropertyName>
+                                <ogc:Literal>*ENCAUSADOR*</ogc:Literal>
+                            </ogc:PropertyIsLike>
+
+                            <ogc:And>
+                                <ogc:PropertyIsLike wildCard="*" singleChar="."
+                                    escape="!">
+                                    <ogc:PropertyName>DESCLOCA</ogc:PropertyName>
+                                    <ogc:Literal>HIPODROMO*</ogc:Literal>
+                                </ogc:PropertyIsLike>
+
+                                <ogc:PropertyIsEqualTo>
+                                    <ogc:PropertyName>OBSERVACIO</ogc:PropertyName>
+                                    <ogc:Literal>MANZANA GR</ogc:Literal>
+                                </ogc:PropertyIsEqualTo>
+                            </ogc:And>
+                        </ogc:Or>
+                    </Filter>
+                    <PolygonSymbolizer>
+                        <Fill>
+                            <CssParameter name="fill">#D0C19C</CssParameter>
+                        </Fill>
+                    </PolygonSymbolizer>
+                </Rule>
+                <!-- Regla para los lagos/arroyos o zonas inundadas -->
+                <Rule>
+                    <MinScaleDenominator>32000</MinScaleDenominator>
+                    <MaxScaleDenominator>132000</MaxScaleDenominator>
+                    <Filter>
+                        <ogc:Or>
+                            <ogc:PropertyIsLike wildCard="*" singleChar="."
+                                escape="!">
+                                <ogc:PropertyName>OBSERVACIO</ogc:PropertyName>
+                                <ogc:Literal>*LAGUNA*</ogc:Literal>
+                            </ogc:PropertyIsLike>
+
+                            <ogc:PropertyIsLike wildCard="*" singleChar="."
+                                escape="!">
+                                <ogc:PropertyName>OBSERVACIO</ogc:PropertyName>
+                                <ogc:Literal>*ARROYO*</ogc:Literal>
+                            </ogc:PropertyIsLike>
+
+                            <ogc:PropertyIsLike wildCard="*" singleChar="."
+                                escape="!">
+                                <ogc:PropertyName>OBSERVACIO</ogc:PropertyName>
+                                <ogc:Literal>*LAGO*</ogc:Literal>
+                            </ogc:PropertyIsLike>
+
+                            <ogc:PropertyIsLike wildCard="*" singleChar="."
+                                escape="!">
+                                <ogc:PropertyName>OBSERVACIO</ogc:PropertyName>
+                                <ogc:Literal>*INUNDADA*</ogc:Literal>
+                            </ogc:PropertyIsLike>
+                        </ogc:Or>
+                    </Filter>
+                    <PolygonSymbolizer>
+                        <Fill>
+                            <CssParameter name="fill">#1E90FF</CssParameter>
+                        </Fill>
+                    </PolygonSymbolizer>
+                </Rule>
+
+                <!-- Regla para las manzanas que indican localidades -->
+                <Rule>
+                    <MinScaleDenominator>32000</MinScaleDenominator>
+                    <MaxScaleDenominator>132000</MaxScaleDenominator>
+                    <Filter>
+                        <ogc:Or>
+                            <ogc:PropertyIsLike wildCard="*" singleChar="."
+                                escape="!">
+                                <ogc:PropertyName>DESCLOCA</ogc:PropertyName>
+                                <ogc:Literal>AEROPUERTO*</ogc:Literal>
+                            </ogc:PropertyIsLike>
+
+                            <ogc:PropertyIsLike wildCard="*" singleChar="."
+                                escape="!">
+                                <ogc:PropertyName>DESCLOCA</ogc:PropertyName>
+                                <ogc:Literal>*UNIVERSI*</ogc:Literal>
+                            </ogc:PropertyIsLike>
+
+                            <ogc:PropertyIsLike wildCard="*" singleChar="."
+                                        escape="!">
+                                <ogc:PropertyName>DESCLOCA</ogc:PropertyName>
+                                <ogc:Literal>*CARCEL*</ogc:Literal>
+                            </ogc:PropertyIsLike>
+
+                            <ogc:PropertyIsLike wildCard="*" singleChar="."
+                                        escape="!">
+                                <ogc:PropertyName>DESCLOCA</ogc:PropertyName>
+                                <ogc:Literal>*PENITENCIARIA*</ogc:Literal>
+                            </ogc:PropertyIsLike>
+
+                            <ogc:PropertyIsLike wildCard="*" singleChar="."
+                                        escape="!">
+                                <ogc:PropertyName>OBSERVACIO</ogc:PropertyName>
+                                <ogc:Literal>*CARCEL*</ogc:Literal>
+                            </ogc:PropertyIsLike>
+
+                            <ogc:PropertyIsLike wildCard="*" singleChar="."
+                                        escape="!">
+                                <ogc:PropertyName>OBSERVACIO</ogc:PropertyName>
+                                <ogc:Literal>*PENITENCIARIA*</ogc:Literal>
+                            </ogc:PropertyIsLike>
+
+                            <ogc:And>
+                                <ogc:PropertyIsEqualTo>
+                                    <ogc:PropertyName>OBSERVACIO</ogc:PropertyName>
+                                    <ogc:Literal>MANZANA GR</ogc:Literal>
+                                </ogc:PropertyIsEqualTo>
+
+                                <ogc:Or>
+                                    <ogc:PropertyIsLike wildCard="*" singleChar="."
+                                        escape="!">
+                                        <ogc:PropertyName>DESCLOCA</ogc:PropertyName>
+                                        <ogc:Literal>TACUMBU*</ogc:Literal>
+                                    </ogc:PropertyIsLike>
+
+                                    <ogc:PropertyIsLike wildCard="*" singleChar="."
+                                        escape="!">
+                                        <ogc:PropertyName>DESCLOCA</ogc:PropertyName>
+                                        <ogc:Literal>TERMINAL*</ogc:Literal>
+                                    </ogc:PropertyIsLike>
+
+                                    <ogc:PropertyIsLike wildCard="*" singleChar="."
+                                        escape="!">
+                                        <ogc:PropertyName>DESCLOCA</ogc:PropertyName>
+                                        <ogc:Literal>*RECOLETA*</ogc:Literal>
+                                    </ogc:PropertyIsLike>
+                                </ogc:Or>
+                            </ogc:And>
+                        </ogc:Or>
+                    </Filter>
+                    <PolygonSymbolizer>
+                        <Fill>
+                            <CssParameter name="fill">#BFBFBF</CssParameter>
+                        </Fill>
+                    </PolygonSymbolizer>
+                </Rule>
+                <!--Regla que define los labels del las manzanas -->
+                <Rule>
+                    <MinScaleDenominator>1000</MinScaleDenominator>
+                    <MaxScaleDenominator>132000</MaxScaleDenominator>
+                    <Filter>
+                        <ogc:Or>
+                            <ogc:PropertyIsLike wildCard="*" singleChar="."
+                                escape="!">
+                                <ogc:PropertyName>OBSERVACIO</ogc:PropertyName>
+                                <ogc:Literal>*PLAZA*</ogc:Literal>
+                            </ogc:PropertyIsLike>
+
+                            <ogc:PropertyIsLike wildCard="*" singleChar="."
+                                escape="!">
+                                <ogc:PropertyName>DESCLOCA</ogc:PropertyName>
+                                <ogc:Literal>*PLAZA*</ogc:Literal>
+                            </ogc:PropertyIsLike>
+
+                            <ogc:PropertyIsLike wildCard="*" singleChar="."
+                                escape="!">
+                                <ogc:PropertyName>DESCLOCA</ogc:PropertyName>
+                                <ogc:Literal>*BOTANICO*</ogc:Literal>
+                            </ogc:PropertyIsLike>
+
+                            <ogc:PropertyIsLike wildCard="*" singleChar="."
+                                escape="!">
+                                <ogc:PropertyName>DESCLOCA</ogc:PropertyName>
+                                <ogc:Literal>*U GUAZU</ogc:Literal>
+                            </ogc:PropertyIsLike>
+
+                            <ogc:PropertyIsLike wildCard="*" singleChar="."
+                                escape="!">
+                                <ogc:PropertyName>OBSERVACIO</ogc:PropertyName>
+                                <ogc:Literal>*PARQUE*</ogc:Literal>
+                            </ogc:PropertyIsLike>
+
+                            <ogc:PropertyIsLike wildCard="*" singleChar="."
+                                escape="!">
+                                <ogc:PropertyName>DESCLOCA</ogc:PropertyName>
+                                <ogc:Literal>*PARQUE*</ogc:Literal>
+                            </ogc:PropertyIsLike>
+
+                            <ogc:PropertyIsLike wildCard="*" singleChar="."
+                                escape="!">
+                                <ogc:PropertyName>DESCLOCA</ogc:PropertyName>
+                                <ogc:Literal>*AEROPUERTO*</ogc:Literal>
+                            </ogc:PropertyIsLike>
+
+                            <ogc:PropertyIsLike wildCard="*" singleChar="."
+                                        escape="!">
+                                <ogc:PropertyName>DESCLOCA</ogc:PropertyName>
+                                <ogc:Literal>*CARCEL*</ogc:Literal>
+                            </ogc:PropertyIsLike>
+
+                            <ogc:PropertyIsLike wildCard="*" singleChar="."
+                                        escape="!">
+                                <ogc:PropertyName>DESCLOCA</ogc:PropertyName>
+                                <ogc:Literal>*PENITENCIARIA*</ogc:Literal>
+                            </ogc:PropertyIsLike>
+
+                            <ogc:And>
+                                <ogc:PropertyIsEqualTo>
+                                    <ogc:PropertyName>OBSERVACIO</ogc:PropertyName>
+                                    <ogc:Literal>MANZANA GR</ogc:Literal>
+                                </ogc:PropertyIsEqualTo>
+
+                                <ogc:Or>
+                                    <ogc:PropertyIsLike wildCard="*" singleChar="."
+                                        escape="!">
+                                        <ogc:PropertyName>DESCLOCA</ogc:PropertyName>
+                                        <ogc:Literal>TACUMBU*</ogc:Literal>
+                                    </ogc:PropertyIsLike>
+
+                                    <ogc:PropertyIsLike wildCard="*" singleChar="."
+                                        escape="!">
+                                        <ogc:PropertyName>DESCLOCA</ogc:PropertyName>
+                                        <ogc:Literal>HIPODROMO*</ogc:Literal>
+                                    </ogc:PropertyIsLike>
+
+                                    <ogc:PropertyIsLike wildCard="*" singleChar="."
+                                        escape="!">
+                                        <ogc:PropertyName>DESCLOCA</ogc:PropertyName>
+                                        <ogc:Literal>TERMINAL*</ogc:Literal>
+                                    </ogc:PropertyIsLike>
+
+                                    <ogc:PropertyIsLike wildCard="*" singleChar="."
+                                        escape="!">
+                                        <ogc:PropertyName>DESCLOCA</ogc:PropertyName>
+                                        <ogc:Literal>*RECOLETA*</ogc:Literal>
+                                    </ogc:PropertyIsLike>
+                                </ogc:Or>
+                            </ogc:And>
+                        </ogc:Or>
+                    </Filter>
+                    <TextSymbolizer>
+                        <Label>
+                            <ogc:Function name="strCapitalize">
+                            <ogc:PropertyName>DESCLOCA</ogc:PropertyName>
+                            </ogc:Function>
+                        </Label>
+                        <Font>
+                            <CssParameter name="font-family">Lucida Sans</CssParameter>
+                            <CssParameter name="font-style">Normal</CssParameter>
+                            <CssParameter name="font-size">10</CssParameter>
+                        </Font>
+                        <LabelPlacement>
+                            <LinePlacement></LinePlacement>
+                        </LabelPlacement>
+                        <Halo>
+                            <Radius>
+                                <ogc:Literal>1</ogc:Literal>
+                            </Radius>
+                            <Fill>
+                                <CssParameter name="fill">#FFFFFF</CssParameter>
+                                <CssParameter name="fill-opacity">0.85</CssParameter>
+                            </Fill>
+                        </Halo>
+                        <VendorOption name="autoWrap">60</VendorOption>
+                        <VendorOption name="maxDisplacement">150</VendorOption>
+                        <VendorOption name="group">true</VendorOption>
+                        <Fill>
+                            <CssParameter name="fill">#000000</CssParameter>
+                        </Fill>
+                    </TextSymbolizer>
+                </Rule>
+            </FeatureTypeStyle>
+        </UserStyle>
+    </NamedLayer>
+</StyledLayerDescriptor>

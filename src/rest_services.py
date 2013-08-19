@@ -17,15 +17,17 @@ def api_root():
     """Path por defecto de los servicios"""
     return 'No se hace nada'
 
-@app.route('/larvitrampas/interpolar/<metodo>', methods=['GET'])
-def interpolate_idw(metodo):
-    gis = GisController();
-    if metodo == 'idw' :
-        resp = gis.method_idw(50, 50);
-    elif metodo == 'voronoi' :
-        resp = gis.method_voronoi(50, 50);
+@app.route('/muestras/<muestra>/instantanea', methods=['POST'])
+def interpolate_idw(muestra):
+    gis = GisController(muestra);
+    col= row = 300
+    resp = gis.method_idw(col, row);
+    print "parsing"
+    layer = gis.to_geoserver(resp, col, row, "inst")
+    res = {}
+    res["layer"] = layer
+    return Response(json.dumps(res), mimetype='application/json')
 
-    return str(resp)
 
 @app.route('/muestras/<muestra>/evolucionar', methods=['POST'])
 def evolutive(muestra):

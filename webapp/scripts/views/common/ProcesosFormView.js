@@ -50,9 +50,11 @@ define(["libs/jquery",
              * @author <a href="mailto:mxbg.py@gmail.com">Maximiliano Báez</a>
              * @name #onClick
              */
-            onClick : function(){
+            onClick : function(event){
+                var process = $(event.target).attr("id");
                 $(".btn").button("loading");
-                this.trigger("on-execute");
+                // se dispara el evento
+                this.trigger("on-execute", {proceso : process});
             }
         });
     }

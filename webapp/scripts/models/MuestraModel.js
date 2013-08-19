@@ -22,7 +22,7 @@ define(["libs/underscore","libs/backbone"], function (_,Backbone) {
          */
         url : function () {
             return GeoDengue.RESTBaseUrl + "/muestras/" +
-                this.get("idMuestra") + "/evolucionar";
+                this.get("idMuestra") ;
         }
     });
 });

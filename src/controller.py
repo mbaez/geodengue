@@ -11,17 +11,39 @@ from interpolation import *
 from simulador import *
 from tutiempo import *
 from geoserver import *
+
 __author__ = "Maximiliano Báez"
 __mail__ = "mxbg.py@gmail.com"
 
 class GisController :
 
     def __init__(self, id_muestras=1):
+        """
+        Inicializa la clase, obtiene los datos correspondientes a la muestra
+        indicada.
+
+        @type id_muestras : Integer
+        @param id_muestras : El identificador de la muestra.
+        """
         print "obteniendo los datos"
         dao = PuntosControlModel()
         self.data = dao.get_by(id_muestras);
 
     def method_idw (self, cols=300, rows=300) :
+        """
+        Este método se encarga de interpolar el grid utilizando el método
+        de idw.
+
+        @type cols : Integer
+        @param cols: La cantidad de columnas del grid
+
+        @type rows : Integer
+        @param rows: La cantidad de filas del grid
+
+        @rtype  Grid
+        @return El grid resultante de la interpolación de los puntos de
+                control.
+        """
         print "construyendo la grilla"
         #~ print data
         muestras = Grid();
@@ -33,25 +55,26 @@ class GisController :
         # Calculate IDW
         print "Interpolando idw"
         interpolated_grid = alg.simple_idw(muestras,grid)
-        #interpolated_grid = interpolated_grid.reshape(cols, rows)
         grid.z = interpolated_grid
-        #~ self.__persist_grid__(grid, detalles);
         #~ print "done."
         return grid;
 
-    def __persist_grid__(self, grid, args) :
-       cabecera = InterpolacionModel()
-       detalle = PuntosInterpoladosModel()
-       # se persite la cabecera
-       cursor = cabecera.persist(args);
-       # se obtiene el id de la cabecera recién persitida
-       id_cabecera = cursor.fetchone()[0];
-       # se consturye el dic con parametros extras
-       params = {'id_interpolacion' : id_cabecera}
-       # se persite los detalles
-       detalle.persist(grid.to_dict(params))
 
     def method_voronoi (self, cols=300, rows=300) :
+        """
+        Se encarga de ejecutar el algoritmo de voronoi sobre los datos
+        de la grilla.
+
+        @type cols : Integer
+        @param cols: La cantidad de columnas del grid
+
+        @type rows : Integer
+        @param rows: La cantidad de filas del grid
+
+        @rtype  Grid
+        @return El grid resultante de la interpolación de los puntos de
+                control.
+        """
         print "construyendo la grilla"
         #~ print data
         muestras = Grid();
@@ -68,6 +91,20 @@ class GisController :
         return grid;
 
     def method_evolutive (self, cols=300, rows=300):
+        """
+        Este método se encarga de ejecutar el proceso evolutivo sobre los
+        puntos de control de la muestra.
+
+        @type cols : Integer
+        @param cols: La cantidad de columnas del grid
+
+        @type rows : Integer
+        @param rows: La cantidad de filas del grid
+
+        @rtype  Grid
+        @return El grid resultante de la interpolación de los puntos de
+                control.
+        """
         print "obteniendo los datos climaticos"
         clima = TuTiempo("Asuncion")
         periodo = clima.get_periodo()
@@ -82,37 +119,30 @@ class GisController :
         # Calculate IDW
         print "Interpolando idw"
         interpolated_grid = alg.simple_idw(muestras_evol,grid)
-        #interpolated_grid = interpolated_grid.reshape(cols, rows)
         grid.z = interpolated_grid
         return grid
 
-    def plot(self, grid, cols=300, rows=300):
-        #djet = cmap_discretize(cm.jet, 1)
-        bounds = grid.get_bounds()
-        #~ points = grid
-        points = self.muestras;
-        #~ plt.figure()
-        #~ plt.imshow(grid, extent=(x.min(), x.max(), y.max(), y.min()), cmap=djet)
-        print grid.z
-        z =  grid.z.reshape((cols, rows))
-        print z[0][4]
-        #~ print np.flipud(z)
-        #~ print bounds.x_min, bounds.x_max, bounds.y_max, bounds.y_min
-        #~ z =  grid.z;
-        plt.imshow(z, extent=(bounds.x_min, bounds.x_max, bounds.y_max, bounds.y_min))
-        #~ plt.imshow(z)
-        plt.hold(True)
-        plt.scatter(points.x,points.y,c=points.z)
-        plt.colorbar()
-        plt.title('IDW')
-        #~ plt.show()
-
-    def to_file (self, grid, cols=300, rows=300,suffix ="") :
-        fo = open("/home/mbaez/Aplicaciones/geoserver2.3/data/coverages/arc_sample/test_"+suffix+".asc", "wb")
-        fo.write( grid.to_raster(cols, rows));
-        fo.close();
-
     def to_geoserver (self, grid, cols=300, rows=300, suffix="") :
+        """
+        Este método se encarga de traducir el grid a una capa raster que
+        es publicada en el geoserver.
+
+        @type grid : Grid
+        @param grid: El grid que contiene los datos para publicar en el
+                geoserver
+
+        @type cols : Integer
+        @param cols: La cantidad de columnas del grid
+
+        @type rows : Integer
+        @param rows: La cantidad de filas del grid
+
+        @type suffix : String
+        @param suffix: Identificador que forma parte del nombre del layer.
+
+        @rtype  String
+        @return El nombre del layer publicado en el geoserver.
+        """
         geo =  Geoserver()
         #~ se crea el sotre para el layer
         store = geo.create_coverage_store(suffix);

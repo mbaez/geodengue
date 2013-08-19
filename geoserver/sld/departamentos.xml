@@ -1,0 +1,76 @@
+<StyledLayerDescriptor version="1.0.0"
+    xmlns="http://www.opengis.net/sld" xmlns:ogc="http://www.opengis.net/ogc"
+    xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.opengis.net/sld http://schemas.opengis.net/sld/1.0-.0/StyledLayerDescriptor.xsd">
+    <NamedLayer>
+        <Name>MANZANASDEMO</Name>
+        <UserStyle>
+            <Name>default</Name>
+            <FeatureTypeStyle>
+                <!--Style para los labels de de los departamentos -->
+                <Rule>
+                    <MinScaleDenominator>100000</MinScaleDenominator>
+                    <MaxScaleDenominator>1000000</MaxScaleDenominator>
+                    <TextSymbolizer>
+                        <Label>
+                            <ogc:Function name="strCapitalize">
+                            <ogc:PropertyName>DISTRITO</ogc:PropertyName>
+                            </ogc:Function>
+                        </Label>
+                        <Font>
+                            <CssParameter name="font-family">Lucida Sans</CssParameter>
+                            <CssParameter name="font-style">Normal</CssParameter>
+                            <CssParameter name="font-size">10</CssParameter>
+                        </Font>
+                        <LabelPlacement>
+                            <LinePlacement>
+                            </LinePlacement>
+                        </LabelPlacement>
+                        <Halo>
+                            <Radius>
+                                <ogc:Literal>2</ogc:Literal>
+                            </Radius>
+                            <Fill>
+                                <CssParameter name="fill">#FFFFFF</CssParameter>
+                                <CssParameter name="fill-opacity">0.85</CssParameter>
+                            </Fill>
+                        </Halo>
+                        <VendorOption name="autoWrap">60</VendorOption>
+                        <VendorOption name="maxDisplacement">150</VendorOption>
+                        <Fill>
+                            <CssParameter name="fill">#000000</CssParameter>
+                        </Fill>
+                    </TextSymbolizer>
+                </Rule>
+                <!-- Style de los poligonos-->
+                <Rule>
+                    <PolygonSymbolizer>
+                        <Fill>
+                            <CssParameter name="fill">#F2EEE6</CssParameter>
+                            <CssParameter name="fill-opacity">0.5</CssParameter>
+                        </Fill>
+                        <Stroke>
+                            <CssParameter name="stroke">#E4E4DC</CssParameter>
+                            <CssParameter name="stroke-width">1</CssParameter>
+                        </Stroke>
+                    </PolygonSymbolizer>
+                </Rule>
+            </FeatureTypeStyle>
+            <!-- Style de los poligonos cuando el nivel de zoom es muy alto-->
+            <!--FeatureTypeStyle>
+                <Rule>
+                    <MaxScaleDenominator>32000</MaxScaleDenominator>
+                    <PolygonSymbolizer>
+                        <Fill>
+                            <CssParameter name="fill">#FFFFFF</CssParameter>
+                        </Fill>
+                        <Stroke>
+                            <CssParameter name="stroke">#E8E8E3</CssParameter>
+                            <CssParameter name="stroke-width">1</CssParameter>
+                        </Stroke>
+                    </PolygonSymbolizer>
+                </Rule>
+            </FeatureTypeStyle-->
+        </UserStyle>
+    </NamedLayer>
+</StyledLayerDescriptor>

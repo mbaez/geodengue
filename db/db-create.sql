@@ -21,7 +21,7 @@ SET default_with_oids = false;
 --
 -- TOC entry 174 (class 1259 OID 25717)
 -- Dependencies: 5
--- Name: categoria_tamanho; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: categoria_tamanho; Type: TABLE; Schema: public; Owner: postgres; Tablespace:
 --
 
 CREATE TABLE categoria_tamanho (
@@ -59,50 +59,9 @@ ALTER SEQUENCE categoria_tamanho_id_seq OWNED BY categoria_tamanho.id;
 
 
 --
--- TOC entry 176 (class 1259 OID 25727)
--- Dependencies: 2985 5
--- Name: interpolacion; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
---
-
-CREATE TABLE interpolacion (
-    id integer NOT NULL,
-    id_muestra integer,
-    descripcion character varying(100),
-    fecha timestamp without time zone DEFAULT '2013-03-17 22:09:44.64067'::timestamp without time zone NOT NULL
-);
-
-
-ALTER TABLE public.interpolacion OWNER TO postgres;
-
---
--- TOC entry 177 (class 1259 OID 25731)
--- Dependencies: 176 5
--- Name: interpolacion_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
---
-
-CREATE SEQUENCE interpolacion_id_seq
-    START WITH 1
-    INCREMENT BY 1
-    NO MINVALUE
-    NO MAXVALUE
-    CACHE 1;
-
-
-ALTER TABLE public.interpolacion_id_seq OWNER TO postgres;
-
---
--- TOC entry 3020 (class 0 OID 0)
--- Dependencies: 177
--- Name: interpolacion_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
---
-
-ALTER SEQUENCE interpolacion_id_seq OWNED BY interpolacion.id;
-
-
---
 -- TOC entry 178 (class 1259 OID 25733)
 -- Dependencies: 2987 5
--- Name: muestras; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: muestras; Type: TABLE; Schema: public; Owner: postgres; Tablespace:
 --
 
 CREATE TABLE muestras (
@@ -144,7 +103,7 @@ ALTER SEQUENCE muestras_id_seq OWNED BY muestras.id;
 --
 -- TOC entry 180 (class 1259 OID 25739)
 -- Dependencies: 5 1418
--- Name: patios_baldios; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: patios_baldios; Type: TABLE; Schema: public; Owner: postgres; Tablespace:
 --
 
 CREATE TABLE patios_baldios (
@@ -154,7 +113,7 @@ CREATE TABLE patios_baldios (
     descripcion character varying(100),
     fecha_inicio timestamp without time zone,
     fecha_fin timestamp without time zone,
-    the_geom geometry
+    the_geom geometry(Point, 4326)
 );
 
 
@@ -188,7 +147,7 @@ ALTER SEQUENCE patios_baldios_id_seq OWNED BY patios_baldios.id;
 --
 -- TOC entry 182 (class 1259 OID 25747)
 -- Dependencies: 1418 5
--- Name: puntos_control; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: puntos_control; Type: TABLE; Schema: public; Owner: postgres; Tablespace:
 --
 
 CREATE TABLE puntos_control (
@@ -197,7 +156,7 @@ CREATE TABLE puntos_control (
     descripcion character varying(100),
     codigo character varying(20),
     cantidad integer,
-    the_geom geometry,
+    the_geom geometry(Point, 4326),
     fecha_recoleccion date,
     fecha_instalacion date
 );
@@ -233,7 +192,7 @@ ALTER SEQUENCE puntos_control_id_seq OWNED BY puntos_control.id;
 --
 -- TOC entry 184 (class 1259 OID 25755)
 -- Dependencies: 5 1418
--- Name: puntos_riesgo; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: puntos_riesgo; Type: TABLE; Schema: public; Owner: postgres; Tablespace:
 --
 
 CREATE TABLE puntos_riesgo (
@@ -243,7 +202,7 @@ CREATE TABLE puntos_riesgo (
     descripcion character varying(100),
     fecha_inicio timestamp without time zone,
     fecha_fin timestamp without time zone,
-    the_geom geometry
+    the_geom geometry(Point, 4326)
 );
 
 
@@ -277,7 +236,7 @@ ALTER SEQUENCE puntos_riesgo_id_seq OWNED BY puntos_riesgo.id;
 --
 -- TOC entry 186 (class 1259 OID 25763)
 -- Dependencies: 5
--- Name: tipo_dispositivos; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: tipo_dispositivos; Type: TABLE; Schema: public; Owner: postgres; Tablespace:
 --
 
 CREATE TABLE tipo_dispositivos (
@@ -317,7 +276,7 @@ ALTER SEQUENCE tipo_dispositivos_id_seq OWNED BY tipo_dispositivos.id;
 --
 -- TOC entry 188 (class 1259 OID 25771)
 -- Dependencies: 5
--- Name: tipo_riesgo; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: tipo_riesgo; Type: TABLE; Schema: public; Owner: postgres; Tablespace:
 --
 
 CREATE TABLE tipo_riesgo (
@@ -429,7 +388,7 @@ ALTER TABLE ONLY tipo_riesgo ALTER COLUMN id SET DEFAULT nextval('tipo_riesgo_id
 --
 -- TOC entry 2995 (class 2606 OID 25786)
 -- Dependencies: 174 174 3016
--- Name: categoria_tamanho_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
+-- Name: categoria_tamanho_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace:
 --
 
 ALTER TABLE ONLY categoria_tamanho
@@ -439,7 +398,7 @@ ALTER TABLE ONLY categoria_tamanho
 --
 -- TOC entry 2997 (class 2606 OID 25790)
 -- Dependencies: 176 176 3016
--- Name: interpolacion_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
+-- Name: interpolacion_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace:
 --
 
 ALTER TABLE ONLY interpolacion
@@ -449,7 +408,7 @@ ALTER TABLE ONLY interpolacion
 --
 -- TOC entry 2999 (class 2606 OID 25792)
 -- Dependencies: 178 178 3016
--- Name: muestras_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
+-- Name: muestras_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace:
 --
 
 ALTER TABLE ONLY muestras
@@ -459,7 +418,7 @@ ALTER TABLE ONLY muestras
 --
 -- TOC entry 3001 (class 2606 OID 25794)
 -- Dependencies: 180 180 3016
--- Name: patios_baldios_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
+-- Name: patios_baldios_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace:
 --
 
 ALTER TABLE ONLY patios_baldios
@@ -469,7 +428,7 @@ ALTER TABLE ONLY patios_baldios
 --
 -- TOC entry 3003 (class 2606 OID 25796)
 -- Dependencies: 182 182 3016
--- Name: puntos_control_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
+-- Name: puntos_control_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace:
 --
 
 ALTER TABLE ONLY puntos_control
@@ -479,7 +438,7 @@ ALTER TABLE ONLY puntos_control
 --
 -- TOC entry 3005 (class 2606 OID 25798)
 -- Dependencies: 184 184 3016
--- Name: puntos_riesgo_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
+-- Name: puntos_riesgo_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace:
 --
 
 ALTER TABLE ONLY puntos_riesgo
@@ -489,7 +448,7 @@ ALTER TABLE ONLY puntos_riesgo
 --
 -- TOC entry 3007 (class 2606 OID 25800)
 -- Dependencies: 186 186 3016
--- Name: tipo_dispositivos_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
+-- Name: tipo_dispositivos_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace:
 --
 
 ALTER TABLE ONLY tipo_dispositivos
@@ -499,7 +458,7 @@ ALTER TABLE ONLY tipo_dispositivos
 --
 -- TOC entry 3009 (class 2606 OID 25802)
 -- Dependencies: 188 188 3016
--- Name: tipo_riesgo_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
+-- Name: tipo_riesgo_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace:
 --
 
 ALTER TABLE ONLY tipo_riesgo

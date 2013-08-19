@@ -1,6 +1,0 @@
-Configuración de Geoserver
-===
-
-Dependecias
----
-

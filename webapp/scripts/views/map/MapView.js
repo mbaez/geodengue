@@ -4,7 +4,7 @@
  * @author <a href="mailto:mxbg.py@gmail.com">Maximiliano Báez</a>
  * @name views.map.MapView
  */
-define(["libs/JQuery/js/jquery",
+define(["libs/jquery",
         "libs/underscore",
         "libs/backbone",
         "libs/OpenLayers/OpenLayers",
@@ -57,10 +57,7 @@ define(["libs/JQuery/js/jquery",
                 //inicializa el map
                 this.map = new OpenLayers.Map("map", mapOptions);
                 //se construye el base layer
-                var baseLayer = new Layer.WMS({
-                    name : DataSource.baseLayerConf,
-                    base : true
-                });
+                var baseLayer = new Layer.WMS(DataSource.baseLayerConf);
                 this.map.addLayers(baseLayer);
                 // Se añade el switch para las capas
                 this.map.addControl(new OpenLayers.Control.LayerSwitcher());

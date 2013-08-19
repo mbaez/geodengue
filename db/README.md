@@ -29,9 +29,3 @@ CREATE DATABASE geodenguedb
        TEMPLATE=template_postgis
        CONNECTION LIMIT=-1;
 ```
-Crear el usuario
-
-Se debe crear un usuario de base de datos con el mismo username que el usuario de sistema en el que corre la aplicación.
-'''sql
-    CREATE USER username WITH PASSWORD 'password' SUPERUSER INHERIT NOCREATEDB CREATEROLE REPLICATION;
-'''

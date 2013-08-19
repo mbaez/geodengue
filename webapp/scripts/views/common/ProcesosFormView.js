@@ -2,13 +2,12 @@
  * Sidebar de la pagina puntos de control
  * @clss
  * @author <a href="mailto:mxbg.py@gmail.com">Maximiliano Báez</a>
- * @name views.common.SideBarView
  */
 define(["libs/jquery",
         "libs/underscore",
         "libs/backbone",
         //se incluye el template
-        "text!templates/common/SidebarTmpl.html"],
+        "text!templates/common/ProcesosFormTmpl.html"],
     function($,_,Backbone,tmpl) {
         return Backbone.View.extend({
             /**
@@ -21,10 +20,14 @@ define(["libs/jquery",
                 this.render();
             },
 
+            /**
+             * Json que mapea los eventos a los handlers
+             * @field
+             * @type Object
+             * @name #events
+             */
             events : {
-                "click #instalar" : "onInstalar",
-                "click #recolectar" : "onRecolectar",
-                "click #guardar" : "onGuardar"
+                "click #procesosForm .btn" : "onClick",
             },
 
             /**
@@ -41,16 +44,17 @@ define(["libs/jquery",
                 return this;
             },
 
-            onInstalar : function(){
-                this.trigger("on-instalar");
-            },
-
-            onRecolectar : function(){
-                this.trigger("on-recolectar");
-            },
-
-            onGuardar : function(){
-                this.trigger("on-guardar");
+            /**
+             * @function
+             *
+             * @author <a href="mailto:mxbg.py@gmail.com">Maximiliano Báez</a>
+             * @name #onClick
+             */
+            onClick : function(event){
+                var process = $(event.target).attr("id");
+                $(".btn").button("loading");
+                // se dispara el evento
+                this.trigger("on-execute", {proceso : process});
             }
         });
     }

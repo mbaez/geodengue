@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<StyledLayerDescriptor version="1.0.0" xmlns="http://www.opengis.net/sld" xmlns:ogc="http://www.opengis.net/ogc"
+  xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://www.opengis.net/sld http://schemas.opengis.net/sld/1.0.0/StyledLayerDescriptor.xsd">
+  <NamedLayer>
+    <Name>gtopo</Name>
+    <UserStyle>
+      <Name>dem</Name>
+      <Title>Simple DEM style</Title>
+      <Abstract>Classic elevation color progression</Abstract>
+      <FeatureTypeStyle>
+        <Rule>
+          <RasterSymbolizer>
+            <Opacity>0.7</Opacity>
+            <ColorMap type="intervals" extended="true">
+              <ColorMapEntry color="#000000" quantity="-9999" label="nodata" opacity="0.0" />
+              <ColorMapEntry color="#FAF183" quantity="0" label="muy bajo" />
+              <ColorMapEntry color="#FAF183" quantity="8" label= "bajo"/>
+              <ColorMapEntry color="#FAD151" quantity="20" label="medio" />
+              <ColorMapEntry color="#F2A82E" quantity="30" label="alto" />
+              <ColorMapEntry color="#A95124" quantity="60" label="muy alto" />
+              <ColorMapEntry color="#630C0E" quantity="50000" label="muy alto" />
+            </ColorMap>
+          </RasterSymbolizer>
+        </Rule>
+      </FeatureTypeStyle>
+    </UserStyle>
+  </NamedLayer>
+</StyledLayerDescriptor>

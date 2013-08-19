@@ -9,19 +9,19 @@ requirejs.config({
         'libs/underscore': {
             exports: '_'
         },
-        'libs/JQuery/js/jquery': {
+        'libs/jquery': {
             exports: '$'
         },
         'libs/backbone': {
-            deps: ['libs/underscore', 'libs/JQuery/js/jquery'],
+            deps: ['libs/underscore', 'libs/jquery'],
             exports: 'Backbone'
         },
-        'libs/backbone.page': {
+        'scripts/common/Backbone.Extend': {
             deps: ['libs/backbone'],
-            exports: 'BPage'
+            exports: 'BExtend'
         },
-        'libs/Bootstrap/js/bootstrap.min' : {
-            deps : ['libs/JQuery/js/jquery'],
+        'libs/bootstrap' : {
+            deps : ['libs/jquery'],
             exports: 'Bootstrap'
         },
         'scripts/common/Layer' : {
@@ -96,69 +96,18 @@ GeoDengue.getHashParams = function(){
     return GeoDengue.getUrlParams(document.location.hash)
 };
 
-
 /**
  *
  * @author <a href="mailto:mxbg.py@gmail.com">Maximiliano Báez</a>
  */
-require(['libs/backbone',
-        'libs/backbone.page',
-        "libs/Bootstrap/js/bootstrap.min"],
-    function(Backbone,BPage,Bootstrap) {
-
-    var Router = Backbone.Router.extend({
-        routes: {
-            "*actions": "interceptor"
-        },
-        /**
-         * Este atributo hace referencia al Page actual, su valor
-         * inicial es null.
-         */
-        current : null,
-        /**
-         * Handler genérico de los paths de la url. Se encarga de
-         * cargar el page correspondiente.
-         * @param action {String} el path de la url que se encuentra
-         *          luego del #
-         */
-        handler : function(params){
-            // referencia a si mismo
-            var thiz = this;
-            // Se cargar el page correspondiente
-            require(['scripts/pages' + params['#'] ],
-                function(Page) {
-                    if(thiz.current != null){
-                        //se cierra el page para desasociar los eventos
-                        //del viejo page para evitar conflictos con el
-                        //nuevo page.
-                        thiz.current.close();
-                    }
-                    //se instancia el nuevo page
-                    thiz.current = new Page({el : $('#appContent')});
-                }
-            );
-        },
-        /**
-         * Interseptor de las urls, se encarga de verificar la url, extraer
-         * los parametros de la misma e invocar al hadler.
-         *
-         * @param action {String} el path de la url que se encuentra
-         *          luego del #
-         */
-        interceptor : function(action){
-            //Se obtienen los parametros de la url para verificar los parametros
-            //de la url
-            var urlParams = GeoDengue.getHashParams();
-            //si se verifica que se especifique el path del page
-            if(typeof urlParams["#"] == "undefined"){
-                window.location="#/Inicio/";
-            }else{
-                //TODO Añadir controles de seguridad
-                this.handler(urlParams);
-            }
-        }
-    });
+require(['libs/underscore',
+        'libs/backbone',
+        'libs/bootstrap',
+        'scripts/common/Backbone.Extend'],
+    function(_, Backbone,Bootstrap, BExtend) {
+    //se configura los models y collection
+    Setup.sync();
     //se instancia el router
-    var router = new Router();
+    var router = new Backbone.AppRouter();
     Backbone.history.start();
 });

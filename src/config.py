@@ -22,5 +22,6 @@ GEOSERVER = {
     "host":"localhost",
     "port":"8080",
     "user": "admin",
-    "password": "geoserver"
+    "password": "admin",
+    "workspace": "geodengue"
 }

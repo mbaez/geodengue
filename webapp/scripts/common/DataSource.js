@@ -32,8 +32,18 @@ DataSource = {
      */
     baseLayerConf : {
         name: 'MapasPy',
+        workspace : "geodengue",
+        base : true
+    },
+
+    /**
+     * Las configuraciones de la capa de raster
+     */
+    rasterLayerConf : {
+        name: '',
+        featureNS : "py.com.geodengue" ,
         workspace : "geodengue"
-    }
+    },
 };
 
 

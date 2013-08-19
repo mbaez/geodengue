@@ -5,7 +5,7 @@
  * @author <a href="mailto:mxbg.py@gmail.com">Maximiliano Báez</a>
  * @name nombre del view
  */
-define(["libs/JQuery/js/jquery",
+define(["libs/jquery",
         "libs/underscore",
         "libs/backbone",
         //se incluye el template

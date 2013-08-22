@@ -221,7 +221,7 @@ class Larva(AeAegypti) :
             Lo que significa que maduraría en razon a
             delta_madurez = 100/(5*24)
             """
-            delta_madurez = 0.83333
+            delta_madurez = 100.0/(5.0*24.0)
 
         elif hora.temperatura >= 20 and hora.temperatura <= 34 :
             """
@@ -246,12 +246,12 @@ class Larva(AeAegypti) :
 
             Para evitar su desarrollo se disminuye la espectativa de vida
             del individuo considerablemente como para que muera en un
-            lapso de 48 hs(Arbitrariamente).
-            delta = 100/48
+            lapso de 72 hs(Arbitrariamente).
+            delta = 100/72
             """
-            delta_vida = 2.063
+            delta_vida = 100.0/72.0
             #~ delta_madurez = 100/(14*24)
-            delta_madurez = 0.2
+            delta_madurez = 100.0/(14.0*24.0)
 
         elif hora.temperatura <= 15 :
             """
@@ -261,13 +261,12 @@ class Larva(AeAegypti) :
 
             Para evitar su desarrollo se disminuye la espectativa de vida
             del individuo considerablemente como para que muera en un
-            lapso de 72 hs(Arbitrariamente).
-            delta = 100/72
+            lapso de 96 hs(Arbitrariamente).
+            delta = 100/96
             """
-            delta_vida = 1.3888
+            delta_vida = 100.0/92.0
             #~ se aumenta la madurez del individuo.
-            #~ delta_madurez = 100/(14*24)
-            delta_madurez = 0.2
+            delta_madurez = 100.0/(14.0*24.0)
 
         else :
             """

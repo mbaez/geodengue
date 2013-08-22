@@ -27,31 +27,43 @@ class AeAegypti :
     @property
     def espectativa_vida(self):
         """
-        Expectativa de vida : es un valor numérico que varía de acuerdo a las
-        condiciones climáticas a las que es sometido el mosquito.
+        La expectativa de vida es un valor numérico(entre 0 y 100) que
+        varía de acuerdo a las condiciones climáticas a las que es
+        sometido el mosquito. Cuando la espectativa de vida es creo el
+        mosquito muere.
         """
-        return self.__espectativa_vida
+        return self._espectativa_vida
 
     @property
     def edad(self):
         """
         La edad es la cantidad de horas que lleva el individuo lleva vivo.
         """
-        return self.__edad
+        return self._edad
 
     @property
     def sexo(self):
         """
         El sexo puede ser Macho o hembra, valor generado aleatoriamente.
         """
-        return self.__sexo
+        return self._sexo
 
     @property
     def estado(self):
         """
         Indica el estado actual de la clase.
         """
-        return self.__estado
+        return self._estado
+
+    @property
+    def madurez (self):
+        """
+        La madurez es un valor numérico(entre 0 y 100) que varía de acuerdo
+        a las condiciones climáticas a las que es sometido el mosquito.
+        Cuando la madurez es igual a 100 el mosquito ya se encuentra
+        listo para un cambio de estado.
+        """
+        return self._madurez;
 
     def __init__(self, sexo=None, estado=None) :
         """
@@ -64,10 +76,11 @@ class AeAegypti :
         @type estado : Enum
         @param estado: El estado del AeAegypti
         """
-        self.__edad = 0;
-        self.__espectativa_vida = 100;
-        self.__sexo = sexo;
-        self.__estado = estado;
+        self._edad = 0;
+        self._espectativa_vida = 100;
+        self._sexo = sexo;
+        self._estado = estado;
+        self._madurez = 0;
 
     def se_reproduce (self, hora) :
         """
@@ -83,8 +96,7 @@ class AeAegypti :
         """
         return str(self.estado) + "(" + str(self.sexo) + ")" + \
             "vida=" + str(self.espectativa_vida) + \
-            " edad=" + str(self.edad) + \
-            " id=" +str(self._id)
+            " edad=" + str(self.edad) + "  madurez=" + str(self.madurez)
 
 
 class Huevo(AeAegypti) :
@@ -137,12 +149,13 @@ class Huevo(AeAegypti) :
         if self.edad < 5*24 :
             estado = randint(2, 5) * 24
             if estado <= self.edad :
+                print str(self)
                 return Larva(self.sexo);
         """
         TODO Como afecta las condiciones climáticas al desarrollo del huevo ?
         """
-        self.espectativa_vida -= 0.1389
-
+        self._espectativa_vida -= 0.1389
+        self._edad +=1
         return self;
 
 class Larva(AeAegypti) :
@@ -181,24 +194,96 @@ class Larva(AeAegypti) :
         Este método se encarga de desarrollar el individuo que se encuentra
         en el estado de larva
 
-        El desarrollo larval a 14oC es irregular y la mortalidad
-        relativamente alta. Por debajo de esa temperatura, las larvas
-        eclosionadas no alcanzan el estado adulto. En condiciones óptimas
-        el período larval puede durar 5 días pero comúnmente se extiende
-        de 7 a 14 días.
+        En condiciones óptimas el período larval puede durar 5 días pero
+        comúnmente se extiende de 7 a 14 días.
+
+        @type hora : Hora
+        @param hora: el objeto que contiene los datos climatologicos para
+            una hora.
         """
         #~ se verifica si el individuo puede realizar un cambio de estado
-        if self.edad < 14*24  :
-            estado = randint(4, 14) * 24
-            if estado <= self.edad :
-                print str(self)
-                return Pupa(self.sexo)
+        if self.madurez >= 100 :
+            print "-> " + str(self)
+            return Pupa(self.sexo)
 
-        """
-        TODO Como afecta las condiciones climáticas al desarrollo de la
-        larva ?
-        """
-        self.espectativa_vida -= 0.1389
+        #~ Se inicializan las variables
+        delta_vida = 0
+        delta_madurez = 0
+        #~ Se realizan los controles para aumentar y/o disminuir la
+        #~ espectativa de vida y la madurez de la larva de acuerdo con
+        #~ la temperatura del medio.
+        if hora.temperatura >= 34 :
+            """
+            La temperatura más alta que permite el desarrollo es 36oC,
+            con una menor duración del estado larval.
+
+            En condiciones óptimas el período larval puede durar 5 días,
+            Lo que significa que maduraría en razon a
+            delta_madurez = 100/(5*24)
+            """
+            delta_madurez = 0.83333
+
+        elif hora.temperatura >= 20 and hora.temperatura <= 34 :
+            """
+            Las temperaturas más cálidas ayudan a la rápida maduración
+            de las larvas.
+
+            En condiciones calidas el período larvar pude durar 5 y 8 días,
+            de forma aleatoria se calcula la duración del periodo larvario
+            para calcular el delta de la maduración
+            """
+            duracion_periodo = randint(5, 8) * 24.0
+            delta_madurez = 100.0/ duracion_periodo
+
+        elif hora.temperatura <= 11 :
+            """
+            El desarrollo cero se sitúa en 13,3oC, con un umbral inferior
+            de desarrollo ubicado entre 9 y 10oC
+
+            Christophers (1960) señala que la actividad del insecto disminuye
+            abruptamente por debajo de 15oC hasta inhibición bajo medias
+            diarias de 12oC.
+
+            Para evitar su desarrollo se disminuye la espectativa de vida
+            del individuo considerablemente como para que muera en un
+            lapso de 48 hs(Arbitrariamente).
+            delta = 100/48
+            """
+            delta_vida = 2.063
+            #~ delta_madurez = 100/(14*24)
+            delta_madurez = 0.2
+
+        elif hora.temperatura <= 15 :
+            """
+            El desarrollo larval a 14 C es irregular y la mortalidad
+            relativamente alta. Por debajo de esa temperatura, las larvas
+            eclosionadas no alcanzan el estado adulto.
+
+            Para evitar su desarrollo se disminuye la espectativa de vida
+            del individuo considerablemente como para que muera en un
+            lapso de 72 hs(Arbitrariamente).
+            delta = 100/72
+            """
+            delta_vida = 1.3888
+            #~ se aumenta la madurez del individuo.
+            #~ delta_madurez = 100/(14*24)
+            delta_madurez = 0.2
+
+        else :
+            """
+            De forma aleatoria se calcula la duración del periodo larvario
+            para calcular el delta de la maduración
+            """
+            duracion_periodo = randint(5, 14) * 24.0
+            delta_madurez = 100.0/ duracion_periodo
+            delta_vida = 0.1389
+
+        #~ Se disminuye la espectativa de vida en un delta
+        self._espectativa_vida -= delta_vida
+        #~ se incrementa la madurez del mosquito en un delta
+        self._madurez += delta_madurez
+        self._edad +=1
+
         return self;
 
 class Pupa(AeAegypti) :
@@ -220,7 +305,7 @@ class Pupa(AeAegypti) :
         reproducirse, protegerse y dispersarse.
             pupa    1 a 4 dias
         """
-        return (self.espectativa_vida <= 0 or self.edad > 19*24 )
+        return (self.espectativa_vida <= 0 or self.edad > 4*24 )
 
     def desarrollar(self, hora) :
         """
@@ -230,8 +315,8 @@ class Pupa(AeAegypti) :
         El estado de pupa demora de 2 a 3 días.
         """
         #~ se verifica si el individuo puede realizar un cambio de estado
-        if self.edad < 19*24 :
-            estado = randint(14, 19) * 24
+        if self.edad < 3*24 :
+            estado = randint(2, 4) * 24
             if estado <= self.edad :
                 print str(self)
                 return Adulto(self.sexo)
@@ -240,7 +325,8 @@ class Pupa(AeAegypti) :
         TODO Como afecta las condiciones climáticas al desarrollo de la
         pupa ?
         """
-        self.espectativa_vida -= 0.1389
+        self._espectativa_vida -= 0.1389
+        self._edad +=1
         return self
 
 class Adulto(AeAegypti) :
@@ -251,7 +337,7 @@ class Adulto(AeAegypti) :
 
     @property
     def ultima_oviposicion (self):
-        return self.__ultima_oviposicion;
+        return self._ultima_oviposicion;
 
     def __init__(self, previous_sexo) :
         """
@@ -260,6 +346,7 @@ class Adulto(AeAegypti) :
         """
         # se invoca al constructor de la clase padre.
         AeAegypti.__init__(self,previous_sexo, Estado.ADULTO);
+        self._ultima_oviposicion = 1
 
     def se_reproduce (self, hora):
         """
@@ -310,7 +397,7 @@ class Adulto(AeAegypti) :
             (T máxima diaria >40o C), ó aire muy seco. Se consideran
             fenecidas todas las formas adultas, y larvarias en el caso térmico,
             """
-            self.espectativa_vida -= 4.3;
+            self._espectativa_vida -= 4.3;
         else :
             """
             En el mejor de los casos y en condiciones optimas el individuo
@@ -320,7 +407,8 @@ class Adulto(AeAegypti) :
 
                delta = 100/(30*24)
             """
-            self.espectativa_vida -= 0.1389
+            self._espectativa_vida -= 0.1389
+            self._edad +=1
         return self;
 
     def buscar_alimento(self, hora):
@@ -383,13 +471,21 @@ class Adulto(AeAegypti) :
 
                 huevos.append(self.get_child())
             # se reinicia el contador
-            self.ultima_oviposicion = 1;
+            self._ultima_oviposicion = 1;
 
             return huevos
 
         # se aumenta el contador de ultima oviposición
-        self.ultima_oviposicion += 1
+        self._ultima_oviposicion += 1
         return None
+
+    def get_child (self):
+        """
+        Este método se encarga de obtener el hijo del inidividuo, el hijo
+        hedea de su padre todos sus atributos.
+        """
+        return Individuo(x=self.coordenada_x, y=self.coordenada_y, \
+                    id=self.id_dispositivo, index=self.index)
 
 
 class Individuo :
@@ -453,6 +549,7 @@ class Individuo :
             una hora.
         """
         self.mosquito = self.mosquito.desarrollar(hora)
+        print str(self.mosquito) +" temp : " + str(hora.temperatura)
 
 
     def se_reproduce (self, hora):
@@ -477,12 +574,5 @@ class Individuo :
         """
         return self.mosquito.poner_huevos(hora)
 
-    def get_child (self):
-        """
-        Este método se encarga de obtener el hijo del inidividuo, el hijo
-        hedea de su padre todos sus atributos.
-        """
-        return Individuo(x=self.coordenada_x, y=self.coordenada_y, \
-                    id=self.id_dispositivo, index=self.index)
 
 

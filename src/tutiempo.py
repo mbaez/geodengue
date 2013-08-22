@@ -130,7 +130,7 @@ class TuTiempo:
     def get_periodo (self) :
         periodo = Periodo()
         periodo.parse_json(self.history());
-        periodo.parse_dict(self.process_dom_hora());
+        #~ periodo.parse_dict(self.process_dom_hora());
         return periodo
 
     def download_page(self, domain) :
@@ -272,10 +272,12 @@ class TuTiempo:
         # se calcula el rango de fechas
         now = datetime.datetime.now()
         # se crea una fecha de 10 dias antes a modo de prueba
-        delta = datetime.timedelta(days=10)
-        past = now - delta;
+        delta = datetime.timedelta(days=150)
+        delta2 = datetime.timedelta(days=157)
+        now2 = now - delta;
+        past = now - delta2;
         # se  transforma a unix time
-        end = str(int(time.mktime(now.timetuple())))
+        end = str(int(time.mktime(now2.timetuple())))
         start = str(int(time.mktime(past.timetuple())))
 
         args ={

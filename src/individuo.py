@@ -76,11 +76,11 @@ class AeAegypti :
         @type estado : Enum
         @param estado: El estado del AeAegypti
         """
-        self._edad = 0;
-        self._espectativa_vida = 100;
         self._sexo = sexo;
         self._estado = estado;
+        self._edad = 0;
         self._madurez = 0;
+        self._espectativa_vida = 100;
 
     def se_reproduce (self, hora) :
         """
@@ -124,39 +124,71 @@ class Huevo(AeAegypti) :
         La supervivencia de los mosquitos depende de la capacidad para alimentarse,
         reproducirse, protegerse y dispersarse.
             Estado  Tiempo promedio
-            huevo   2 a 3 dias
+            huevo   2 a 5 dias
         """
         return self.espectativa_vida <= 0
 
     def desarrollar(self, hora) :
         """
-        El desarrollo embriológico generalmente se completa en 48 horas
-        si el ambiente es húmedo y cálido, pero puede prolongarse hasta
-        5 días a temperaturas más bajas.
+        Para el estudío se supone que los criaderos disponibles estan
+        delimitados por los puntos de control(dispositivos de ovipostura)
+        fijados. Para el caso de los huevos, estos son depositados
+        individualmente en las paredes de los recipientes(dispositivo de
+        ovipostura) por encima del nivel del agua.
 
-        1) Los huevos son depositados individualmente en las paredes de los
-        recipientes por encima del nivel del agua.
-        2) Una vez que se ha completado el desarrollo embrionario los
-        huevos son capaces de resistir largos períodos de desecación,
-        que pueden prolongarse por más de un año.
-        3) Cuando los huevos son mojados, se genera un estímulo para la eclosión.
-        4) Algunos huevos hacen eclosión en los primeros 15 minutos de
-        contacto con el agua, al tiempo que otros pueden no responder hasta
-        que han sido mojados varias veces.
+        Para el desarrollo del huevo se supone que una vez que culmine el
+        desarrollo embriológico los huevos eclosionarán.
 
+        La lógica de que los huevos deben mojarse para eclosionar no está
+        implementada, así como que los huevos desarrollados pueden
+        sobrevivir por periodos largos para posteriormente eclosionar.
+
+        @type hora : Hora
+        @param hora: el objeto que contiene los datos climatologicos para
+            una hora.
         """
         #~ se verifica si el individuo puede realizar un cambio de estado
-        if self.edad < 5*24 :
-            estado = randint(2, 5) * 24
-            if estado <= self.edad :
-                print str(self)
-                return Larva(self.sexo);
-        """
-        TODO Como afecta las condiciones climáticas al desarrollo del huevo ?
-        """
-        self._espectativa_vida -= 0.1389
+        if self.madurez >= 100 :
+            print "-> " + str(self)
+            return Larva(self.sexo)
+        #~ Se inicializan las variables
+        delta_vida = 0
+        delta_madurez = 0
+        #~ Se realizan los controles para aumentar y/o disminuir la
+        #~ espectativa de vida y la madurez de la larva de acuerdo con
+        #~ la temperatura del medio.
+        if hora.temperatura >= 27 :
+            """
+            Se considera un clima cálido cuando la temperatura es superior
+            de los 27 C.
+
+            El desarrollo embriológico generalmente se completa en 48 horas
+            si el ambiente es húmedo y cálido.
+            """
+            delta_madurez = 100/48.0
+        elif hora.temperatura <= 15 :
+            """
+            El desarrollo embriológico puede prolongarse hasta 5 días a
+            temperaturas bajas.
+            """
+            delta_madurez = 100/120.0
+            #~ Arbitrariamente se disminuye la espectativa de vida del huevo
+            delta_vida = 100/ 140.0
+        else :
+            """
+            En temperaturas no optimas se calcula con regla de 3 el delta
+            de maduración del huevo.
+            """
+            temp_med= randint(27,40)
+            delta_madurez = (hora.temperatura * 48.0 )/(temp_med * 1.0)
+
+        #~ Se disminuye la espectativa de vida en un delta
+        self._espectativa_vida -= delta_vida
+        #~ se incrementa la madurez del mosquito en un delta
+        self._madurez += delta_madurez
         self._edad +=1
         return self;
+
 
 class Larva(AeAegypti) :
     """

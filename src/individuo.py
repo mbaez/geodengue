@@ -461,8 +461,7 @@ class Adulto(AeAegypti) :
         if hora.temperatura < 15 :
             return
 
-
-    def poner_huevos(self, hora) :
+    def poner_huevos(self, parent, hora) :
         """
         Generalmente el apareamiento se realiza cuando la hembra busca
         alimentarse; se ha observado que el ruido que emite al volar es
@@ -499,8 +498,7 @@ class Adulto(AeAegypti) :
             cantidad = randint(80, 150)
             huevos = []
             for i in range(cantidad) :
-
-                huevos.append(self.get_child())
+                huevos.append(parent.get_child())
             # se reinicia el contador
             self._ultima_oviposicion = 1;
 
@@ -509,14 +507,6 @@ class Adulto(AeAegypti) :
         # se aumenta el contador de ultima oviposición
         self._ultima_oviposicion += 1
         return None
-
-    def get_child (self):
-        """
-        Este método se encarga de obtener el hijo del inidividuo, el hijo
-        hedea de su padre todos sus atributos.
-        """
-        return Individuo(x=self.coordenada_x, y=self.coordenada_y, \
-                    id=self.id_dispositivo, index=self.index)
 
 
 class Individuo :
@@ -603,7 +593,15 @@ class Individuo :
         @param hora: el objeto que contiene los datos climatologicos para
             una hora.
         """
-        return self.mosquito.poner_huevos(hora)
+        return self.mosquito.poner_huevos(self, hora)
+
+    def get_child (self):
+        """
+        Este método se encarga de obtener el hijo del inidividuo, el hijo
+        hedea de su padre todos sus atributos.
+        """
+        return Individuo(x=self.coordenada_x, y=self.coordenada_y, \
+                    id=self.id_dispositivo, index=self.index)
 
 
 

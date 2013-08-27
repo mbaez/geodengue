@@ -418,7 +418,7 @@ class Pupa(AeAegypti) :
             """
             delta_madurez = 100.0 / (randint(9, 29) * 0.206 * 24.0)
             #~  si es macho madura más rápido
-            if sexo.MACHO == self.sexo :
+            if Sexo.MACHO == self.sexo :
                 delta_madurez =  delta_madurez / 1.315789474
 
         elif hora.temperatura <= 20:
@@ -439,7 +439,7 @@ class Pupa(AeAegypti) :
             """
             delta_madurez =100.0 / (randint(10,47) * 0.206 * 24.0)
             #~  si es macho madura más rápido
-            if sexo.MACHO == self.sexo :
+            if Sexo.MACHO == self.sexo :
                 delta_madurez =  delta_madurez / 1.315789474
 
 

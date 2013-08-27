@@ -130,7 +130,7 @@ class TuTiempo:
     def get_periodo (self) :
         periodo = Periodo()
         periodo.parse_json(self.history());
-        #~ periodo.parse_dict(self.process_dom_hora());
+        periodo.parse_dict(self.process_dom_hora());
         return periodo
 
     def download_page(self, domain) :
@@ -273,7 +273,7 @@ class TuTiempo:
         now = datetime.datetime.now()
         # se crea una fecha de 10 dias antes a modo de prueba
         delta = datetime.timedelta(days=150)
-        delta2 = datetime.timedelta(days=157)
+        delta2 = datetime.timedelta(days=160)
         now2 = now - delta;
         past = now - delta2;
         # se  transforma a unix time

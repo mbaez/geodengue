@@ -147,11 +147,14 @@ class GisController :
         #~ se crea el sotre para el layer
         store = geo.create_coverage_store(suffix);
         layer_name="{0}.asc".format(store);
+        print "tmp file.."
         #~ se mueve genera el layer en la carpeta temporal
         src_file = geo.tmp_buffer(store, grid.to_raster(cols, rows));
         #~ se añade el layer al geoserver
+        print "uploading file.."
         geo.upload_file(src_file, layer_name)
         #~  se publica el layer
+        print "publish file.."
         geo.publish_coverage(store);
         #~ se retorna el nombre del layer
         return store

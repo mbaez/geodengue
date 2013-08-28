@@ -9,5 +9,6 @@ Fuente : http://flask.pocoo.org/docs/deploying/mod_wsgi/
 """
 import sys
 sys.path.insert(0, '/var/www/geodengue_server')
+sys.stdout = sys.stderr
 #~  se importa el modulo rest
 from rest_services import app as application

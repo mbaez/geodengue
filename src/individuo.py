@@ -663,7 +663,7 @@ class Individuo :
             una hora.
         """
         self.mosquito = self.mosquito.desarrollar(hora)
-        print str(self.mosquito) +" temp : " + str(hora.temperatura)
+        #~ print str(self.mosquito) +" temp : " + str(hora.temperatura)
 
 
     def se_reproduce (self, hora):

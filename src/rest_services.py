@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 from flask import Flask, request, Response, jsonify
 from controller import *
+import traceback
 
 """
 Este modulo define la interfaz de los servicios rest.
@@ -16,6 +17,15 @@ app = Flask(__name__)
 def api_root():
     """Path por defecto de los servicios"""
     return ""
+
+@app.errorhandler(500)
+def internal_error(error):
+    print error
+    return "500 error "+ str(error), 500
+
+@app.errorhandler(404)
+def not_found(error):
+    return "404 error",404
 
 @app.route('/muestras/<muestra>/instantanea', methods=['POST'])
 def interpolate_idw(muestra):

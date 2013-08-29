@@ -10,6 +10,7 @@ define(['libs/jquery',
         'text!pages/Procesos.html',
         //se incluyen los modulos gis necesarios
         "scripts/common/Layer",
+        'scripts/common/Style',
         //se incluyen los models necesarios,
         "scripts/models/MuestraModel",
         //se incluyen los views necesarios,
@@ -18,7 +19,7 @@ define(['libs/jquery',
         "scripts/views/map/MapView",
         ],
     function ($,_,Backbone,template,
-        Layer,
+        Layer,Style,
         // models
         MuestraModel,
         //Se incluyen los Views
@@ -123,7 +124,9 @@ define(['libs/jquery',
          * @name #initLayers
          */
         initLayers : function(){
+            var style = new Style.Layer('/geodengue/sld/pixel.xml');
             this.puntosControl = new Layer.Vector(DataSource.puntosControlLayerConf);
+            this.puntosControl.styleMap = style.styleMap;
             this.mapPanel.map.addLayer(this.puntosControl);
         }
     });

@@ -25,7 +25,7 @@ SET default_with_oids = false;
 --
 
 CREATE TABLE categoria_tamanho (
-    id integer NOT NULL,
+    id serial NOT NULL,
     descripcion character varying(100),
     tamanho integer
 );
@@ -65,7 +65,7 @@ ALTER SEQUENCE categoria_tamanho_id_seq OWNED BY categoria_tamanho.id;
 --
 
 CREATE TABLE muestras (
-    id integer NOT NULL,
+    id serial NOT NULL,
     id_tipo_dispositivo integer,
     codigo integer,
     descripcion character varying(100),
@@ -107,7 +107,7 @@ ALTER SEQUENCE muestras_id_seq OWNED BY muestras.id;
 --
 
 CREATE TABLE patios_baldios (
-    id integer NOT NULL,
+    id serial NOT NULL,
     codigo character varying(15),
     id_categoria integer,
     descripcion character varying(100),
@@ -151,7 +151,7 @@ ALTER SEQUENCE patios_baldios_id_seq OWNED BY patios_baldios.id;
 --
 
 CREATE TABLE puntos_control (
-    id integer NOT NULL,
+    id serial NOT NULL,
     id_muestras integer,
     descripcion character varying(100),
     codigo character varying(20),
@@ -196,7 +196,7 @@ ALTER SEQUENCE puntos_control_id_seq OWNED BY puntos_control.id;
 --
 
 CREATE TABLE puntos_riesgo (
-    id integer NOT NULL,
+    id serial NOT NULL,
     codigo character varying(15),
     id_tipo integer,
     descripcion character varying(100),
@@ -240,7 +240,7 @@ ALTER SEQUENCE puntos_riesgo_id_seq OWNED BY puntos_riesgo.id;
 --
 
 CREATE TABLE tipo_dispositivos (
-    id integer NOT NULL,
+    id serial NOT NULL,
     descripcion character varying(100),
     image bytea
 );
@@ -280,7 +280,7 @@ ALTER SEQUENCE tipo_dispositivos_id_seq OWNED BY tipo_dispositivos.id;
 --
 
 CREATE TABLE tipo_riesgo (
-    id integer NOT NULL,
+    id serial NOT NULL,
     descripcion character varying(100),
     riesgo integer
 );

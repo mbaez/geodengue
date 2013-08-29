@@ -58,7 +58,9 @@ define(["libs/jquery",
                 this.map = new OpenLayers.Map("map", mapOptions);
                 //se construye el base layer
                 var baseLayer = new Layer.WMS(DataSource.baseLayerConf);
+                var riesgoLayer = new Layer.WMS(DataSource.puntosRiesgoLayerConf);
                 this.map.addLayers(baseLayer);
+                this.map.addLayers(riesgoLayer);
                 // Se añade el switch para las capas
                 this.map.addControl(new OpenLayers.Control.LayerSwitcher());
                 this.map.addControl(new OpenLayers.Control.CacheRead());

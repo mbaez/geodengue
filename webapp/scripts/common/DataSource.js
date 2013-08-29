@@ -21,7 +21,15 @@ DataSource = {
      */
     puntosControlLayerConf : {
         name: 'puntos_control',
-        //filterColumn : "",
+        geometryName: 'the_geom',
+        featureNS : "py.com.geodengue" ,
+        workspace : "geodengue"
+    },
+    /**
+     * Las configuraciones de la capa
+     */
+    puntosRiesgoLayerConf : {
+        name: 'puntos_riesgo',
         geometryName: 'the_geom',
         featureNS : "py.com.geodengue" ,
         workspace : "geodengue"

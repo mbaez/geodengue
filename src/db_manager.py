@@ -4,9 +4,10 @@
 import psycopg2
 from psycopg2 import connect
 import psycopg2.extras
-
-__author__ = "Maximiliano Báez"
-__mail__ = "mxbg.py@gmail.com"
+"""
+@autors Maximiliano Báez, Roberto Bañuelos
+@contact mxbg.py@gmail.com, robertobanuelos@gmail.com
+"""
 
 
 class DBManager :
@@ -154,40 +155,39 @@ class InterpolacionModel :
         cursor = self.db.query(sql_string, args)
         return cursor
 
-class PuntosInterpoladosModel :
+
+class PuntosRiesgoDao :
     """
     Esta clase define la capa de acceso y comunicación para la tabla
-    `puntos_interpolacion`.
+    `puntos_control`.
     """
     def __init__(self):
         self.db = DBManager()
 
-    def persist(self,args=[]):
+    def get_all(self):
         """
-        Se encarga de persitir los puntos interpolados en la tabla
-        `puntos_interpolados`.
+        Se encarga de obtener la lista de todos los puntos de riesgo definidos
 
-            INSERT INTO puntos_interpolados(
-                id_interpolacion, cantidad, the_geom)
-            VALUES ( :id_interpolacion, :cantidad,
-                ST_SetSRID(ST_MakePoint(:x, :y), 900913))
-
-        @type args : Dictionaries
-        @param args: Un diccionario con los paramteros de la consulta.
+        @rtype  Dictionaries
+        @return Un diccionario con el resultado de la consulta
         """
-        #  se definie el query de la consulta.
+        # se definie el query de la consulta.
         sql_string = """
-        INSERT INTO puntos_interpolados(id_interpolacion, cantidad, the_geom)
-            VALUES ( %(id_interpolacion)s, %(cantidad)s,
-                ST_SetSRID(ST_MakePoint(%(x)s, %(y)s), 900913))
+            SELECT id, codigo, id_tipo, descripcion,
+            ST_X(the_geom) as x, ST_Y(the_geom) as y
+            FROM puntos_riesgo
+            WHERE fecha_fin is null
+                OR (fecha_inicio >= now() AND fecha_fin <= now())
         """
         # se construye el diccionario que contiene los parametros del query.
-        cursor = self.db.query(sql_string, tuple(args), True)
-        return cursor
+        cursor = self.db.query(sql_string)
+        return self.db.to_dict(cursor)
 
 
 if __name__ == "__main__" :
     #~ dic = da.get_by(1)
-    a = InterpolacionModel()
+    a = PuntosRiesgoDao()
+    dic = a.get_all();
+    print dic;
     #~ cursor = a.persist({'id_muestra': 1, 'descripcion': 'test'})
     #~ print cursor.fetchone()[0]

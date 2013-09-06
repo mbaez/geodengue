@@ -461,7 +461,17 @@ class Adulto(AeAegypti) :
 
     @property
     def ultima_oviposicion (self):
+        """
+        Cantidad de horas desde la última oviposición.
+        """
         return self._ultima_oviposicion;
+
+    @property
+    def ultimo_alimento (self):
+        """
+        Porcentaje no digerido de la última alimentación.
+        """
+        return self._ultimo_alimento;
 
     def __init__(self, previous_sexo) :
         """
@@ -553,6 +563,19 @@ class Adulto(AeAegypti) :
         """
         if hora.temperatura < 15 :
             return
+
+    def digestion(self, hora):
+        """
+        Dependiendo a la temperatura los mosquitos-hembra adultas digieren
+        más rápidamente/lentamente la sangre y se alimentan más/menos
+        frecuentemente.
+
+        @type hora : Hora
+        @param hora: el objeto que contiene los datos climatologicos para
+            una hora.
+        """
+        pass
+
 
     def poner_huevos(self, parent, hora) :
         """

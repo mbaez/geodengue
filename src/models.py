@@ -1,11 +1,16 @@
 #! /usr/bin/env python
 # -*- coding: utf-8 -*-
 """
-Este módulo contiene las clases que representa los objetos bases que son
-utilizados para realizar las operaciones correspondientes.
+Este módulo contiene las clases que representa los objetos utilizados para
+procesamiento espacial.
+
+@autors Maximiliano Báez
+@contact mxbg.py@gmail.com
 """
-__author__ = "Maximiliano Báez"
-__mail__ = "mxbg.py@gmail.com"
+
+import numpy
+import math
+
 class Bounds :
     """
     Clase para representar la extensión de los puntos. La extensión de se
@@ -39,10 +44,6 @@ class Bounds :
             self.y_min = y_array.min();
             self.x_max = x_array.max();
             self.y_max = y_array.max();
-
-
-
-import numpy
 
 class Grid :
     """
@@ -205,7 +206,65 @@ class Grid :
         coll = geojson.FeatureCollection(grid)
         return geojson.dumps(coll);
 
+class Point :
+    """
+    Esta clase define la geometría de un punto y las operaciones que se
+    pueden realizar sobre el mismo.
+    """
+    @property
+    def x(self) :
+        """Coordenada X"""
+        return self.__x
+
+    @property
+    def y(self) :
+        """Coordenada Y"""
+        return self.__y
+
+    def to_metter(self, delta) :
+        """
+        Se encarga de traducir la diferencia de las distancias a metros
+
+        @param delta : El número que se desea traducir a metros.
+        @type  delta : Float
+
+        @return: La distancia en metros.
+        @rtype: Float
+        """
+        return 100000.0 * delta
+
+    def __init__(self) :
+        self.__x = 0
+        self.__y = 0
+
+    def distance_to (self, point):
+        """
+        Halla la distancia entre 2 puntos utilizando el teorema de
+        pitagoras aplicado a la geometría de triangulos.
+
+
+        @param point : El punto destino
+        @type  point : Point
+
+        @return: La distancia en metros.
+        @rtype: Float
+        """
+        #~ Se encuentra la distancia de la latitud o distancia entre los
+        #~ puntos  x
+        d_lat = (point.x - self.x)
+        #~ Se encuentra la distancia de la longitud o distancia entre los
+        #~ puntos y
+        d_lng = (point.y - self.y)
+        #~  se realiza una suma de las potencias
+        suma_potencias = (d_lat * d_lat) + (d_lng * d_lng)
+        resultado = math.sqrt(suma_potencias);
+
+        return self.to_metter(resultado)
+
 class Enum(set):
+    """
+    Calse que define el tipo de dato enum
+    """
     def __getattr__(self, name):
         if name in self:
             return name

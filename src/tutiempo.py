@@ -180,7 +180,7 @@ class TuTiempo:
         """
         periodo = Periodo()
         periodo.parse_json(self.history());
-        periodo.parse_dict(self.process_dom_hora());
+        #~ periodo.parse_dict(self.process_dom_hora());
         return periodo
 
     def download_page(self, domain) :

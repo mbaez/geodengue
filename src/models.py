@@ -233,9 +233,9 @@ class Point :
         """
         return 100000.0 * delta
 
-    def __init__(self) :
-        self.__x = 0
-        self.__y = 0
+    def __init__(self, args) :
+        self.__x = args.get('x', 0)
+        self.__y = args.get('y', 0)
 
     def distance_to (self, point):
         """
@@ -260,6 +260,15 @@ class Point :
         resultado = math.sqrt(suma_potencias);
 
         return self.to_metter(resultado)
+
+    def parse (self, data) :
+        """
+        Se emcarga de generar un punto a partir de los datos de entrada.
+
+        @param data : El diccionario que contiene los atributos x e y
+        @type  data : Diccionario
+
+        """
 
 class Enum(set):
     """

@@ -62,21 +62,38 @@ class AeAegypti :
         Cuando la madurez es igual a 100 el mosquito ya se encuentra
         listo para un cambio de estado.
         """
-        return self._madurez;
+        return self._madurez
 
-    def __init__(self, sexo=None, estado=None) :
+    @property
+    def posicion (self):
+        """
+        La posición esta definida por las coordenadas x e y, se encuentra
+        representada por un punto.
+
+        @see Point
+        """
+        return self._posicion
+
+
+    def __init__(self, **kargs) :
         """
         Inicializa la clase setenado la espectativa de vida y la edad a
         cero.
 
-        @type sexo : Enum
-        @param sexo: El sexo del AeAegypti
+        @param kargs: Parametros de inicialización de la clase
 
-        @type estado : Enum
-        @param estado: El estado del AeAegypti
+        @keyword [sexo]: El enum que identifica el sexo del AeAegypti
+        @keyword [estado]: El enum que identifica el estado del AeAegypti
+        @keyword [x]: la coordenada x
+        @keyword [y]: La coordenada y
+        @keyword [posicion]: El punto que determina la ubiación del AeAegypti
         """
-        self._sexo = sexo;
-        self._estado = estado;
+        self._sexo = kargs.get('sexo', None)
+        self._estado = kargs.get('estado', None)
+        if kargs.has_key('posicion') :
+            self._posicion = kargs.get('posicion', None)
+        else :
+            self._posicion = Point(kargs)
         self._edad = 0;
         self._madurez = 0;
         self._espectativa_vida = 100;
@@ -103,11 +120,12 @@ class Huevo(AeAegypti) :
     Esta clase contiene la representación del AeAegypti en su etapa de
     huevo.
     """
-    def __init__(self) :
+    def __init__(self, **kargs) :
         """
         @param kargs: Parametros de inicialización de la clase
 
-        @keyword [estado]: El estado del individuo
+        @keyword [sexo]: El enum que identifica el sexo del Huevo
+        @keyword [position]: El punto que determina la ubiación del huevo
         """
         # Se genera de forma aleatoria el sexo del huevo
         sexo = randint(0, 1)
@@ -115,8 +133,10 @@ class Huevo(AeAegypti) :
             sexo = Sexo.MACHO
         else :
             sexo = Sexo.HEMBRA
+        kargs['sexo'] = sexo
+        kargs['estado'] = Estado.HUEVO
         # se invoca al constructor de la clase padre.
-        AeAegypti.__init__(self,sexo, Estado.HUEVO);
+        AeAegypti.__init__(self, **kargs);
 
     def esta_muerto (self):
         """
@@ -149,7 +169,7 @@ class Huevo(AeAegypti) :
         #~ se verifica si el individuo puede realizar un cambio de estado
         if self.madurez >= 100 :
             print "-> " + str(self)
-            return Larva(self.sexo)
+            return Larva(sexo=self.sexo,posicion=self.posicion)
         #~ Se inicializan las variables
         delta_vida = 0
         delta_madurez = 0
@@ -202,21 +222,25 @@ class Larva(AeAegypti) :
     Fuente : Temperature-Dependent Development and Survival Rates of
     Culex quinquefasciatus tus and Aedes aegypti (Diptera: Culicidae
     """
-    def __init__(self, previous_sexo=None) :
+
+    def __init__(self, **kargs) :
         """
-        @type previous_sexo : Enum
-        @param previous_sexo: El el sexo del huevo a partir del cual eclosionó la larva.
+        @param kargs: Parametros de inicialización de la clase
+
+        @keyword [sexo]: El el sexo del huevo a partir del cual eclosionó la larva.
+        @keyword [position]: El punto que determina la ubiación de la larva
         """
-        if previous_sexo == None :
+
+        if not kargs.has_key('sexo') :
             # Se genera de forma aleatoria el sexo del mosquito
             sexo = randint(0, 1)
             if sexo == 0 :
-                previous_sexo = Sexo.MACHO
+                kargs['sexo'] = Sexo.MACHO
             else :
-                previous_sexo = Sexo.HEMBRA
-
+                kargs['sexo'] = Sexo.HEMBRA
+        kargs['estado'] = Estado.LARVA
         # se invoca al constructor de la clase padre.
-        AeAegypti.__init__(self,previous_sexo, Estado.LARVA);
+        AeAegypti.__init__(self, **kargs);
 
     def esta_muerto (self):
         """
@@ -243,7 +267,7 @@ class Larva(AeAegypti) :
         #~ se verifica si el individuo puede realizar un cambio de estado
         if self.madurez >= 100 :
             print "-> " + str(self)
-            return Pupa(self.sexo)
+            return Pupa(sexo=self.sexo,posicion=self.posicion)
 
         #~ Se inicializan las variables
         delta_vida = 0
@@ -340,13 +364,16 @@ class Pupa(AeAegypti) :
     @see http://medicina.tij.uabc.mx/von/ciclo.html
     @see http://www.todosobremosquitos.com.ar/index.php?id=48&titulo=pupas-de-mosquitos
     """
-    def __init__(self, previous_sexo) :
+    def __init__(self, **kargs) :
         """
-        @type previous_sexo : Enum
-        @param previous_sexo: El sexo de la larva a partir del cual evoluciono a pupa.
+        @param kargs: Parametros de inicialización de la clase
+
+        @keyword [sexo]: El sexo de la larva a partir del cual evoluciono a pupa.
+        @keyword [position]: El punto que determina la ubiación de la pupa
         """
         # se invoca al constructor de la clase padre.
-        AeAegypti.__init__(self,previous_sexo, Estado.PUPA);
+        kargs['estado'] = Estado.PUPA
+        AeAegypti.__init__(self, **kargs);
 
     def esta_muerto (self):
         """
@@ -381,7 +408,7 @@ class Pupa(AeAegypti) :
         #~ se verifica si el individuo puede realizar un cambio de estado
         if self.madurez >= 100 :
             print str(self)
-            return Adulto(self.sexo)
+            return Adulto(sexo=self.sexo, posicion=self.posicion)
 
         #~  se inicializa la varible
         delta_madurez = 0.0
@@ -473,14 +500,19 @@ class Adulto(AeAegypti) :
         """
         return self._ultimo_alimento;
 
-    def __init__(self, previous_sexo) :
+    def __init__(self, **kargs) :
         """
-        @type previous_sexo : Enum
-        @param previous_sexo: El sexo de la pupa a partir del cual evoluciono a adulto.
+        @param kargs: Parametros de inicialización de la clase
+
+        @keyword [sexo]: El sexo de la pupa a partir del cual evoluciono a adulto.
+        @keyword [position]: El punto que determina la ubiación de la pupa
         """
         # se invoca al constructor de la clase padre.
-        AeAegypti.__init__(self,previous_sexo, Estado.ADULTO);
+        kargs['estado'] = Estado.PUPA
+        # se invoca al constructor de la clase padre.
+        AeAegypti.__init__(self,**kargs);
         self._ultima_oviposicion = 1
+        self._ultimo_alimento = 1;
 
     def se_reproduce (self, hora):
         """
@@ -649,9 +681,9 @@ class Individuo :
         #~ Se inicializa el mosquito de acuerdo al estado.
         self.mosquito = None
         if estado == Estado.HUEVO :
-            self.mosquito = Huevo()
+            self.mosquito = Huevo(**kargs)
         else :
-            self.mosquito = Larva()
+            self.mosquito = Larva(**kargs)
 
         #~ TODO : ver estado inicial para los individuos que provienen de
         #~ las larvitrampas
@@ -687,7 +719,6 @@ class Individuo :
         """
         self.mosquito = self.mosquito.desarrollar(hora)
         #~ print str(self.mosquito) +" temp : " + str(hora.temperatura)
-
 
     def se_reproduce (self, hora):
         """

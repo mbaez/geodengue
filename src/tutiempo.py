@@ -23,14 +23,14 @@ class Hora :
     Define los datos climáticos para una hora en especifico.
     """
     def __init__( self, data={}):
-        if len(data) >= 6:
-            self.hora = data["hora"]
-            self.presion = None
-            self.precipitacion = data["precipitacion"]
-            self.temperatura = data["temperatura"]
-            self.humedad = data["humedad"]
-            self.viento = data["viento"]
-            self.nuves = data["nuves"]
+        self.hora = data.get("hora", 0)
+        self.presion = data.get("presion", 0)
+        self.precipitacion = data.get("precipitacion", 0 )
+        self.temperatura = data.get("temperatura",0)
+        self.humedad = data.get("humedad",0)
+        self.viento = data.get("viento", 0.0)
+        self.direccion_viento = data.get("direccion_viento",0.0)
+        self.nuves = data.get("nuves", 0)
 
     def parse( self, data):
         """
@@ -117,7 +117,6 @@ class Periodo :
             d = Hora()
             d.parse(day)
             self.horas.append(d)
-
 
     def parse_dict(self , data) :
         """

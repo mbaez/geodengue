@@ -216,10 +216,18 @@ class Point :
         """Coordenada X"""
         return self.__x
 
+    @x.setter
+    def x(self, value):
+        self.__x = value
+
     @property
     def y(self) :
         """Coordenada Y"""
         return self.__y
+
+    @y.setter
+    def y(self, value):
+        self.__y = value
 
     def to_metter(self, delta) :
         """

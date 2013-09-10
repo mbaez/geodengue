@@ -74,7 +74,6 @@ class AeAegypti :
         """
         return self._posicion
 
-
     def __init__(self, **kargs) :
         """
         Inicializa la clase setenado la espectativa de vida y la edad a
@@ -113,7 +112,6 @@ class AeAegypti :
         return str(self.estado) + "(" + str(self.sexo) + ")" + \
             "vida=" + str(self.espectativa_vida) + \
             " edad=" + str(self.edad) + "  madurez=" + str(self.madurez)
-
 
 class Huevo(AeAegypti) :
     """
@@ -198,7 +196,7 @@ class Huevo(AeAegypti) :
             En temperaturas no optimas se calcula con regla de 3 el delta
             de maduración del huevo.
             """
-            temp_med= randint(27,40)
+            temp_med = randint(27,40)
             delta_madurez = (hora.temperatura * 48.0 )/(temp_med * 1.0)
 
         #~ Se disminuye la espectativa de vida en un delta
@@ -575,6 +573,9 @@ class Adulto(AeAegypti) :
             """
             self._espectativa_vida -= 0.1389
             self._edad +=1
+
+        self.volar(hora)
+
         return self;
 
     def buscar_alimento(self, hora):
@@ -608,7 +609,6 @@ class Adulto(AeAegypti) :
         """
         pass
 
-
     def poner_huevos(self, parent, hora) :
         """
         Generalmente el apareamiento se realiza cuando la hembra busca
@@ -629,6 +629,9 @@ class Adulto(AeAegypti) :
         La hembra deposita sus huevos en las paredes de recipientes con
         agua estancada, limpia y a la sombra. Un solo mosquito puede poner
         80 a 150 huevos, cuatro veces al día.
+
+        El mosquito hembra necesita la sangre para obtener proteínas y
+        poner sus huevos.
 
         @type hora : Hora
         @param hora: el objeto que contiene los datos climatologicos para
@@ -655,6 +658,39 @@ class Adulto(AeAegypti) :
         # se aumenta el contador de ultima oviposición
         self._ultima_oviposicion += 1
         return None
+
+    def volar(self, hora) :
+        """
+        Los machos rondan como voladores solitarios aunque es más común
+        que lo hagan en grupos pequeños (Bates, 1970; Kettle, 1993) atraídos
+        por los mismos huéspedes vertebrados que las hembras.
+
+        Vuelan en sentido contrario al viento, desplazándose mediante lentas
+        corrientes de aire, siguen los olores y gases emitidos por el
+        huésped (CO2), al estar cerca utilizan estímulos visuales para
+        localizarlo mientras sus receptores táctiles y térmicos las guían
+        hacia el sitio donde se posan.
+
+        Por lo general, la hembra de Ae. aegypti no se desplaza más allá de
+        5,000 m de distancia de radio de vuelo en toda su vida, permanece
+        físicamente en donde emergió, siempre y cuando no halla algún factor
+        que la perturbe o no disponga de huéspedes, sitios de reposo y de
+        postura. En caso de no haber recipientes adecuados, la hembra grávida
+        es capaz de volar hasta tres kilómetros en busca de este sitio.
+        Los machos suelen dispersarse en menor magnitud que las hembras
+
+        En un ensayo de laboratorio, con viento en calma mosquitos
+        Ae. aegypti se desplazan a 17 cm/s, al introducir viento en contra
+        de 33 cm/s, incrementaron su velocidad para contrarrestarle disminuyendo
+        su avance a 16 cm/s, lo que implica un esfuerzo de desplazamiento
+        como si hubieran volado a 49 cm/s, por consiguiente volar con
+        viento de mayor velocidad le representa un mayor esfuerzo y suelen
+        hacerlo (Kettle, 1993).
+        """
+
+        #~ Vuelan en sentido contrario al viento
+        angulo_vuelo = hora.direccion_vuelo + 180
+        #~ La velocidad promedio de vuelo es de 16.5 cm/s
 
 
 class Individuo :

@@ -183,6 +183,36 @@ class PuntosRiesgoDao :
         cursor = self.db.query(sql_string)
         return self.db.to_dict(cursor)
 
+    def get_within(self, point, distance):
+        """
+        Se encarga de obtener la lista de todos los puntos que se encuentran
+        a una determinada distancia del punto de origen.
+
+        @rtype  Dictionaries
+        @return Un diccionario con el resultado de la consulta
+        """
+        # se definie el query de la consulta.
+        sql_string = """
+            SELECT id, codigo, id_tipo, descripcion,
+            ST_X(the_geom) as x, ST_Y(the_geom) as y
+            FROM puntos_riesgo
+            WHERE (fecha_fin is null
+                    OR (fecha_inicio >= now() AND fecha_fin <= now())
+                )
+            AND ST_DWithin(
+            Geography(the_geom),
+            Geography(
+                ST_GeomFromText('POINT(%(x)s  %(y)s)',
+                4326)
+            ), %(distance))
+        """
+        args = {"distance" : distance}
+        args["x"] = point.x
+        args["y"] = point.y
+        # se construye el diccionario que contiene los parametros del query.
+        cursor = self.db.query(sql_string, args)
+        return self.db.to_dict(cursor)
+
 
 if __name__ == "__main__" :
     #~ dic = da.get_by(1)

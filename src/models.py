@@ -11,6 +11,7 @@ procesamiento espacial.
 import numpy
 import math
 import cmath
+import types
 
 class Bounds :
     """
@@ -270,6 +271,9 @@ class Point :
         @return: La distancia en metros.
         @rtype: Float
         """
+        if type(point) is types.DictType :
+            point = Point(point)
+
         #~ Se encuentra la distancia de la latitud o distancia entre los
         #~ puntos  x
         d_lat = (point.x - self.x)

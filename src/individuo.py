@@ -718,9 +718,22 @@ class Adulto(AeAegypti) :
     def raking_zona(self, puntos_criticos) :
         """
         Este método se encarga de analizar los puntos criticos y dar un
-        puntaje a la zona.
+        puntaje a la zona. Una zona se califica teniendo en cuenta :
+
+        * La cantidad de puntos criticos que existen en la zona.
+        * El riesgo de los puntos criticos.
         """
-        return 1
+        rank_value = 0.0
+        dist_value = 0.0
+        for i in range(len(puntos_criticos)) :
+            rank_value += puntos_criticos[i].riesgo;
+            dist_value += self.posicion(puntos_criticos[i])
+        #~ se calcula el promedio de riesgo
+        rank_value = rank_value / len(puntos_criticos)
+        #~ se calcula el promedio de distancia
+        dist_value = dist_value / len(puntos_criticos)
+
+        return rank_value / dist_value
 
 class Individuo :
     INDEX_IND = 1

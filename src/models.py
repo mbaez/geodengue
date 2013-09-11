@@ -10,6 +10,7 @@ procesamiento espacial.
 
 import numpy
 import math
+import cmath
 
 class Bounds :
     """
@@ -241,6 +242,18 @@ class Point :
         """
         return 100000.0 * delta
 
+    def to_units(self, delta) :
+        """
+        Se encarga de traducir de metros a unidades
+
+        @param delta : El número que se desea traducir a unidades.
+        @type  delta : Float
+
+        @return: La distancia en unidades.
+        @rtype: Float
+        """
+        return delta / 100000.0
+
     def __init__(self, args) :
         self.__x = args.get('x', 0)
         self.__y = args.get('y', 0)
@@ -269,6 +282,42 @@ class Point :
 
         return self.to_metter(resultado)
 
+    def project (self, distance, angle=0) :
+        """
+        Proyecta el punto sobre una linea que forma un angulo 'angle' sobre
+        el eje horizontal. El punto se proyecta a una distancia 'distance'
+        del punto de origen.
+
+        @param distance : La distancia en metros
+        @type  distance : Float
+
+        @param angle : El angulo en grados
+        @type  angle : Float
+
+        @return: El punto proyectado
+        @rtype: Point
+        """
+        #convert bearing to arithmetic angle in radians
+        angle = 90 - angle
+        if angle <- 180 :
+            angle = 360 + angle
+
+        #~ se traduce la distancia en metros a unidades
+        distance = self.to_units(distance)
+        #~ se traduce el angulo en radianes
+        angle = math.radians(angle)
+        start = complex(self.x, self.y)
+        #~ se genera una recta
+        movement = cmath.rect(distance, angle)
+        #~ se proyecta el punto
+        end = start + movement
+
+        args = {}
+        args["x"] = end.real
+        args["y"] = end.imag
+        #~ se genera un punto
+        return Point(args)
+
     def parse (self, data) :
         """
         Se emcarga de generar un punto a partir de los datos de entrada.
@@ -286,3 +335,15 @@ class Enum(set):
         if name in self:
             return name
         raise AttributeError
+
+if __name__ == "__main__" :
+    p1 = {"x" : -57.6581, "y" :  -25.2928}
+    p2 ={"x": -57.343086004255, "y": -25.387185928441}
+    p3 ={"x": -57.343086, "y": -25.387186}
+    src = Point(p2)
+    des = Point(p3)
+    #~ des = src.project(100,90);
+    print str(des.x) +" "+str(des.y)
+
+    print src.distance_to(des)
+

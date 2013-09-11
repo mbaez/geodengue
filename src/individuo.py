@@ -9,6 +9,7 @@ Larva, Pupa, Adulto) para, finalmente, representar a un individuo.
 """
 #Se impotan los modulos.
 from models import *
+from db_manager import *
 from random import randint
 """
 Enum que representa los estados por lo cuales atravieza el individuo.
@@ -511,6 +512,7 @@ class Adulto(AeAegypti) :
         AeAegypti.__init__(self,**kargs);
         self._ultima_oviposicion = 1
         self._ultimo_alimento = 1;
+        self.dao = PuntosRiesgoDao()
 
     def se_reproduce (self, hora):
         """
@@ -690,8 +692,34 @@ class Adulto(AeAegypti) :
 
         #~ Vuelan en sentido contrario al viento
         angulo_vuelo = hora.direccion_vuelo + 180
-        #~ La velocidad promedio de vuelo es de 16.5 cm/s
+        #~ TODO : averiguar la velocidad de vuelo en promedio
+        #~ Se obtienen todos los puntos de riesgo que se encuentran en la zona
+        #~ para analizar si el mosquito debe volar en busca de mejores
+        #~ condiciones
+        puntos_riesgo = self.dao.get_within(self.posicion,100)
+        #~ Como determinar que una zona es buena?
+        rank_value = self.raking_zona(puntos_riesgo)
+        if  rank_value > 3:
+            """
+            Permanece físicamente en donde emergió, siempre y cuando no
+            halla algún factor que la perturbe o no disponga de huéspedes,
+            sitios de reposo y de postura.
+            """
+            pass
+        else :
+            """
+            En caso de no haber recipientes adecuados, la hembra grávida
+            es capaz de volar hasta tres kilómetros en busca de este sitio.
+            Los machos suelen dispersarse en menor magnitud que las hembras
+            """
+            pass
 
+    def raking_zona(self, puntos_criticos) :
+        """
+        Este método se encarga de analizar los puntos criticos y dar un
+        puntaje a la zona.
+        """
+        return 1
 
 class Individuo :
     INDEX_IND = 1

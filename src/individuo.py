@@ -20,6 +20,7 @@ Estado = Enum(["HUEVO", "LARVA","PUPA","ADULTO"])
 Sexo válidos del individuo
 """
 Sexo = Enum(["MACHO", "HEMBRA"])
+DAO = PuntosRiesgoDao()
 class AeAegypti :
     """
     Clase base, contiene la definición los atributos básicos.
@@ -512,7 +513,6 @@ class Adulto(AeAegypti) :
         AeAegypti.__init__(self,**kargs);
         self._ultima_oviposicion = 1
         self._ultimo_alimento = 1;
-        self.dao = PuntosRiesgoDao()
 
     def se_reproduce (self, hora):
         """
@@ -691,12 +691,13 @@ class Adulto(AeAegypti) :
         """
 
         #~ Vuelan en sentido contrario al viento
-        angulo_vuelo = hora.direccion_vuelo + 180
+        angulo_vuelo = hora.direccion_viento + 180
         #~ TODO : averiguar la velocidad de vuelo en promedio
+
         #~ Se obtienen todos los puntos de riesgo que se encuentran en la zona
         #~ para analizar si el mosquito debe volar en busca de mejores
         #~ condiciones
-        puntos_riesgo = self.dao.get_within(self.posicion,100)
+        puntos_riesgo = DAO.get_within(self.posicion,100)
         #~ Como determinar que una zona es buena?
         rank_value = self.raking_zona(puntos_riesgo)
         if  rank_value > 3:

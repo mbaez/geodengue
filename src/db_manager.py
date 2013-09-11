@@ -84,7 +84,7 @@ class DBManager :
                 dictnum += 1
             results[rownum] = dictrow
             rownum += 1
-
+        dbcursor.close();
         #se retorna la lista de resultados
         return results
 
@@ -193,9 +193,10 @@ class PuntosRiesgoDao :
         """
         # se definie el query de la consulta.
         sql_string = """
-            SELECT id, codigo, id_tipo, descripcion,
+            SELECT pr.id, pr.codigo, pr.id_tipo, pr.descripcion, tr.riesgo,
             ST_X(the_geom) as x, ST_Y(the_geom) as y
-            FROM puntos_riesgo
+            FROM puntos_riesgo pr JOIN tipo_riesgo tr
+                ON pr.id_tipo = tr.id
             WHERE (fecha_fin is null
                     OR (fecha_inicio >= now() AND fecha_fin <= now())
                 )
@@ -204,7 +205,7 @@ class PuntosRiesgoDao :
             Geography(
                 ST_GeomFromText('POINT(%(x)s  %(y)s)',
                 4326)
-            ), %(distance))
+            ), %(distance)s)
         """
         args = {"distance" : distance}
         args["x"] = point.x

@@ -13,7 +13,8 @@ API_DATA = {
     "mode" : "json"
 }
 # URLs de las fuentes de información de datos climaticos
-API_URL = "http://api.openweathermap.org/data/2.5";
+#~ API_URL = "http://api.openweathermap.org/data/2.5";
+API_URL = "http://localhost/geodengue/api.openweathermap.json";
 TUTIEMPO_URL = 'http://www.tutiempo.net/'
 
 import json    # or `import simplejson as json` if on Python < 2.6
@@ -350,7 +351,8 @@ class TuTiempo:
             "end" : "1364705002", #2013/03/31
         }
 
-        url = API_URL + "/history/city" + self.build_url_params(args);
+        #~ url = API_URL + "/history/city" + self.build_url_params(args);
+        url = API_URL;
         json_string = self.download_page(url);
         return json.loads(json_string)
 

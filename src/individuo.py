@@ -723,10 +723,13 @@ class Adulto(AeAegypti) :
         #~ para analizar si el mosquito debe volar en busca de mejores
         #~ condiciones
         puntos_riesgo = DAO.get_within(point, distancia)
+        if len(puntos_riesgo) == 0 :
+            return 0
+
         #~ se evaluan los puntos de riesgo
         for i in range(len(puntos_riesgo)) :
-            rank_value += puntos_riesgo[i].riesgo;
-            dist_value += self.posicion(puntos_riesgo[i])
+            rank_value += puntos_riesgo[i]['riesgo'];
+            dist_value += self.posicion.distance_to(puntos_riesgo[i])
         #~ se calcula el promedio de riesgo
         rank_value = rank_value / len(puntos_riesgo)
         #~ se calcula el promedio de distancia
@@ -753,7 +756,7 @@ class Adulto(AeAegypti) :
         #~ se evaluan los vecinos
         while distancia <= max_dist :
             #~ se calcula el punto vecino
-            punto_vecino = self.posicion.project(distancia, angulo)
+            punto_vecino = self.posicion.project(distancia, angulo_vuelo)
             #~ se rankea la zona
             rank_value = self.raking_zona(punto_vecino, distancia)
 

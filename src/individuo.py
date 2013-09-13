@@ -7,10 +7,12 @@ Larva, Pupa, Adulto) para, finalmente, representar a un individuo.
 @autors Maximiliano Báez, Roberto Bañuelos
 @contact mxbg.py@gmail.com, robertobanuelos@gmail.com
 """
+import time
 #Se impotan los modulos.
 from models import *
 from db_manager import *
 from random import randint
+
 """
 Enum que representa los estados por lo cuales atravieza el individuo.
 """
@@ -21,6 +23,24 @@ Sexo válidos del individuo
 """
 Sexo = Enum(["MACHO", "HEMBRA"])
 DAO = PuntosRiesgoDao()
+
+
+class RankingTable:
+    """
+    Se encarga de guardar en memoria  el valor de todas las zonas que ya
+    fueron rankeadas en algún momento para evitar calculos incecesarios.
+    """
+    memory = {}
+
+    @staticmethod
+    def gen_key (punto, distancia):
+        """
+        Genera una clave única para el punto y la distancia.
+        """
+        return str(punto.x) + "-" + str(punto.y) + "-"  + str(distancia)
+
+
+
 class AeAegypti :
     """
     Clase base, contiene la definición los atributos básicos.
@@ -98,6 +118,7 @@ class AeAegypti :
         self._edad = 0;
         self._madurez = 0;
         self._espectativa_vida = 100;
+        self.delta_vuelo = 0;
 
     def se_reproduce (self, hora) :
         """
@@ -168,7 +189,7 @@ class Huevo(AeAegypti) :
         """
         #~ se verifica si el individuo puede realizar un cambio de estado
         if self.madurez >= 100 :
-            print "-> " + str(self)
+            #~ print "Huevo -> Larva " + str(self)
             return Larva(sexo=self.sexo,posicion=self.posicion)
         #~ Se inicializan las variables
         delta_vida = 0
@@ -266,7 +287,7 @@ class Larva(AeAegypti) :
         """
         #~ se verifica si el individuo puede realizar un cambio de estado
         if self.madurez >= 100 :
-            print "-> " + str(self)
+            #~ print "Larva -> Pupa " + str(self)
             return Pupa(sexo=self.sexo,posicion=self.posicion)
 
         #~ Se inicializan las variables
@@ -407,7 +428,7 @@ class Pupa(AeAegypti) :
         """
         #~ se verifica si el individuo puede realizar un cambio de estado
         if self.madurez >= 100 :
-            print str(self)
+            #~ print "Pupa -> Adulto " + str(self)
             return Adulto(sexo=self.sexo, posicion=self.posicion)
 
         #~  se inicializa la varible
@@ -508,9 +529,10 @@ class Adulto(AeAegypti) :
         @keyword [position]: El punto que determina la ubiación de la pupa
         """
         # se invoca al constructor de la clase padre.
-        kargs['estado'] = Estado.PUPA
+        kargs['estado'] = Estado.ADULTO
         # se invoca al constructor de la clase padre.
         AeAegypti.__init__(self,**kargs);
+        #~ print "new "+ str(self)
         self._ultima_oviposicion = 1
         self._ultimo_alimento = 1;
 
@@ -575,9 +597,11 @@ class Adulto(AeAegypti) :
             """
             self._espectativa_vida -= 0.1389
             self._edad +=1
-
+        #~ start = time.time()
         self.volar(hora)
-
+        #~ end = time.time()
+        #~ self.delta_vuelo = end - start
+        #~ print "Calc vuelo : " + str(end - start)
         return self;
 
     def buscar_alimento(self, hora):
@@ -695,7 +719,7 @@ class Adulto(AeAegypti) :
         #~ TODO : averiguar la velocidad de vuelo en promedio
         #~ Como determinar que una zona es buena?
         dist_recorrer = self.ranking_neighbors(hora)
-
+        self.delta_vuelo += 1
         """
         Permanece físicamente en donde emergió, siempre y cuando no
         halla algún factor que la perturbe o no disponga de huéspedes,
@@ -737,6 +761,19 @@ class Adulto(AeAegypti) :
 
         return rank_value / dist_value
 
+    def get_ranking (self, punto, distancia) :
+        """
+        Se ecarga de verificar si la zona ya fue rankeada, de ser así
+        se retorna el valor de la tabla de zonas rankeadas. Si no fue
+        rankeada se rankea la zona y se guarda en la tabla de ranking.
+        """
+        key = RankingTable.gen_key(punto, distancia)
+        if RankingTable.memory.has_key(key) :
+            return RankingTable.memory[key]
+        else :
+            rank_value = self.raking_zona(punto, distancia)
+            RankingTable.memory[key] = rank_value
+
     def ranking_neighbors (self, hora) :
         """
         En caso de no haber recipientes adecuados, la hembra grávida
@@ -754,11 +791,11 @@ class Adulto(AeAegypti) :
         angulo_vuelo = hora.direccion_viento + 180
 
         #~ se evaluan los vecinos
-        while distancia <= max_dist :
+        for distancia in xrange(100, 3000, 100) :
             #~ se calcula el punto vecino
             punto_vecino = self.posicion.project(distancia, angulo_vuelo)
             #~ se rankea la zona
-            rank_value = self.raking_zona(punto_vecino, distancia)
+            rank_value = self.get_ranking(punto_vecino, distancia)
 
             #~ se compara el valor de la zona
             if(rank_value > best_rank) :
@@ -766,9 +803,7 @@ class Adulto(AeAegypti) :
                 best_neighbor = punto_vecino
                 best_distancia = distancia
 
-            #~ se incrementa la distancia
-            distancia += 100
-
+        #~ print "\t Mejor distancia : "+str(best_distancia) + " Loops : " + str(total)
         return best_distancia
 
 

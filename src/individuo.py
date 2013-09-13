@@ -693,29 +693,23 @@ class Adulto(AeAegypti) :
         #~ Vuelan en sentido contrario al viento
         angulo_vuelo = hora.direccion_viento + 180
         #~ TODO : averiguar la velocidad de vuelo en promedio
-
-        #~ Se obtienen todos los puntos de riesgo que se encuentran en la zona
-        #~ para analizar si el mosquito debe volar en busca de mejores
-        #~ condiciones
-        puntos_riesgo = DAO.get_within(self.posicion,100)
         #~ Como determinar que una zona es buena?
-        rank_value = self.raking_zona(puntos_riesgo)
-        if  rank_value > 3:
-            """
-            Permanece físicamente en donde emergió, siempre y cuando no
-            halla algún factor que la perturbe o no disponga de huéspedes,
-            sitios de reposo y de postura.
-            """
-            pass
-        else :
+        dist_recorrer = self.ranking_neighbors(hora)
+
+        """
+        Permanece físicamente en donde emergió, siempre y cuando no
+        halla algún factor que la perturbe o no disponga de huéspedes,
+        sitios de reposo y de postura. El alcance noral es de 100 metros.
+        """
+        if  dist_recorrer > 100:
             """
             En caso de no haber recipientes adecuados, la hembra grávida
             es capaz de volar hasta tres kilómetros en busca de este sitio.
             Los machos suelen dispersarse en menor magnitud que las hembras
             """
-            pass
+            self.posicion.move(dist_recorrer, angulo_vuelo)
 
-    def raking_zona(self, puntos_criticos) :
+    def raking_zona(self, point, distancia) :
         """
         Este método se encarga de analizar los puntos criticos y dar un
         puntaje a la zona. Una zona se califica teniendo en cuenta :
@@ -725,15 +719,55 @@ class Adulto(AeAegypti) :
         """
         rank_value = 0.0
         dist_value = 0.0
-        for i in range(len(puntos_criticos)) :
-            rank_value += puntos_criticos[i].riesgo;
-            dist_value += self.posicion(puntos_criticos[i])
+        #~ Se obtienen todos los puntos de riesgo que se encuentran en la zona
+        #~ para analizar si el mosquito debe volar en busca de mejores
+        #~ condiciones
+        puntos_riesgo = DAO.get_within(point, distancia)
+        #~ se evaluan los puntos de riesgo
+        for i in range(len(puntos_riesgo)) :
+            rank_value += puntos_riesgo[i].riesgo;
+            dist_value += self.posicion(puntos_riesgo[i])
         #~ se calcula el promedio de riesgo
-        rank_value = rank_value / len(puntos_criticos)
+        rank_value = rank_value / len(puntos_riesgo)
         #~ se calcula el promedio de distancia
-        dist_value = dist_value / len(puntos_criticos)
+        dist_value = dist_value / len(puntos_riesgo)
 
         return rank_value / dist_value
+
+    def ranking_neighbors (self, hora) :
+        """
+        En caso de no haber recipientes adecuados, la hembra grávida
+        es capaz de volar hasta tres kilómetros en busca de este sitio.
+        Los machos suelen dispersarse en menor magnitud que las hembras
+        """
+        #~ La distancia máxima es de 3 km o 3000m
+        max_dist = 3000
+        distancia = 100
+        #~ se evalua la zona
+        best_rank = self.raking_zona(self.posicion, distancia)
+        best_neighbor = self.posicion.clone()
+        best_distancia = 100
+        #~ se calcula el angulo de vuelo
+        angulo_vuelo = hora.direccion_viento + 180
+
+        #~ se evaluan los vecinos
+        while distancia <= max_dist :
+            #~ se calcula el punto vecino
+            punto_vecino = self.posicion.project(distancia, angulo)
+            #~ se rankea la zona
+            rank_value = self.raking_zona(punto_vecino, distancia)
+
+            #~ se compara el valor de la zona
+            if(rank_value > best_rank) :
+                best_rank = rank_value
+                best_neighbor = punto_vecino
+                best_distancia = distancia
+
+            #~ se incrementa la distancia
+            distancia += 100
+
+        return best_distancia
+
 
 class Individuo :
     INDEX_IND = 1

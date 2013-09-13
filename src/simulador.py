@@ -86,15 +86,16 @@ class Simulador :
                 time += individuo.mosquito.delta_vuelo
                 #~ Se verifica el estado del individuo
                 if(individuo.esta_muerto() == True):
-                    #~ print "Esta muerto.. : " + str(hora.temperatura)
+                    print "Esta muerto : " + str(individuo.mosquito) +\
+                        " Temp " +str(hora.temperatura)
                     self.poblacion.remove(individuo)
-                    pass
 
                 elif(individuo.se_reproduce(hora) == True) :
                     #~ print "se reproduce :" + str(hora.temperatura)
                     huevos = individuo.poner_huevos(hora)
                     if not huevos == None :
-                        #~ print "puso huevos :" + str(hora.temperatura)
+                        print "Puso Huevos : " + str(individuo.mosquito) +\
+                            " Temp " +str(hora.temperatura)
                         nueva_poblacion.extend(huevos)
                 #~ fin del preiodo
                 j += 1

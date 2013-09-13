@@ -166,7 +166,7 @@ class Huevo(AeAegypti) :
             Estado  Tiempo promedio
             huevo   2 a 5 dias
         """
-        return self.espectativa_vida <= 0
+        return self.espectativa_vida <= 0 or edad > 5*24
 
     def desarrollar(self, hora) :
         """
@@ -575,10 +575,20 @@ class Adulto(AeAegypti) :
         Cómo le afecta la temperatura : Limitantes para el desarrollo poblacional.
         Entre ellos, dentro del ambiente abiótico el potencial del vector
 
+        Variable atmosférica    Valor umbral letal  Duración letal (días)
+        Déficit de saturación       >30 mb              2
+        Déficit de saturación       entre 25 y 30 mb    3
+        Déficit de saturación       entre 20 y 25 mb    5
+        Déficit de saturación       entre 15 y 20 mb    10
+        Temperatura máxima          > 40 oC             1
+        Temperatura mínima          < 0 oC              1
+
+
         @type hora : Hora
         @param hora: el objeto que contiene los datos climatologicos para
             una hora.
         """
+        puede_volar = True
         if hora.temperatura >= 40 or hora.temperatura <= 0 :
             """
             Día letal: si ocurre T<0o (T mínima diaria <0o) ó T> 40o C
@@ -586,7 +596,19 @@ class Adulto(AeAegypti) :
             fenecidas todas las formas adultas, y larvarias en el caso térmico,
             """
             self._espectativa_vida -= 4.3;
-        else :
+
+        elif hora.temperatura < 15 :
+            """
+            Día adverso, si T máxima <15oC no vuela (por debajo de este
+            umbral de vuelo, no vuela, no pica, ni ovipone)
+
+            TODO: Averiguar cuanto tiempo puede vivir sin alimentarse
+            delta = 100/(10*24)
+            """
+            puede_volar = False
+            self._espectativa_vida -= 100/(10*24)
+
+        else if:
             """
             En el mejor de los casos y en condiciones optimas el individuo
             llegaría a los 30 días. Teniendo en cuenta que su espectativa
@@ -596,9 +618,11 @@ class Adulto(AeAegypti) :
                delta = 100/(30*24)
             """
             self._espectativa_vida -= 0.1389
-            self._edad +=1
+
+        self._edad +=1
         #~ start = time.time()
-        self.volar(hora)
+        if puede_volar == True :
+            self.volar(hora)
         #~ end = time.time()
         #~ self.delta_vuelo = end - start
         #~ print "Calc vuelo : " + str(end - start)

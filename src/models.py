@@ -286,6 +286,23 @@ class Point :
 
         return self.to_metter(resultado)
 
+    def move (self, distance, angle=0) :
+        """
+        Proyecta el punto sobre una linea que forma un angulo 'angle' sobre
+        el eje horizontal. El punto se proyecta a una distancia 'distance'
+        del punto de origen. El punto proyectado pasar a ser la nueva
+        ubicación.
+
+        @param distance : La distancia en metros
+        @type  distance : Float
+
+        @param angle : El angulo en grados
+        @type  angle : Float
+        """
+        point = self.project(distance, angle)
+        self.x = point.x
+        self.y = point.y
+
     def project (self, distance, angle=0) :
         """
         Proyecta el punto sobre una linea que forma un angulo 'angle' sobre
@@ -322,14 +339,17 @@ class Point :
         #~ se genera un punto
         return Point(args)
 
-    def parse (self, data) :
+    def clone (self) :
         """
-        Se emcarga de generar un punto a partir de los datos de entrada.
+        Se encarga de clonar el punto actual
 
-        @param data : El diccionario que contiene los atributos x e y
-        @type  data : Diccionario
-
+        @return: El punto clon del punto actual
+        @rtype: Point
         """
+        point = {}
+        point["x"] = self.x
+        point["y"] = self.y
+        return Point(point)
 
 class Enum(set):
     """

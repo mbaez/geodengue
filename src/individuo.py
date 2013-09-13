@@ -718,7 +718,7 @@ class Adulto(AeAegypti) :
         angulo_vuelo = hora.direccion_viento + 180
         #~ TODO : averiguar la velocidad de vuelo en promedio
         #~ Como determinar que una zona es buena?
-        dist_recorrer = self.ranking_neighbors(hora)
+        dist_recorrer = self.move_to_neighbors(hora)
         self.delta_vuelo += 1
         """
         Permanece físicamente en donde emergió, siempre y cuando no
@@ -806,6 +806,45 @@ class Adulto(AeAegypti) :
         #~ print "\t Mejor distancia : "+str(best_distancia) + " Loops : " + str(total)
         return best_distancia
 
+    def move_to_neighbors (self, hora) :
+        """
+        Este método se encarga de evaluar el vecino inmediato y comparalo
+        con el valor de la posicion actual, si el vecino posee un puntaje
+        mayor que el puntaje actual retorna true.
+
+        En caso de no haber recipientes adecuados, la hembra grávida
+        es capaz de volar hasta tres kilómetros en busca de este sitio.
+        Los machos suelen dispersarse en menor magnitud que las hembras
+
+        @type hora : Hora
+        @param hora: el objeto que contiene los datos climatologicos para
+            una hora.
+
+        @return True si el vecino posee una mayor puntación, False en caso
+            contrario.
+        @rtype Boolean
+        """
+        #~ La distancia máxima es de 3 km o 3000m
+        max_dist = 3000
+        distancia = 100
+        #~ se evalua la zona
+        best_rank = self.get_ranking(self.posicion, distancia)
+        #~ se calcula el angulo de vuelo
+        angulo_vuelo = hora.direccion_viento + 180
+
+        #~ se evaluan los vecinos
+        #~ for distancia in xrange(100, 000, 100) :
+            #~ se calcula el punto vecino
+        punto_vecino = self.posicion.project(distancia, angulo_vuelo)
+        #~ se rankea la zona
+        rank_value = self.get_ranking(punto_vecino, distancia)
+
+        #~ se compara el valor de la zona
+        if(rank_value > best_rank) :
+            return True
+
+        #~ print "\t Mejor distancia : "+str(best_distancia) + " Loops : " + str(total)
+        return False
 
 class Individuo :
     INDEX_IND = 1
@@ -868,7 +907,7 @@ class Individuo :
             una hora.
         """
         self.mosquito = self.mosquito.desarrollar(hora)
-        #~ print str(self.mosquito) +" temp : " + str(hora.temperatura)
+        print str(self.mosquito) +" temp : " + str(hora.temperatura)
 
     def se_reproduce (self, hora):
         """

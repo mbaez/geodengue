@@ -1,9 +1,13 @@
 #! /usr/bin/env python
 # -*- coding: utf-8 -*-
 
+"""
+Este módulo contiene la definición del proceso evolutivo de los puntos
+de control.
 
-__author__ = "Maximiliano Báez"
-__mail__ = "mxbg.py@gmail.com"
+@autors Maximiliano Báez, Roberto Bañuelos
+@contact mxbg.py@gmail.com, robertobanuelos@gmail.com
+"""
 
 #Se impotan los modulos.
 
@@ -75,28 +79,33 @@ class Simulador :
             #~ se procesa cada individuo de la población
             j=0
             nueva_poblacion = []
+            time = 0
             for individuo in self.poblacion :
                 #~ Se desarrolla el inidividuo
                 individuo.desarrollar(hora)
-
+                time += individuo.mosquito.delta_vuelo
                 #~ Se verifica el estado del individuo
                 if(individuo.esta_muerto() == True):
-                    print "Esta muerto.. : " + str(hora.temperatura)
+                    print "Esta muerto : " + str(individuo.mosquito) +\
+                        " Temp " +str(hora.temperatura)
                     self.poblacion.remove(individuo)
-                    pass
 
                 elif(individuo.se_reproduce(hora) == True) :
-                    print "se reproduce :" + str(hora.temperatura)
+                    #~ print "se reproduce :" + str(hora.temperatura)
                     huevos = individuo.poner_huevos(hora)
                     if not huevos == None :
-                        print "puso huevos :" + str(hora.temperatura)
+                        print "Puso Huevos : " + str(individuo.mosquito) +\
+                            " Temp " +str(hora.temperatura)
                         nueva_poblacion.extend(huevos)
                 #~ fin del preiodo
                 j += 1
             #~ fin del preriodo
             self.poblacion.extend(nueva_poblacion)
             i+= 1
-            print "New perido " + str(i) + "\n"
+            print " Periodo : " + str(i) + \
+                " Horas " + str(len(self.periodo.horas)) + \
+                " Poblacion : "+str(len(self.poblacion))+\
+                " Voladores : "+ str(time) +"\n"
 
         self.stats()
 
@@ -112,7 +121,7 @@ class Simulador :
         data_array = []
         for individuo in self.poblacion :
             if not key_map.has_key(individuo.id_dispositivo) \
-                and not individuo.estado == Estado.ADULTO:
+                and not individuo.mosquito.estado == Estado.ADULTO:
                 # se obtiene los datos
                 data = {}
                 data['x'] = individuo.coordenada_x
@@ -124,7 +133,7 @@ class Simulador :
                 data_array.append(data)
                 # se añade el indice al array
                 key_map[individuo.id_dispositivo] = len(data_array) -1
-            elif not individuo.estado == Estado.ADULTO:
+            elif not individuo.mosquito.estado == Estado.ADULTO:
                 index = key_map[individuo.id_dispositivo]
                 # se incrementa la cantidad de larvas
                 data_array[index]['cantidad'] += 1
@@ -157,16 +166,16 @@ class Simulador :
         stats_dic['adulto'] = 0
 
         for individuo in self.poblacion :
-            if individuo.sexo == Sexo.MACHO :
+            if individuo.mosquito.sexo == Sexo.MACHO :
                 stats_dic['macho'] += 1
             else :
                 stats_dic['hembra'] += 1
 
-            if individuo.estado == Estado.HUEVO :
+            if individuo.mosquito.estado == Estado.HUEVO :
                 stats_dic['huevo'] += 1
-            elif individuo.estado == Estado.LARVA :
+            elif individuo.mosquito.estado == Estado.LARVA :
                 stats_dic['larva'] += 1
-            elif individuo.estado == Estado.PUPA :
+            elif individuo.mosquito.estado == Estado.PUPA :
                 stats_dic['pupa'] += 1
             else :
                 stats_dic['adulto'] += 1

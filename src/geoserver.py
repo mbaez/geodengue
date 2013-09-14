@@ -93,7 +93,8 @@ class Geoserver :
         """
         Este método se encarga de genear el archivo de forma temporal
         """
-        name = "data/{0}.tmp".format(name)
+        path = '/var/www/geodengue_server'
+        name = path + "/data/{0}.tmp".format(name)
         fo = open(name, "wb")
         fo.write(content);
         fo.close();

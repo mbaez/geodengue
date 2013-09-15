@@ -166,7 +166,7 @@ class Huevo(AeAegypti) :
             Estado  Tiempo promedio
             huevo   2 a 5 dias
         """
-        return self.espectativa_vida <= 0 or edad > 5*24
+        return self.espectativa_vida <= 0 or self.edad > 5*24
 
     def desarrollar(self, hora) :
         """
@@ -608,7 +608,7 @@ class Adulto(AeAegypti) :
             puede_volar = False
             self._espectativa_vida -= 100/(10*24)
 
-        else if:
+        else:
             """
             En el mejor de los casos y en condiciones optimas el individuo
             llegaría a los 30 días. Teniendo en cuenta que su espectativa
@@ -742,20 +742,20 @@ class Adulto(AeAegypti) :
         angulo_vuelo = hora.direccion_viento + 180
         #~ TODO : averiguar la velocidad de vuelo en promedio
         #~ Como determinar que una zona es buena?
-        dist_recorrer = self.move_to_neighbors(hora)
+        se_mueve = self.move_to_neighbors(hora)
         self.delta_vuelo += 1
         """
         Permanece físicamente en donde emergió, siempre y cuando no
         halla algún factor que la perturbe o no disponga de huéspedes,
         sitios de reposo y de postura. El alcance noral es de 100 metros.
         """
-        if  dist_recorrer > 100:
+        if  se_mueve == True:
             """
             En caso de no haber recipientes adecuados, la hembra grávida
             es capaz de volar hasta tres kilómetros en busca de este sitio.
             Los machos suelen dispersarse en menor magnitud que las hembras
             """
-            self.posicion.move(dist_recorrer, angulo_vuelo)
+            self.posicion.move(100, angulo_vuelo)
 
     def raking_zona(self, point, distancia) :
         """
@@ -798,7 +798,7 @@ class Adulto(AeAegypti) :
             rank_value = self.raking_zona(punto, distancia)
             RankingTable.memory[key] = rank_value
 
-    def ranking_neighbors (self, hora) :
+    def rank_all_neighbors (self, hora) :
         """
         En caso de no haber recipientes adecuados, la hembra grávida
         es capaz de volar hasta tres kilómetros en busca de este sitio.
@@ -931,7 +931,7 @@ class Individuo :
             una hora.
         """
         self.mosquito = self.mosquito.desarrollar(hora)
-        print str(self.mosquito) +" temp : " + str(hora.temperatura)
+        #~ print str(self.mosquito) +" temp : " + str(hora.temperatura)
 
     def se_reproduce (self, hora):
         """

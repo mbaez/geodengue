@@ -120,8 +120,10 @@ class Simulador :
         key_map = {}
         data_array = []
         for individuo in self.poblacion :
-            if not key_map.has_key(individuo.id_dispositivo) \
-                and not individuo.mosquito.estado == Estado.ADULTO:
+            point = individuo.mosquito.posicion
+            key = str(point.x) + "-" + str(point.y)
+            if not key_map.has_key(key) \
+                and individuo.mosquito.estado == Estado.LARVA:
                 # se obtiene los datos
                 data = {}
                 data['x'] = individuo.coordenada_x
@@ -132,9 +134,9 @@ class Simulador :
                 #se añade el elemento al array
                 data_array.append(data)
                 # se añade el indice al array
-                key_map[individuo.id_dispositivo] = len(data_array) -1
-            elif not individuo.mosquito.estado == Estado.ADULTO:
-                index = key_map[individuo.id_dispositivo]
+                key_map[key] = len(data_array) -1
+            elif individuo.mosquito.estado == Estado.LARVA:
+                index = key_map[key]
                 # se incrementa la cantidad de larvas
                 data_array[index]['cantidad'] += 1
         #se ordenan los datos

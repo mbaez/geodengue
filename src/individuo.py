@@ -503,8 +503,48 @@ class Pupa(AeAegypti) :
 
 class Adulto(AeAegypti) :
     """
-    Esta clase contiene la representación del AeAegypti en su etapa de
-    adulto.
+    ECOLOGÍA DEL ADULTO
+    Emergencia
+    Luego de emerger de la pupa, el insecto se posa sobre las paredes del
+    recipiente durante varias horas hasta el endurecimiento de sus alas y
+    su exoesqueleto.
+
+    Apareamiento
+    Dentro de las 24 h, después de la emergencia, puede ocurrir el apareamiento.
+    El macho es atraído por el sonido emitido por el batir de las alas de la
+    hembra durante el vuelo.
+
+    Alimentación
+    Las hembras se alimentan de la mayoría de vertebrados, pero prefieren
+    a los humanos, vuelan en sentido contrario al viento y son atraídas por
+    los olores y gases del hombre. La sangre sirve para el desarrollo de
+    los huevos.
+
+    Ciclo gonadotrófico
+    Después de cada alimentación se desarrolla un lote de huevos. Si la
+    hembra completa su alimentación sanguínea (2-3 mg) desarrollará y
+    pondrá 100-200 huevos, el intervalo dura de dos a tres días. La hembra
+    grávida buscará recipientes oscuros o sombreados para depositar sus
+    huevos, prefiriendo aguas limpias y claras.
+
+    Rango de vuelo
+    La hembra no sobrepasa los 50-100 m durante su vida (puede permanecer
+    en la misma casa donde emergió). Si no hay recipientes, una hembra
+    grávida puede volar tres kilómetros para poner sus huevos. Los machos
+    se dispersan menos que las hembras.
+
+    Conducta de reposo
+    Descansan en lugares sombreados como alcobas, baños, patios o cocinas.
+    Se les captura sobre ropas colgadas, debajo de muebles, toallas, cortinas
+    y mosquiteros.
+
+    Longevidad
+    Los adultos pueden permanecer vivos en el laboratorio durante meses y
+    en la naturaleza pocas semanas. Con una mortalidad diaria de 10 %, la
+    mitad de los mosquitos morirán durante la primera semana y 95 % en el
+    primer mes.
+
+    Fuente : http://scielo.sld.cu/scielo.php?pid=S0864-34662010000100015&script=sci_arttext
     """
 
     @property
@@ -521,6 +561,13 @@ class Adulto(AeAegypti) :
         """
         return self._ultimo_alimento;
 
+    @property
+    def distancia_recorrida (self):
+        """
+        La distancia en metros recorrida por el mosquito adulto.
+        """
+        return self._distancia_recorrida;
+
     def __init__(self, **kargs) :
         """
         @param kargs: Parametros de inicialización de la clase
@@ -535,6 +582,7 @@ class Adulto(AeAegypti) :
         #~ print "new "+ str(self)
         self._ultima_oviposicion = 1
         self._ultimo_alimento = 1;
+        self._distancia_recorrida = 0;
 
     def se_reproduce (self, hora):
         """
@@ -737,9 +785,11 @@ class Adulto(AeAegypti) :
         viento de mayor velocidad le representa un mayor esfuerzo y suelen
         hacerlo (Kettle, 1993).
         """
-
+        #~ se genera un angulo 'delta', para simular las corrientes de aire
+        #~ que sigue el mosquito.
+        delta = randint(-45, 45)
         #~ Vuelan en sentido contrario al viento
-        angulo_vuelo = hora.direccion_viento + 180
+        angulo_vuelo = hora.direccion_viento + 180 + delta
         #~ TODO : averiguar la velocidad de vuelo en promedio
         #~ Como determinar que una zona es buena?
         se_mueve = self.move_to_neighbors(hora)
@@ -798,38 +848,6 @@ class Adulto(AeAegypti) :
             rank_value = self.raking_zona(punto, distancia)
             RankingTable.memory[key] = rank_value
 
-    def rank_all_neighbors (self, hora) :
-        """
-        En caso de no haber recipientes adecuados, la hembra grávida
-        es capaz de volar hasta tres kilómetros en busca de este sitio.
-        Los machos suelen dispersarse en menor magnitud que las hembras
-        """
-        #~ La distancia máxima es de 3 km o 3000m
-        max_dist = 3000
-        distancia = 100
-        #~ se evalua la zona
-        best_rank = self.raking_zona(self.posicion, distancia)
-        best_neighbor = self.posicion.clone()
-        best_distancia = 100
-        #~ se calcula el angulo de vuelo
-        angulo_vuelo = hora.direccion_viento + 180
-
-        #~ se evaluan los vecinos
-        for distancia in xrange(100, 3000, 100) :
-            #~ se calcula el punto vecino
-            punto_vecino = self.posicion.project(distancia, angulo_vuelo)
-            #~ se rankea la zona
-            rank_value = self.get_ranking(punto_vecino, distancia)
-
-            #~ se compara el valor de la zona
-            if(rank_value > best_rank) :
-                best_rank = rank_value
-                best_neighbor = punto_vecino
-                best_distancia = distancia
-
-        #~ print "\t Mejor distancia : "+str(best_distancia) + " Loops : " + str(total)
-        return best_distancia
-
     def move_to_neighbors (self, hora) :
         """
         Este método se encarga de evaluar el vecino inmediato y comparalo
@@ -840,6 +858,18 @@ class Adulto(AeAegypti) :
         es capaz de volar hasta tres kilómetros en busca de este sitio.
         Los machos suelen dispersarse en menor magnitud que las hembras
 
+        Son muchos los factores que afectan el vuelo de los mosquitos:
+
+        1. disponibilidad de sitios resguardados del sol,
+        2. disponibilidad de vegetación y fuentes de néctar,
+        3. ubicación, cantidad y disponibilidad de sitios de cría,
+        4. dirección del viento,
+        5. lluvias,
+        6. urbanización,
+        7. fuentes para la ingesta de sangre
+        8. estado del mosquito: recién emergido, hembras grávidas, edad,
+            nivel de alimentación, etc.
+
         @type hora : Hora
         @param hora: el objeto que contiene los datos climatologicos para
             una hora.
@@ -848,26 +878,20 @@ class Adulto(AeAegypti) :
             contrario.
         @rtype Boolean
         """
-        #~ La distancia máxima es de 3 km o 3000m
-        max_dist = 3000
+
         distancia = 100
         #~ se evalua la zona
         best_rank = self.get_ranking(self.posicion, distancia)
         #~ se calcula el angulo de vuelo
         angulo_vuelo = hora.direccion_viento + 180
 
-        #~ se evaluan los vecinos
-        #~ for distancia in xrange(100, 000, 100) :
-            #~ se calcula el punto vecino
+        #~ se evalua el vecino
         punto_vecino = self.posicion.project(distancia, angulo_vuelo)
         #~ se rankea la zona
         rank_value = self.get_ranking(punto_vecino, distancia)
-
         #~ se compara el valor de la zona
         if(rank_value > best_rank) :
             return True
-
-        #~ print "\t Mejor distancia : "+str(best_distancia) + " Loops : " + str(total)
         return False
 
 class Individuo :

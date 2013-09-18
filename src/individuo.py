@@ -8,6 +8,7 @@ Larva, Pupa, Adulto) para, finalmente, representar a un individuo.
 @contact mxbg.py@gmail.com, robertobanuelos@gmail.com
 """
 import time
+import math
 #Se impotan los modulos.
 from models import *
 from db_manager import *
@@ -893,6 +894,36 @@ class Adulto(AeAegypti) :
         if(rank_value > best_rank) :
             return True
         return False
+
+    def velocidad_vuelo(self, hora, angulo_vuelo) :
+        """
+        Al volar en busca de sangre, la hembra bate sus alas de 250 a 600
+        veces/segundo, ello depende de la especie y en menor grado de su
+        velocidad que puede llegar ser de 1.5 millas por hora.
+
+        Aedes albopictus
+        TOP SPEED (FLYING) :  2km/h
+
+        The Anopheles mosquito can fly for up to four hours continuously
+        at 1–2 km/h ,traveling up to 12 km (7.5 mi) in a night.
+        """
+
+        speed = randint(1000, 2000)
+        wind_speed = hora.viento
+
+        """
+        Se calcula la velocidad resultante medinte algebra de vectores.
+
+        vx = sen(180 - angulo_vuelo) * speed + wind_speed
+        vy = cos(180 - angulo_vuelo) * speed
+        v = sqrt (Vx^2 + Vy^2 )
+        """
+        vx = math.sin(180 - angulo_vuelo) * speed - wind_speed
+        vy = math.cos(180 - angulo_vuelo) * speed
+        v = sqrt (vx^2 + vy^2 )
+
+        return  v
+
 
 class Individuo :
     INDEX_IND = 1

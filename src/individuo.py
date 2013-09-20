@@ -565,7 +565,7 @@ class Adulto(AeAegypti) :
     @property
     def ultimo_alimento (self):
         """
-        Porcentaje no digerido de la última alimentación.
+        Tiempo transcurrido desde la ultima alimentación.
         """
         return self._ultimo_alimento;
 
@@ -582,6 +582,13 @@ class Adulto(AeAegypti) :
         La distancia en metros recorrida por el mosquito adulto.
         """
         return self._distancia_recorrida;
+
+    @property
+    def is_inseminada (self):
+        """
+        True si la hembra fue inseminada, False en caso contrario.
+        """
+        return self._is_inseminada;
 
     def __init__(self, **kargs) :
         """
@@ -600,6 +607,7 @@ class Adulto(AeAegypti) :
         self._distancia_recorrida = 0;
         self._cantidad_oviposicion = 0;
         self._cantidad_alimentacion = 0;
+        self._is_inseminada = False;
 
     def se_reproduce (self, hora):
         """
@@ -734,7 +742,7 @@ class Adulto(AeAegypti) :
             pass
         else :
             #~
-            pass
+            self.inseminar_hembra(hora)
 
     def inseminar_hembra (self, hora) :
         """
@@ -745,6 +753,9 @@ class Adulto(AeAegypti) :
         inseminación es sufuiciente para que la hembra pueda poner huevos
         toda su vida.
 
+        TODO : Se debe verificar si existe algun macho cerca para poder
+        realizar la inseminación.
+
         @type hora : Hora
         @param hora: el objeto que contiene los datos climatologicos para
             una hora.
@@ -753,29 +764,35 @@ class Adulto(AeAegypti) :
             contrario.
         @rtype Boolean
         """
+
         porcentaje =  randint(1, 100)
         #~ Para las hembras nulíperas (no ha puesto ningún huevo)
-        if self.cantidad_oviposicion == 0 \
-            and self.cantidad_alimentacion == 0 :
-            porcentaje <= 58 :
+        if self.cantidad_oviposicion == 0  \
+            and self.cantidad_alimentacion == 0 \
+            and porcentaje <= 58 \
+            and self.is_inseminada == False :
                 """
                 El 58% son inseminadas antes de su primera alimentación
                 sanguínea.
                 """
+                self._is_inseminada = True
                 return True
 
         elif  self.cantidad_oviposicion == 0 \
-            porcentaje <= 17 :
+            and porcentaje <= 17 \
+            and self.is_inseminada == False :
                 """El 17% durante durante la alimentación"""
+                self._is_inseminada = True
                 return True;
 
         elif  self.cantidad_oviposicion <= 1 \
             and self.cantidad_alimentacion == 0 \
-            porcentaje <= 25 :
+            and porcentaje <= 25 :
                 """
                 El 25% es inseminada entre la segunda alimentación y la
                 primera oviposición.
                 """
+                self._is_inseminada = True
                 return True;
         """
         Una inseminación es suficiente para fecundar todos los huevos que
@@ -784,7 +801,6 @@ class Adulto(AeAegypti) :
         'habilitar' la hembra para que ponga huevos.
         """
         return False
-
 
     def digestion(self, hora):
         """
@@ -821,6 +837,17 @@ class Adulto(AeAegypti) :
 
         El mosquito hembra necesita la sangre para obtener proteínas y
         poner sus huevos.
+
+        * Después de cada alimentación sanguínea la hembra desarrolla un
+          lote de huevos.
+        * La primera generación de óvulos requiere por lo menos dos alimentaciones
+          sanguíneas para su maduración.
+        * Desarrolla y pone alrededor de 100 huevos.
+        * Una alimentación escasa produce menos huevos por lote y si es muy
+          reducida no se producen huevos.
+        * El intervalo de tiempo entre la alimentación y la postura (ciclo
+          gonotrófico) es de 48 horas en condiciones óptimas de temperatura.
+        * La mayoría de las posturas ocurre cerca del crepúsculo.
 
         @type hora : Hora
         @param hora: el objeto que contiene los datos climatologicos para

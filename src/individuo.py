@@ -556,11 +556,25 @@ class Adulto(AeAegypti) :
         return self._ultima_oviposicion;
 
     @property
+    def cantidad_oviposicion (self):
+        """
+        Cantidad de veces que el mosquito hembra ovipuso.
+        """
+        return self._cantidad_oviposicion
+
+    @property
     def ultimo_alimento (self):
         """
         Porcentaje no digerido de la última alimentación.
         """
         return self._ultimo_alimento;
+
+    @property
+    def cantidad_alimentacion (self):
+        """
+        Porcentaje no digerido de la última alimentación.
+        """
+        return self._cantidad_alimentacion;
 
     @property
     def distancia_recorrida (self):
@@ -584,6 +598,8 @@ class Adulto(AeAegypti) :
         self._ultima_oviposicion = 1
         self._ultimo_alimento = 1;
         self._distancia_recorrida = 0;
+        self._cantidad_oviposicion = 0;
+        self._cantidad_alimentacion = 0;
 
     def se_reproduce (self, hora):
         """
@@ -689,12 +705,86 @@ class Adulto(AeAegypti) :
         como de humedad. Es de notar que para el caso de deficiencias de
         humedad, lo letal es función de la duración del período.
 
+        * La alimentación y la postura ocurren principalmente durante el día
+        * Existe una mayor actividad en las primeras horas de haber amanecido,
+         a media mañana, a media tarde o al anochecer.
+        *  La hembra embarazada es capaz de volar hasta 3km en busca de un
+         sitio optimo para la ovipostura.
+        * Los machos suelen dispersarse en menor magnitud que las hembras.
+
         @type hora : Hora
         @param hora: el objeto que contiene los datos climatologicos para
             una hora.
         """
         if hora.temperatura < 15 :
             return
+
+    def inseminacion (self, hora):
+        """
+        Inseminación :
+        *  Antes de 24 horas ambos sexos están listos para el apareamiento
+        *
+        * El macho es atraído por el sonido emitido de las alas de la hembra durante
+          el vuelo.
+        * La inseminación,generalmente, se efectúa durante el vuelo.
+        * Una vez alimentada de sangre ocurren pocos apareamientos.
+        """
+        if self.sexo == Sexo.MACHO :
+            #~ buscar a hembras para inseminarse
+            pass
+        else :
+            #~
+            pass
+
+    def inseminar_hembra (self, hora) :
+        """
+        Se encarga de verificar el estado de las hembras y verificar si
+        estas pueden ser insemindadas.
+
+        Sólo las hembras nulíperas son insemindandas debido a que una
+        inseminación es sufuiciente para que la hembra pueda poner huevos
+        toda su vida.
+
+        @type hora : Hora
+        @param hora: el objeto que contiene los datos climatologicos para
+            una hora.
+
+        @return True si se puede inseminar a la hembra, False en caso
+            contrario.
+        @rtype Boolean
+        """
+        porcentaje =  randint(1, 100)
+        #~ Para las hembras nulíperas (no ha puesto ningún huevo)
+        if self.cantidad_oviposicion == 0 \
+            and self.cantidad_alimentacion == 0 :
+            porcentaje <= 58 :
+                """
+                El 58% son inseminadas antes de su primera alimentación
+                sanguínea.
+                """
+                return True
+
+        elif  self.cantidad_oviposicion == 0 \
+            porcentaje <= 17 :
+                """El 17% durante durante la alimentación"""
+                return True;
+
+        elif  self.cantidad_oviposicion <= 1 \
+            and self.cantidad_alimentacion == 0 \
+            porcentaje <= 25 :
+                """
+                El 25% es inseminada entre la segunda alimentación y la
+                primera oviposición.
+                """
+                return True;
+        """
+        Una inseminación es suficiente para fecundar todos los huevos que
+        la hembra produzca en toda su vida. Por lo que no es es relevante
+        las inseminaciones posteriores a la primera debido que se busca
+        'habilitar' la hembra para que ponga huevos.
+        """
+        return False
+
 
     def digestion(self, hora):
         """
@@ -899,7 +989,7 @@ class Adulto(AeAegypti) :
         """
         Al volar en busca de sangre, la hembra bate sus alas de 250 a 600
         veces/segundo, ello depende de la especie y en menor grado de su
-        velocidad que puede llegar ser de 1.5 millas por hora.
+        velocidad que puede llegar ser de 2 km por hora.
 
         Aedes albopictus
         TOP SPEED (FLYING) :  2km/h

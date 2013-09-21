@@ -710,8 +710,10 @@ class Adulto(AeAegypti) :
             self._espectativa_vida -= 0.1389
 
         self._edad +=1
+
         if puede_volar == True :
             self.volar(hora)
+
         return self;
 
     def buscar_alimento(self, hora):
@@ -740,6 +742,16 @@ class Adulto(AeAegypti) :
         if hora.temperatura < 15 :
             return
 
+    def alimentarse(self, hora) :
+        """
+        * Las hembras se alimentan de sangre de cualquier vertebrado.
+        * Las hembras y machos se alimentan de carbohidratos de cualquier fuente
+          accesible como frutos o néctar de flores.
+        * La hembra queda completamente satisfecha con de dos a tres miligramos
+          de sangre
+        """
+        pass
+
     def inseminacion (self, hora):
         """
         Inseminación :
@@ -752,10 +764,15 @@ class Adulto(AeAegypti) :
         """
         if self.sexo == Sexo.MACHO :
             #~ buscar a hembras para inseminarse
-            pass
+            inseminar_macho(hora)
         else :
-            #~
             self.inseminar_hembra(hora)
+
+    def inseminar_macho (self, hora) :
+        """
+        Buscar hembras para inseminar
+        """
+        pass
 
     def inseminar_hembra (self, hora) :
         """

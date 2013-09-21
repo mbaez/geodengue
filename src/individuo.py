@@ -627,7 +627,8 @@ class Adulto(AeAegypti) :
             una hora.
 
         """
-        return self.esta_muerto() == False \
+        return self.is_inseminada == True \
+            and self.esta_muerto() == False \
             and self.sexo == Sexo.HEMBRA \
             and hora.temperatura > 18
 
@@ -637,8 +638,24 @@ class Adulto(AeAegypti) :
         reproducirse, protegerse y dispersarse.
 
         adulto  si espectativa de vida <= 0, si edad >= 30 dias.
+
+        * Muchos mueren al momento de emerger
+        * Si la población emergente original es grande, la restante es suficiente
+          para transmitir la enfermedad y mantener o provocar una epidemia (Nelson,1986).
         """
-        return (self.espectativa_vida <= 0 or self.edad >= 30*24 )
+        #~ 10% de mortalidad diaria
+        if randint(0,100) <= 10 and (self.edad % 24) == 0 :
+            return True;
+
+        #~ 50% mueren en la primera semana
+        elif randint(0,100) <= 50 and (self.edad % (7*24)) == 0 :
+            return True;
+
+        #~ 95% durante el primer mes
+        elif randint(0,100) <= 95 and (self.edad % (30*24)) == 0 :
+            return True;
+
+        return (self.espectativa_vida <= 0)
 
     def desarrollar(self, hora) :
         """
@@ -693,12 +710,8 @@ class Adulto(AeAegypti) :
             self._espectativa_vida -= 0.1389
 
         self._edad +=1
-        #~ start = time.time()
         if puede_volar == True :
             self.volar(hora)
-        #~ end = time.time()
-        #~ self.delta_vuelo = end - start
-        #~ print "Calc vuelo : " + str(end - start)
         return self;
 
     def buscar_alimento(self, hora):

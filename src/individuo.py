@@ -814,6 +814,13 @@ class Adulto(AeAegypti) :
         """
         pass
 
+    def get_ciclo_gonotrofico (self, hora) :
+        """
+        El intervalo de tiempo entre la alimentación y la postura (ciclo
+        gonotrófico) es de 48 horas en condiciones óptimas de temperatura.
+        """
+        return randint (48, 96)
+
     def poner_huevos(self, parent, hora) :
         """
         Generalmente el apareamiento se realiza cuando la hembra busca
@@ -838,15 +845,6 @@ class Adulto(AeAegypti) :
         El mosquito hembra necesita la sangre para obtener proteínas y
         poner sus huevos.
 
-        * Después de cada alimentación sanguínea la hembra desarrolla un
-          lote de huevos.
-        * La primera generación de óvulos requiere por lo menos dos alimentaciones
-          sanguíneas para su maduración.
-        * Desarrolla y pone alrededor de 100 huevos.
-        * Una alimentación escasa produce menos huevos por lote y si es muy
-          reducida no se producen huevos.
-        * El intervalo de tiempo entre la alimentación y la postura (ciclo
-          gonotrófico) es de 48 horas en condiciones óptimas de temperatura.
         * La mayoría de las posturas ocurre cerca del crepúsculo.
 
         @type hora : Hora
@@ -854,26 +852,62 @@ class Adulto(AeAegypti) :
             una hora.
         """
 
-        #Su ciclo para poner huevos es de aproximadamente cada tres días a
-        # cuatro días
-        ciclo = randint(3, 4)
-        # se verifica la cantidad de días que pasaron desde su ultima
-        # oviposición.
-        if self.ultima_oviposicion % (ciclo * 24) == 0 :
-            # Un solo mosquito puede poner 80 a 150 huevos, cuatro veces
-            # al día.
+        huevos = None
+        #~ se obtiene el ciclo gonotrofico
+        ciclo_gonotrofico = self.get_ciclo_gonotrofico(hora)
+        # se aumenta el contador de ultima oviposición
+        self._ultima_oviposicion += 1
+
+        #~ se realizan los controles de las condiciones
+        if self.ultimo_alimento >= ciclo_gonotrofico \
+          and self.cantidad_oviposicion == 0 \
+          and self.cantidad_alimentacion >= 2:
+            """
+            Para hembras nuliperas, la primera generación de óvulos requiere
+            por lo menos dos alimentaciones sanguíneas para su maduración.
+            """
+            huevos = self.generar_huevos()
+
+        elif self.ultimo_alimento >= ciclo_gonotrofico :
+            """
+            Después de cada alimentación sanguínea la hembra desarrolla un
+            lote de huevos.
+            """
+            huevos = self.generar_huevos()
+
+        return huevos
+
+    def genear_huevos (self) :
+        """
+        Su ciclo para poner huevos es de aproximadamente cada tres días a
+        cuatro días.
+
+        Una alimentación escasa produce menos huevos por lote y si es muy
+        reducida no se producen huevos.
+
+        Este metodo se encarga de generar una cantidad aleatoria de huevos.
+        Un solo mosquito hembra puede poner 80 a 150 huevos, cuatro veces
+        al día.
+        """
+        huevos = None
+        if (self.ultima_oviposicion % 6) == 0 :
+            """
+            Un solo mosquito puede poner 80 a 150 huevos, cuatro veces
+            al día.
+
+            24 horas / 4 veces al día = cada 6 horas
+            self.ultima_oviposicion % 6 == 0 ? poner huevos : no huevos
+
+            """
             cantidad = randint(80, 150)
             huevos = []
             for i in range(cantidad) :
                 huevos.append(parent.get_child())
+
             # se reinicia el contador
             self._ultima_oviposicion = 1;
 
-            return huevos
-
-        # se aumenta el contador de ultima oviposición
-        self._ultima_oviposicion += 1
-        return None
+        return huevos
 
     def volar(self, hora) :
         """

@@ -74,6 +74,8 @@ class Simulador :
         """
         Se encarga de iniciar el simulador.
         """
+
+        init_dic = self.stats()
         i=0
         for hora in self.periodo.horas :
             #~ se procesa cada individuo de la población
@@ -86,28 +88,38 @@ class Simulador :
                 time += individuo.mosquito.delta_vuelo
                 #~ Se verifica el estado del individuo
                 if(individuo.esta_muerto() == True):
+                    '''
                     print "Esta muerto : " + str(individuo.mosquito) +\
                         " Temp " +str(hora.temperatura)
+                    '''
                     self.poblacion.remove(individuo)
-
-                elif(individuo.se_reproduce(hora) == True) :
-                    #~ print "se reproduce :" + str(hora.temperatura)
-                    huevos = individuo.poner_huevos(hora)
-                    if not huevos == None :
-                        print "Puso Huevos : " + str(individuo.mosquito) +\
-                            " Temp " +str(hora.temperatura)
-                        nueva_poblacion.extend(huevos)
+                elif individuo.mosquito.estado == Estado.ADULTO :
+                    if(individuo.se_reproduce(hora) == True) :
+                        huevos = individuo.poner_huevos(hora)
+                        if not huevos == None :
+                            print "Puso Huevos : " + str(individuo.mosquito) +\
+                                " Temp " +str(hora.temperatura)
+                            nueva_poblacion.extend(huevos)
                 #~ fin del preiodo
                 j += 1
             #~ fin del preriodo
             self.poblacion.extend(nueva_poblacion)
             i+= 1
+            '''
             print " Periodo : " + str(i) + \
                 " Horas " + str(len(self.periodo.horas)) + \
                 " Poblacion : "+str(len(self.poblacion))+\
                 " Voladores : "+ str(time) +"\n"
+            '''
+        print 'Poblacion inicial'
+        for k in init_dic.keys() :
+            print( 'nro de ' + str(k) + ' = ' + str(init_dic[k]))
 
-        self.stats()
+        print 'Poblacion final'
+        out_dic = self.stats()
+        for k in out_dic.keys() :
+            print( 'nro de ' + str(k) + ' = ' + str(out_dic[k]))
+
 
 
     def to_grid (self):
@@ -182,8 +194,7 @@ class Simulador :
             else :
                 stats_dic['adulto'] += 1
 
-        for k in stats_dic.keys() :
-            print( 'nro de ' + str(k) + ' = ' + str(stats_dic[k]))
+        return stats_dic
 
 if __name__ == "__main__" :
     from db_manager import *

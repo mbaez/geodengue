@@ -25,6 +25,7 @@ Sexo válidos del individuo
 Sexo = Enum(["MACHO", "HEMBRA"])
 DAO = PuntosRiesgoDao()
 
+total_huevos = 0
 
 class RankingTable:
     """
@@ -261,8 +262,30 @@ class Larva(AeAegypti) :
             else :
                 kargs['sexo'] = Sexo.HEMBRA
         kargs['estado'] = Estado.LARVA
+
         # se invoca al constructor de la clase padre.
         AeAegypti.__init__(self, **kargs);
+
+        """
+        Seleccion natural
+        "...del número inicial de individuos (larvas de primer estadio)
+        solamente emergió el 9%, es decir, que la mortalidad total de
+        las etapas inmaduras fue del 91%. La mayor tasa de mortalidad
+        se observó en las larvas de cuarto estadio (54%), mientras que
+        la menor mortalidad se observó en la etapa de pupa (18%).
+        La proporción de sexos de los adultos emergidos fue de 1:1..."
+
+        "...Con una mortalidad típica diaria de 10%, la mitad de los
+        mosquitos morirán durante la primera semana y el resto durante
+        el primer mes... "
+
+        Aplicamos los porcentajes asociados a la mortalidad para simular
+        la seleccion natural de los mosquitos
+        """
+        if randint(0, 100) > 10 :
+            self.espectativa_vida = 0
+
+
 
     def esta_muerto (self):
         """
@@ -607,7 +630,7 @@ class Adulto(AeAegypti) :
         self._distancia_recorrida = 0;
         self._cantidad_oviposicion = 0;
         self._cantidad_alimentacion = 0;
-        self._is_inseminada = False;
+        self._is_inseminada = True;
 
     def se_reproduce (self, hora):
         """
@@ -905,9 +928,11 @@ class Adulto(AeAegypti) :
             """
             huevos = self.generar_huevos()
 
+        huevos = self.generar_huevos(parent)
+
         return huevos
 
-    def genear_huevos (self) :
+    def generar_huevos (self, parent) :
         """
         Su ciclo para poner huevos es de aproximadamente cada tres días a
         cuatro días.

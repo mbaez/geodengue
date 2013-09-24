@@ -242,18 +242,8 @@ class Larva(AeAegypti) :
     2do estadio : 14% (11,3 a 21,3)
     3er estadio : 17% (13,0 a 27,0)
     4to estadio : 27% (24,2 a 28,5)
-    Pupa        : 23% (15,3 a 28,5)
-    --------------------------------
-    Total       :100% - 23% = 77% del tiempo Estados larvarios
     Fuente : Temperature-Dependent Development and Survival Rates of
     Culex quinquefasciatus tus and Aedes aegypti (Diptera: Culicidae
-    Tomando el 77% como el total se calcula los tiempos de duración de
-    cada estadio larvario :
-
-    1er estadio : 25% (13,9 a 23,1)
-    2do estadio : 18% (11,3 a 21,3)
-    3er estadio : 22% (13,0 a 27,0)
-    4to estadio : 35% (24,2 a 28,5)
     """
 
     def __init__(self, **kargs) :
@@ -636,7 +626,7 @@ class Adulto(AeAegypti) :
         self._distancia_recorrida = 0;
         self._cantidad_oviposicion = 0;
         self._cantidad_alimentacion = 0;
-        self._is_inseminada = True;
+        self._is_inseminada = False;
 
     def se_reproduce (self, hora):
         """
@@ -743,6 +733,8 @@ class Adulto(AeAegypti) :
 
         if puede_volar == True :
             self.volar(hora)
+            self.buscar_alimento(hora)
+            self.inseminacion(hora)
 
         return self;
 
@@ -794,7 +786,7 @@ class Adulto(AeAegypti) :
         """
         if self.sexo == Sexo.MACHO :
             #~ buscar a hembras para inseminarse
-            inseminar_macho(hora)
+            self.inseminar_macho(hora)
         else :
             self.inseminar_hembra(hora)
 
@@ -926,14 +918,14 @@ class Adulto(AeAegypti) :
             Para hembras nuliperas, la primera generación de óvulos requiere
             por lo menos dos alimentaciones sanguíneas para su maduración.
             """
-            huevos = self.generar_huevos()
+            huevos = self.generar_huevos(parent)
 
         elif self.ultimo_alimento >= ciclo_gonotrofico :
             """
             Después de cada alimentación sanguínea la hembra desarrolla un
             lote de huevos.
             """
-            huevos = self.generar_huevos()
+            huevos = self.generar_huevos(parent)
 
         huevos = self.generar_huevos(parent)
 

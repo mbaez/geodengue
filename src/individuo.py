@@ -242,8 +242,19 @@ class Larva(AeAegypti) :
     2do estadio : 14% (11,3 a 21,3)
     3er estadio : 17% (13,0 a 27,0)
     4to estadio : 27% (24,2 a 28,5)
+    Pupa        : 23% (15,3 a 28,5)
+    --------------------------------
+    Total       :100% - 23% = 77% del tiempo Estados larvarios
     Fuente : Temperature-Dependent Development and Survival Rates of
     Culex quinquefasciatus tus and Aedes aegypti (Diptera: Culicidae
+
+    Tomando el 77% como el total se calcula los tiempos de duración de
+    cada estadio larvario :
+
+    1er estadio : 25% (13,9 a 23,1)
+    2do estadio : 18% (11,3 a 21,3)
+    3er estadio : 22% (13,0 a 27,0)
+    4to estadio : 35% (24,2 a 28,5)
     """
 
     def __init__(self, **kargs) :
@@ -266,7 +277,14 @@ class Larva(AeAegypti) :
         # se invoca al constructor de la clase padre.
         AeAegypti.__init__(self, **kargs);
 
+
+    def esta_muerto (self):
         """
+        La supervivencia de los mosquitos depende de la capacidad para alimentarse,
+        reproducirse, protegerse y dispersarse.
+            Estado  Tiempo promedio
+            larva   4 a 14 dias
+
         Seleccion natural
         "...del número inicial de individuos (larvas de primer estadio)
         solamente emergió el 9%, es decir, que la mortalidad total de
@@ -282,18 +300,39 @@ class Larva(AeAegypti) :
         Aplicamos los porcentajes asociados a la mortalidad para simular
         la seleccion natural de los mosquitos
         """
-        if randint(0, 100) > 10 :
-            self.espectativa_vida = 0
 
+        if randint(0, 100) <= 37 and self.madurez <= 25:
+            """
+            la mortalidad total de las etapas inmaduras fue del 91% - 54 %
+            que le corresponde al 4to estadio. queda un 37% de mortalidad
+            para los estadio restantes
+            1er estadio : 25% (13,9 a 23,1)
+            """
+            print "Muere 37%"
+            return True;
 
+        #~ elif randint(0, 100) > 50 and self.madurez > 25 and self.madurez <= 43:
+            """
+            TODO ver mortalidad en 2 estadio
+            2do estadio : 18% (11,3 a 21,3)
+            """
+            #~ return True;
 
-    def esta_muerto (self):
-        """
-        La supervivencia de los mosquitos depende de la capacidad para alimentarse,
-        reproducirse, protegerse y dispersarse.
-            Estado  Tiempo promedio
-            larva   4 a 14 dias
-        """
+        #~ elif randint(0, 100) > 50 and self.madurez > 43 and self.madurez < 65:
+            """
+            TODO ver mortalidad en 3er estadio
+            3er estadio : 22% (13,0 a 27,0)
+            """
+            #~ return True;
+
+        elif randint(0, 100) <= 54 and self.madurez >= 65:
+            """
+            La mayor tasa de mortalidad se observó en las larvas de cuarto estadio (54%)
+            4to estadio : 35% (24,2 a 28,5)
+            """
+            print "Muere 54%"
+            return True;
+
         return (self.espectativa_vida <= 0 or self.edad > 14 * 24 )
 
 

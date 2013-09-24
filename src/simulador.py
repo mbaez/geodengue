@@ -88,10 +88,10 @@ class Simulador :
                 time += individuo.mosquito.delta_vuelo
                 #~ Se verifica el estado del individuo
                 if(individuo.esta_muerto() == True):
-                    '''
-                    print "Esta muerto : " + str(individuo.mosquito) +\
-                        " Temp " +str(hora.temperatura)
-                    '''
+
+                    #~ print "Esta muerto : " + str(individuo.mosquito) +\
+                        #~ " Temp " +str(hora.temperatura)
+
                     self.poblacion.remove(individuo)
                 elif individuo.mosquito.estado == Estado.ADULTO :
                     if(individuo.se_reproduce(hora) == True) :
@@ -105,12 +105,12 @@ class Simulador :
             #~ fin del preriodo
             self.poblacion.extend(nueva_poblacion)
             i+= 1
-            '''
-            print " Periodo : " + str(i) + \
-                " Horas " + str(len(self.periodo.horas)) + \
-                " Poblacion : "+str(len(self.poblacion))+\
-                " Voladores : "+ str(time) +"\n"
-            '''
+
+            #~ print " Periodo : " + str(i) + \
+                #~ " Horas " + str(len(self.periodo.horas)) + \
+                #~ " Poblacion : "+str(len(self.poblacion))+\
+                #~ " Voladores : "+ str(time) +"\n"
+
         print 'Poblacion inicial'
         for k in init_dic.keys() :
             print( 'nro de ' + str(k) + ' = ' + str(init_dic[k]))

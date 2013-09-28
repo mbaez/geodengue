@@ -161,6 +161,8 @@ class Simulador :
             data['cantidad'] = \
                 float(data['cantidad'])*float(80.0/max_cantidad)
 
+        print 'cantidad de puntos a interpolar: ' + str(len(data_array))
+
         #se ordenan los datos
         new_list = sorted(data_array, key=lambda k: k['index'])
 

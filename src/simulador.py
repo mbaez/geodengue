@@ -97,8 +97,8 @@ class Simulador :
                     if(individuo.se_reproduce(hora) == True) :
                         huevos = individuo.poner_huevos(hora)
                         if not huevos == None :
-                            print "Puso Huevos : " + str(individuo.mosquito) +\
-                                " Temp " +str(hora.temperatura)
+                            #~ print "Puso Huevos : " + str(individuo.mosquito) +\
+                                #~ " Temp " +str(hora.temperatura)
                             nueva_poblacion.extend(huevos)
                 #~ fin del preiodo
                 j += 1
@@ -131,11 +131,12 @@ class Simulador :
         """
         key_map = {}
         data_array = []
+        max_cantidad = 0
         for individuo in self.poblacion :
             point = individuo.mosquito.posicion
             key = str(point.x) + "-" + str(point.y)
             if not key_map.has_key(key) \
-                and individuo.mosquito.estado == Estado.LARVA:
+                and not individuo.mosquito.estado == Estado.HUEVO :
                 # se obtiene los datos
                 data = {}
                 data['x'] = individuo.coordenada_x
@@ -147,17 +148,54 @@ class Simulador :
                 data_array.append(data)
                 # se añade el indice al array
                 key_map[key] = len(data_array) -1
-            elif individuo.mosquito.estado == Estado.LARVA:
+            elif not individuo.mosquito.estado == Estado.HUEVO :
                 index = key_map[key]
                 # se incrementa la cantidad de larvas
                 data_array[index]['cantidad'] += 1
+                if data_array[index]['cantidad'] >  max_cantidad :
+                    max_cantidad = data_array[index]['cantidad']
+
+        #ajustar las escala de valores para tener cantidades en el rango
+        #de 0 a 80
+        for data in data_array :
+            data['cantidad'] = \
+                float(data['cantidad'])*float(80.0/max_cantidad)
+
         #se ordenan los datos
         new_list = sorted(data_array, key=lambda k: k['index'])
+
+        #orden por coordenada
+        print "sort por coordenada..."
+        swapped = True
+        while swapped :
+            swapped = False
+            for i in range(1, len(new_list)) :
+                comp1 = (new_list[i-1]['x'], new_list[i-1]['y'])
+                comp2 = (new_list[i]['x'], new_list[i]['y'])
+                if self.compare_coordinates(comp1, comp2) > 0 :
+                    aux = new_list[i-1]
+                    new_list[i-1] = new_list[i]
+                    new_list[i] = aux
+                    swapped = True
+
         # se realiza el parse a grid
         grid = Grid();
         grid.parse(new_list)
+
         # se retorna la referencia al grid
         return grid;
+
+    """
+    Metodo para comparar 2 puntos
+    @param p1, p2
+    array puntos
+        ej> p1 = (x1, y1)
+    """
+    def compare_coordinates( self, p1, p2 ) :
+        if float(p1[0]) == float(p2[0]) :
+            return float(p1[1]) - float(p2[1])
+        else :
+            return float(p1[0]) - float(p2[0])
 
     def stats( self ) :
         """
@@ -221,3 +259,4 @@ if __name__ == "__main__" :
     for ind in evol.poblacion :
         print str(ind)
     """
+    evol.to_grid()

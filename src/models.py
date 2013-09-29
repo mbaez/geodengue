@@ -351,14 +351,6 @@ class Point :
         point["y"] = self.y
         return Point(point)
 
-class Enum(set):
-    """
-    Calse que define el tipo de dato enum
-    """
-    def __getattr__(self, name):
-        if name in self:
-            return name
-        raise AttributeError
 
 if __name__ == "__main__" :
     p1 = {"x" : -57.6581, "y" :  -25.2928}

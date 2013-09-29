@@ -36,6 +36,7 @@ class Pupa(AeAegypti) :
         kargs['estado'] = Estado.PUPA
         AeAegypti.__init__(self, **kargs);
 
+
     def esta_muerto (self):
         """
         El estadio de pupa dura aproximadamente dos o tres días, emergiendo
@@ -43,30 +44,10 @@ class Pupa(AeAegypti) :
         @see Dengeue en Mexico
 
         """
-        return (self.espectativa_vida <= 0 or self.edad > 4*24 )
+        return self.espectativa_vida <= 0
 
-    def desarrollar(self, hora) :
-        """
-        El estadio de pupa dura aproximadamente dos o tres días, emergiendo
-        alrededor del 88% de los adultos en cuestión de 48 horas (Méndez et al., 1996)
-
-        Entre los 27-32oC la pupa que da lugar al Adulto macho emerge en
-        1,9 días y la pupa que originará una hembra muda en 2,5 días.
-
-        La duración promedio de la pupa, expresada como porcentaje del
-        tiempo ocupado por la larva hasta que llega a adulto es de 20,6
-        (Baz-Zeed, 1958)
-
-        [26,83 (10-47)] * 0.206 días a 20oC
-        [17,59 (9-29)]  * 0.206 días a 25oC
-        [9,75 (5-16) ] * 0.206  días a 30oC
-
-        @see Dengeue en Mexico
-        @see El Aedes aegypti y la transmision del dengue
-        @see The effect of temperature on the growth rate and survival
-             of the immature stages of Aedes aegypti
-        """
-
+    @deprecated
+    def madurar (self, hora) :
         #~  se inicializa la varible
         delta_madurez = 0.0
         if hora.temperatura >= 27  and hora.temperatura <= 32:
@@ -133,6 +114,40 @@ class Pupa(AeAegypti) :
         """
         self._espectativa_vida -= 0.1389
         self._madurez += delta_madurez
+
+    def desarrollar(self, hora) :
+        """
+        El estadio de pupa dura aproximadamente dos o tres días, emergiendo
+        alrededor del 88% de los adultos en cuestión de 48 horas (Méndez et al., 1996)
+
+        Entre los 27-32oC la pupa que da lugar al Adulto macho emerge en
+        1,9 días y la pupa que originará una hembra muda en 2,5 días.
+
+        La duración promedio de la pupa, expresada como porcentaje del
+        tiempo ocupado por la larva hasta que llega a adulto es de 20,6
+        (Baz-Zeed, 1958)
+
+        [26,83 (10-47)] * 0.206 días a 20oC
+        [17,59 (9-29)]  * 0.206 días a 25oC
+        [9,75 (5-16) ] * 0.206  días a 30oC
+
+        @see Dengeue en Mexico
+        @see El Aedes aegypti y la transmision del dengue
+        @see The effect of temperature on the growth rate and survival
+             of the immature stages of Aedes aegypti
+        """
+        cantidad_dias = self.get_espectativa_zona(hora)
+        if (cantidad_dias > 0 ) :
+            #~ se calcula el promedio de días que puede vivir la pupa
+            if self.tiempo_vida > 0 :
+                self._tiempo_vida = (self.tiempo_vida + cantidad_dias)/2
+            else :
+                self._tiempo_vida = cantidad_dias
+            #~ se hace madurar a pa pupa
+            self._madurez += 100/(cantidad_dias * 24)
+        #~ se disminuye la espectativa de vida de la pupa
+        self._espectativa_vida -= 100/(self.tiempo_vida * 24)
+        #~ se envejece la pupa
         self._edad +=1
 
         return self

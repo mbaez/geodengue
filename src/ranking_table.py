@@ -11,11 +11,6 @@ from db_manager import *
 
 DAO = PuntosControlModel()
 
-"""
-Caracterización de las zonas
-"""
-Zonas = Enum(["OPTIMA", "BUENA", "NORMAL", "MALA", "PESIMA"])
-
 class RankingTable:
     """
     Se encarga de guardar en memoria  el valor de todas las zonas que ya
@@ -31,7 +26,7 @@ class RankingTable:
         self.__memory = value
 
     def __init__(self) :
-        self__memory = {}
+        self.__memory = {}
 
     def get_tipo_zona(self, pts) :
         """
@@ -41,7 +36,6 @@ class RankingTable:
         20 > Pts  Mala
         8 > Pts   Pésima
         """
-        print pts
         if pts  < 8 :
             return Zonas.PESIMA
 
@@ -57,7 +51,7 @@ class RankingTable:
         elif pts  >= 60 :
             return Zonas.OPTIMA
 
-    def gen_key (punto, distancia):
+    def gen_key (self, punto, distancia):
         """
         Genera una clave única para el punto y la distancia.
         """

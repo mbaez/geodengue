@@ -201,6 +201,6 @@ class AeAegypti :
         """
         return str(self.estado) + "(" + str(self.sexo) + ")" + \
             " vida=" + str(self.espectativa_vida) + \
-            " edad=" + str(self.edad / 24) + \
+            " edad=" + str(self.edad / 24.0) + \
             " tiempo_vida=" + str(self.tiempo_vida)+ \
             " madurez=" + str(self.madurez)

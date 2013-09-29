@@ -126,6 +126,34 @@ class PuntosControlModel :
         cursor = self.db.query(sql_string, args)
         return self.db.to_dict(cursor)
 
+    def get_within(self, point, distance):
+        """
+        Se encarga de obtener la lista de todos los puntos que se encuentran
+        a una determinada distancia del punto de origen.
+
+        @rtype  Dictionaries
+        @return Un diccionario con el resultado de la consulta
+        """
+        # se definie el query de la consulta.
+        sql_string = """
+            SELECT id,  id_muestras, codigo, descripcion,
+                cantidad, ST_X(the_geom) as x, ST_Y(the_geom) as y
+            FROM puntos_control
+            WHERE fecha_recoleccion is not null
+            AND ST_DWithin(
+            Geography(the_geom),
+            Geography(
+                ST_GeomFromText('POINT(%(x)s  %(y)s)',
+                4326)
+            ), %(distance)s)
+        """
+        args = {"distance" : distance}
+        args["x"] = point.x
+        args["y"] = point.y
+        # se construye el diccionario que contiene los parametros del query.
+        cursor = self.db.query(sql_string, args)
+        return self.db.to_dict(cursor)
+
 
 class InterpolacionModel :
     """

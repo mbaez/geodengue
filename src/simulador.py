@@ -11,6 +11,7 @@ de control.
 
 #Se impotan los modulos.
 
+from ranking_table import *
 from huevo import *
 from larva import *
 from pupa import *
@@ -42,6 +43,7 @@ class Simulador :
         @keyword poblacion: La población inicial.
         @keyword periodo: El periodo de simulación.
         """
+        self.zonas_table = RankingTable();
         #~ se inicializa el atributo periodo
         self.poblacion =  [];
         if kargs.has_key("poblacion") == True:
@@ -66,25 +68,25 @@ class Simulador :
                 #se inicializa los inidviduos
 
                 indv = Larva(x=grid.x[i], y=grid.y[i], \
-                    id=grid.ids[i], estado=Estado.LARVA, index=i)
+                    estado=Estado.LARVA, zonas=self.zonas_table)
 
                 self.poblacion.append(indv)
 
         self.__grid = grid
 
-    def cambiar_estado (self, individuo) :
+    def cambiar_estado (self, indiv) :
         """
         """
-        if individuo.estado == Estado.HUEVO :
-            return Larva(sexo=individuo.sexo, posicion=individuo.posicion)
+        if indiv.estado == Estado.HUEVO :
+            return Larva(sexo=indiv.sexo, posicion=indiv.posicion, zonas=self.zonas_table)
 
-        elif individuo.estado == Estado.LARVA :
-            return Pupa(sexo=individuo.sexo, posicion=individuo.posicion)
+        elif indiv.estado == Estado.LARVA :
+            return Pupa(sexo=indiv.sexo, posicion=indiv.posicion, zonas=self.zonas_table)
 
-        elif individuo.estado == Estado.PUPA :
-            return Adulto(sexo=individuo.sexo, posicion=individuo.posicion)
+        elif indiv.estado == Estado.PUPA :
+            return Adulto(sexo=indiv.sexo, posicion=indiv.posicion, zonas=self.zonas_table)
         else :
-            return individuo
+            return indiv
 
     def start(self):
         """

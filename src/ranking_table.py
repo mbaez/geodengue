@@ -30,7 +30,9 @@ class RankingTable:
     def memory(self, value):
         self.__memory = value
 
-    @property
+    def __init__(self) :
+        self__memory = {}
+
     def get_tipo_zona(self, pts) :
         """
         60 < Pts  Optima
@@ -39,6 +41,7 @@ class RankingTable:
         20 > Pts  Mala
         8 > Pts   Pésima
         """
+        print pts
         if pts  < 8 :
             return Zonas.PESIMA
 
@@ -53,9 +56,6 @@ class RankingTable:
 
         elif pts  >= 60 :
             return Zonas.OPTIMA
-
-    def __init__(self) :
-        pass
 
     def gen_key (punto, distancia):
         """

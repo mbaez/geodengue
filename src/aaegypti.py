@@ -9,6 +9,7 @@ Este módulo contiene la definición del AeAegypti
 
 from random import randint
 from datatype import *
+from config import *
 
 class AeAegypti :
     """
@@ -65,6 +66,16 @@ class AeAegypti :
         """
         return self._posicion
 
+    @property
+    def zonas (self):
+        """
+        Amacena la referencia a la tabla que almacena todas las zonas que
+        ya fueron procesadas y rankeadas.
+
+        @see RankingTable
+        """
+        return self._zonas
+
     def __init__(self, **kargs) :
         """
         Inicializa la clase setenado la espectativa de vida y la edad a
@@ -74,12 +85,14 @@ class AeAegypti :
 
         @keyword [sexo]: El enum que identifica el sexo del AeAegypti
         @keyword [estado]: El enum que identifica el estado del AeAegypti
+        @keyword [zonas]: La referencia al ranking table de las zonas
         @keyword [x]: la coordenada x
         @keyword [y]: La coordenada y
         @keyword [posicion]: El punto que determina la ubiación del AeAegypti
         """
         self._sexo = kargs.get('sexo', None)
         self._estado = kargs.get('estado', None)
+        self._zonas = kargs.get('zonas', None)
         if kargs.has_key('posicion') :
             self._posicion = kargs.get('posicion', None)
         else :
@@ -104,3 +117,71 @@ class AeAegypti :
         return str(self.estado) + "(" + str(self.sexo) + ")" + \
             "vida=" + str(self.espectativa_vida) + \
             " edad=" + str(self.edad) + "  madurez=" + str(self.madurez)
+
+    def rank_zona (self) :
+        """
+        Calcula el tipo de zona en la que se encuentra el mosquito
+        """
+        #~ se calcula el puntaje de la zona
+        pts = self.zonas.raking_zona(self, self.posicion, TAMANHO_ZONA)
+        #~ se retorna el tipo de zona
+        return self.zonas.get_tipo_zona(pts);
+
+
+    def get_espectativa_zona (self, hora) :
+        """
+        Se encarga de mapear el puntaje asignado a la zona del mosquito
+        a la cantidad de días estimado de vida.
+
+        Para LARVAS (P=0.8) Y PUPAS(P=0.2)
+
+        60 < Pts  Optima  0   [10, 17.4] * P    [9, 13]* P    [5, 7.2] * P  0
+        60 > Pts  Buena   0   [17.4, 24.8] * P  [13, 17]* P   [7.2, 9.4] * P    0
+        30 > Pts  Normal  0   [24.8, 32.2] * P  [17, 21]* P   [9.4, 11.6] * P   0
+        20 > Pts  Mala    0   [32.2, 39.6] * P  [21, 25]* P   [11.6, 13.8] * P  0
+        8 > Pts   Pésima  0   [39.6, 47] * P    [25, 29]* P   [13.8, 16] * P    0
+        """
+        tipo_zona = str(self.rank_zona())
+        tipo_clima = str(hora.get_tipo_clima())
+
+        if(self.estado == Estado.HUEVO) :
+            return
+
+        elif(self.estado == Estado.LARVA) :
+            return self.__get_dias__(LARVA_PUPA_ZONE, tipo_zona, tipo_clima, 0.8)
+
+        elif(self.estado == Estado.PUPA) :
+            return self.__get_dias__(LARVA_PUPA_ZONE ,tipo_zona, tipo_clima, 0.2)
+
+        else :
+            return
+
+
+    def __get_dias__(self, table,tipo_zona, tipo_clima, p) :
+        """
+        Obtiene el valor que corersponde a la zona y el tipo de clima
+
+        @type table : Diccionario
+        @param table: La tabla que continene los datos
+
+        @type tipo_zona : String
+        @param tipo_zona: El string que caracteriza a la zona
+
+        @type tipo_clima : String
+        @param tipo_clima: El string que caracteriza al clima
+
+        @type p : Float
+        @param p: El porcentaje de duración del periodo
+        """
+        dias = table[tipo_zona][tipo_clima]
+        if(len(dias) > 1) :
+            #~ se obitnene los extremos, se multiplica por 100 para realizar
+            #~ un ranint entre los extremos ya que no existe un 'randfloat'
+            start = dias[0] * 100
+            end = dias[1] * 100
+            #~ se calcula un número aleatorio en entre los extremos
+            return randint(start, end) * p /100.0
+        #~ si tiene un solo elemento se retorna el elemento multiplicado
+        #~  por el porcentaje
+        return dias[0] * p;
+

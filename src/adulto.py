@@ -9,6 +9,7 @@ Este módulo contiene la definición del estado Adulto
 
 from aaegypti import *
 
+
 class Adulto(AeAegypti) :
     """
     ECOLOGÍA DEL ADULTO
@@ -361,7 +362,7 @@ class Adulto(AeAegypti) :
         """
         return randint (48, 96)
 
-    def poner_huevos(self, parent, hora) :
+    def poner_huevos(self, hora) :
         """
         Generalmente el apareamiento se realiza cuando la hembra busca
         alimentarse; se ha observado que el ruido que emite al volar es
@@ -392,7 +393,7 @@ class Adulto(AeAegypti) :
             una hora.
         """
 
-        huevos = None
+        huevos = 0
         #~ se obtiene el ciclo gonotrofico
         ciclo_gonotrofico = self.get_ciclo_gonotrofico(hora)
         # se aumenta el contador de ultima oviposición
@@ -406,20 +407,18 @@ class Adulto(AeAegypti) :
             Para hembras nuliperas, la primera generación de óvulos requiere
             por lo menos dos alimentaciones sanguíneas para su maduración.
             """
-            huevos = self.generar_huevos(parent)
+            huevos = self.generar_huevos()
 
         elif self.ultimo_alimento >= ciclo_gonotrofico :
             """
             Después de cada alimentación sanguínea la hembra desarrolla un
             lote de huevos.
             """
-            huevos = self.generar_huevos(parent)
-
-        huevos = self.generar_huevos(parent)
+            huevos = self.generar_huevos()
 
         return huevos
 
-    def generar_huevos (self, parent) :
+    def generar_huevos (self) :
         """
         Su ciclo para poner huevos es de aproximadamente cada tres días a
         cuatro días.
@@ -441,10 +440,8 @@ class Adulto(AeAegypti) :
             self.ultima_oviposicion % 6 == 0 ? poner huevos : no huevos
 
             """
-            cantidad = randint(80, 150)
-            huevos = []
-            for i in range(cantidad) :
-                huevos.append(parent.get_child())
+            huevos = randint(80, 150)
+
 
             # se reinicia el contador
             self._ultima_oviposicion = 1;

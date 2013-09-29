@@ -99,7 +99,8 @@ class Simulador :
             #~ se procesa cada individuo de la población
             j=0
             nueva_poblacion = []
-            time = 0
+            if(i%24) == 0 :
+                print "Día Nro :" + str(i/24)
             for individuo in self.poblacion :
                 #~ Se desarrolla el inidividuo
                 individuo.desarrollar(hora)
@@ -108,20 +109,22 @@ class Simulador :
                     """
                     si el individuo esta muerto se lo remueve de la poblacion
                     """
+                    print "Muerto " + str(individuo)
                     self.poblacion.remove(individuo)
 
-                elif individuo.esta_maduro() :
+                elif individuo.esta_maduro() == True:
                     """
                     si el individuo esta maduro, se realiza el cambio de
                     estado.
                     """
-                    individuo = self.cambiar_estado(individuo);
+                    #~ print  "\tCamibar de estado "+  str(individuo)
+                    self.poblacion [j] = self.cambiar_estado(individuo)
 
                 elif individuo.estado == Estado.ADULTO :
                     if(individuo.se_reproduce(hora) == True) :
                         huevos = individuo.poner_huevos(hora)
-                        if not huevos == None :
-                            nueva_poblacion.extend(huevos)
+                        for c in range(huevos) :
+                            nueva_poblacion.push(Huevo(posicion=individuo.posicion, zonas=self.zonas_table))
                 #~ fin del preiodo
                 j += 1
             #~ fin del preriodo

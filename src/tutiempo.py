@@ -110,6 +110,13 @@ class Hora :
 
         elif self.temperatura  >= 36 :
             return Clima.CALUROSO
+    def __str__(self) :
+        return str(self.hora) + "hs " + \
+        str(self.precipitacion) + " " + \
+        str(self.temperatura) + "¤C " + \
+        str(self.humedad) + " " + \
+        str(self.viento ) + " " + \
+        str(self.direccion_viento) + " "
 
 class Periodo :
     """

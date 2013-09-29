@@ -34,6 +34,13 @@ class AeAegypti :
         return self._edad
 
     @property
+    def tiempo_vida(self):
+        """
+        La cantidad de dias que puede vivir el individuo
+        """
+        return self._tiempo_vida
+
+    @property
     def sexo(self):
         """
         El sexo puede ser Macho o hembra, valor generado aleatoriamente.
@@ -102,6 +109,7 @@ class AeAegypti :
         self._madurez = 0;
         self._espectativa_vida = 100;
         self.delta_vuelo = 0;
+        self._tiempo_vida = 0
 
     def se_reproduce (self, hora) :
         """
@@ -118,20 +126,12 @@ class AeAegypti :
         """
         return self.madurez >= 100
 
-    def __str__(self):
-        """
-        Metodo que se encarga de traducir la clase a un string
-        """
-        return str(self.estado) + "(" + str(self.sexo) + ")" + \
-            "vida=" + str(self.espectativa_vida) + \
-            " edad=" + str(self.edad) + "  madurez=" + str(self.madurez)
-
     def rank_zona (self) :
         """
         Calcula el tipo de zona en la que se encuentra el mosquito
         """
         #~ se calcula el puntaje de la zona
-        pts = self.zonas.raking_zona(self, self.posicion, TAMANHO_ZONA)
+        pts = self.zonas.get_ranking(self.posicion, TAMANHO_ZONA)
         #~ se retorna el tipo de zona
         return self.zonas.get_tipo_zona(pts);
 
@@ -185,11 +185,22 @@ class AeAegypti :
         if(len(dias) > 1) :
             #~ se obitnene los extremos, se multiplica por 100 para realizar
             #~ un ranint entre los extremos ya que no existe un 'randfloat'
-            start = dias[0] * 100
-            end = dias[1] * 100
+            start = int(dias[0] * 100)
+            end = int(dias[1] * 100)
             #~ se calcula un número aleatorio en entre los extremos
-            return randint(start, end) * p /100.0
+            cantidad_dias = randint(start, end)
+            #~ print "cantidad dias " +str(cantidad_dias)
+            return  (cantidad_dias * p) /100.0
         #~ si tiene un solo elemento se retorna el elemento multiplicado
         #~  por el porcentaje
         return dias[0] * p;
 
+    def __str__(self):
+        """
+        Metodo que se encarga de traducir la clase a un string
+        """
+        return str(self.estado) + "(" + str(self.sexo) + ")" + \
+            " vida=" + str(self.espectativa_vida) + \
+            " edad=" + str(self.edad / 24) + \
+            " tiempo_vida=" + str(self.tiempo_vida)+ \
+            " madurez=" + str(self.madurez)

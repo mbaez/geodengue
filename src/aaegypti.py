@@ -9,6 +9,7 @@ Este módulo contiene la definición del AeAegypti
 
 from random import randint
 from datatype import *
+from models import *
 from config import *
 
 class AeAegypti :
@@ -109,6 +110,13 @@ class AeAegypti :
             una hora.
         """
         return False;
+
+    def esta_maduro (self) :
+        """
+        @rtype Boolean
+        @return True si la madurez es >= 100 False en caso contraio
+        """
+        return self.madurez >= 100
 
     def __str__(self):
         """

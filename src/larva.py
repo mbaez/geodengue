@@ -6,7 +6,7 @@ Este módulo contiene la definición del estados Larva
 @autors Maximiliano Báez, Roberto Bañuelos
 @contact mxbg.py@gmail.com, robertobanuelos@gmail.com
 """
-from pupa import *
+from aaegypti import *
 
 class Larva(AeAegypti) :
     """
@@ -82,10 +82,6 @@ class Larva(AeAegypti) :
         @param hora: el objeto que contiene los datos climatologicos para
             una hora.
         """
-        #~ se verifica si el individuo puede realizar un cambio de estado
-        if self.madurez >= 100 :
-            #~ print "Larva -> Pupa " + str(self)
-            return Pupa(sexo=self.sexo,posicion=self.posicion)
 
         #~ Se inicializan las variables
         delta_vida = 0

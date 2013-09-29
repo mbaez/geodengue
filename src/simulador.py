@@ -11,7 +11,10 @@ de control.
 
 #Se impotan los modulos.
 
-from individuo import *
+from huevo import *
+from larva import *
+from pupa import *
+from adulto import *
 
 class Simulador :
     """
@@ -42,13 +45,13 @@ class Simulador :
         #~ se inicializa el atributo periodo
         self.poblacion =  [];
         if kargs.has_key("poblacion") == True:
-            self.__init_poblacion__(kargs["poblacion"])
+            self.generar_poblacion(kargs["poblacion"])
         #~ se inicializa el atributo periodo
         self.historial_clima =[]
         #~ se inicializa el atributo periodo
         self.periodo = kargs.get('periodo',[])
 
-    def __init_poblacion__ (self, data ):
+    def generar_poblacion (self, data ):
         """
         Este método se encarga de procesar los datos de las muestras y
         generar los inidividuos para inicializar la población.
@@ -62,13 +65,26 @@ class Simulador :
             for cantidad in range(cantidad_larvas) :
                 #se inicializa los inidviduos
 
-                indv = Individuo(x=grid.x[i], y=grid.y[i], \
+                indv = Larva(x=grid.x[i], y=grid.y[i], \
                     id=grid.ids[i], estado=Estado.LARVA, index=i)
 
                 self.poblacion.append(indv)
 
         self.__grid = grid
 
+    def cambiar_estado (self, individuo) :
+        """
+        """
+        if individuo.estado == Estado.HUEVO :
+            return Larva(sexo=individuo.sexo, posicion=individuo.posicion)
+
+        elif individuo.estado == Estado.LARVA :
+            return Pupa(sexo=individuo.sexo, posicion=individuo.posicion)
+
+        elif individuo.estado == Estado.PUPA :
+            return Adulto(sexo=individuo.sexo, posicion=individuo.posicion)
+        else :
+            return individuo
 
     def start(self):
         """
@@ -85,20 +101,24 @@ class Simulador :
             for individuo in self.poblacion :
                 #~ Se desarrolla el inidividuo
                 individuo.desarrollar(hora)
-                time += individuo.mosquito.delta_vuelo
                 #~ Se verifica el estado del individuo
-                if(individuo.esta_muerto() == True):
-
-                    #~ print "Esta muerto : " + str(individuo.mosquito) +\
-                        #~ " Temp " +str(hora.temperatura)
-
+                if(individuo.esta_muerto() == True) :
+                    """
+                    si el individuo esta muerto se lo remueve de la poblacion
+                    """
                     self.poblacion.remove(individuo)
-                elif individuo.mosquito.estado == Estado.ADULTO :
+
+                elif individuo.esta_maduro() :
+                    """
+                    si el individuo esta maduro, se realiza el cambio de
+                    estado.
+                    """
+                    individuo = self.cambiar_estado(individuo);
+
+                elif individuo.estado == Estado.ADULTO :
                     if(individuo.se_reproduce(hora) == True) :
                         huevos = individuo.poner_huevos(hora)
                         if not huevos == None :
-                            #~ print "Puso Huevos : " + str(individuo.mosquito) +\
-                                #~ " Temp " +str(hora.temperatura)
                             nueva_poblacion.extend(huevos)
                 #~ fin del preiodo
                 j += 1
@@ -106,10 +126,6 @@ class Simulador :
             self.poblacion.extend(nueva_poblacion)
             i+= 1
 
-            #~ print " Periodo : " + str(i) + \
-                #~ " Horas " + str(len(self.periodo.horas)) + \
-                #~ " Poblacion : "+str(len(self.poblacion))+\
-                #~ " Voladores : "+ str(time) +"\n"
 
         print 'Poblacion inicial'
         for k in init_dic.keys() :
@@ -119,8 +135,6 @@ class Simulador :
         out_dic = self.stats()
         for k in out_dic.keys() :
             print( 'nro de ' + str(k) + ' = ' + str(out_dic[k]))
-
-
 
     def to_grid (self):
         """
@@ -133,22 +147,22 @@ class Simulador :
         data_array = []
         max_cantidad = 0
         for individuo in self.poblacion :
-            point = individuo.mosquito.posicion
+            point = individuo.posicion
             key = str(point.x) + "-" + str(point.y)
             if not key_map.has_key(key) \
-                and not individuo.mosquito.estado == Estado.HUEVO :
+                and not individuo.estado == Estado.HUEVO :
                 # se obtiene los datos
                 data = {}
-                data['x'] = individuo.coordenada_x
-                data['y'] = individuo.coordenada_y
-                data['id'] = individuo.id_dispositivo
-                data['index'] = individuo.index
+                data['x'] = point.x
+                data['y'] = point.y
+                data['id'] = 0
+                #~ data['index'] = individuo.index
                 data['cantidad'] = 1
                 #se añade el elemento al array
                 data_array.append(data)
                 # se añade el indice al array
                 key_map[key] = len(data_array) -1
-            elif not individuo.mosquito.estado == Estado.HUEVO :
+            elif not individuo.estado == Estado.HUEVO :
                 index = key_map[key]
                 # se incrementa la cantidad de larvas
                 data_array[index]['cantidad'] += 1
@@ -163,26 +177,23 @@ class Simulador :
 
         print 'cantidad de puntos a interpolar: ' + str(len(data_array))
 
-        #se ordenan los datos
-        new_list = sorted(data_array, key=lambda k: k['index'])
-
         #orden por coordenada
         print "sort por coordenada..."
         swapped = True
         while swapped :
             swapped = False
-            for i in range(1, len(new_list)) :
-                comp1 = (new_list[i-1]['x'], new_list[i-1]['y'])
-                comp2 = (new_list[i]['x'], new_list[i]['y'])
+            for i in range(1, len(data_array)) :
+                comp1 = (data_array[i-1]['x'], data_array[i-1]['y'])
+                comp2 = (data_array[i]['x'], data_array[i]['y'])
                 if self.compare_coordinates(comp1, comp2) > 0 :
-                    aux = new_list[i-1]
-                    new_list[i-1] = new_list[i]
-                    new_list[i] = aux
+                    aux = data_array[i-1]
+                    data_array[i-1] = data_array[i]
+                    data_array[i] = aux
                     swapped = True
 
         # se realiza el parse a grid
         grid = Grid();
-        grid.parse(new_list)
+        grid.parse(data_array)
 
         # se retorna la referencia al grid
         return grid;
@@ -220,16 +231,16 @@ class Simulador :
         stats_dic['adulto'] = 0
 
         for individuo in self.poblacion :
-            if individuo.mosquito.sexo == Sexo.MACHO :
+            if individuo.sexo == Sexo.MACHO :
                 stats_dic['macho'] += 1
             else :
                 stats_dic['hembra'] += 1
 
-            if individuo.mosquito.estado == Estado.HUEVO :
+            if individuo.estado == Estado.HUEVO :
                 stats_dic['huevo'] += 1
-            elif individuo.mosquito.estado == Estado.LARVA :
+            elif individuo.estado == Estado.LARVA :
                 stats_dic['larva'] += 1
-            elif individuo.mosquito.estado == Estado.PUPA :
+            elif individuo.estado == Estado.PUPA :
                 stats_dic['pupa'] += 1
             else :
                 stats_dic['adulto'] += 1

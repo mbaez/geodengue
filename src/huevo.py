@@ -7,7 +7,7 @@ Este módulo contiene la definición del estado Huevo del Aedes Aegypty
 @contact mxbg.py@gmail.com, robertobanuelos@gmail.com
 """
 
-from larva import *
+from aaegypti import *
 
 class Huevo(AeAegypti) :
     """
@@ -60,10 +60,6 @@ class Huevo(AeAegypti) :
         @param hora: el objeto que contiene los datos climatologicos para
             una hora.
         """
-        #~ se verifica si el individuo puede realizar un cambio de estado
-        if self.madurez >= 100 :
-            #~ print "Huevo -> Larva " + str(self)
-            return Larva(sexo=self.sexo,posicion=self.posicion)
         #~ Se inicializan las variables
         delta_vida = 0
         delta_madurez = 0

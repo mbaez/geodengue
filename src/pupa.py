@@ -7,7 +7,7 @@ Este módulo contiene la definición del estado Pupa del Aedes Aegypti
 @contact mxbg.py@gmail.com, robertobanuelos@gmail.com
 """
 
-from adulto import *
+from aaegypti import *
 
 class Pupa(AeAegypti) :
     """
@@ -66,10 +66,6 @@ class Pupa(AeAegypti) :
         @see The effect of temperature on the growth rate and survival
              of the immature stages of Aedes aegypti
         """
-        #~ se verifica si el individuo puede realizar un cambio de estado
-        if self.madurez >= 100 :
-            #~ print "Pupa -> Adulto " + str(self)
-            return Adulto(sexo=self.sexo, posicion=self.posicion)
 
         #~  se inicializa la varible
         delta_madurez = 0.0

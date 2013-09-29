@@ -1,3 +1,5 @@
+#! /usr/bin/env python
+# -*- coding: utf-8 -*-
 """
 Este módulo contiene la definición de datos utilizados en el simulador.
 
@@ -31,13 +33,11 @@ class RankingTable:
     @property
     def get_tipo_zona(self, pts) :
         """
-                T < 13  15 < T <20   20 < T < 25    25 < T < 36 T > 36
-                Zonas   Frio    Fresco  Normal  Cálido  Caluroso
-        60 < Pts  Optima  0   [10, 17.4] * 0.8    [9, 13]* 0.8    [5, 7.2] * 0.8  0
-        60 > Pts  Buena   0   [17.4, 24.8] * 0.8  [13, 17]* 0.8   [7.2, 9.4] * 0.8    0
-        30 > Pts  Normal  0   [24.8, 32.2] * 0.8  [17, 21]* 0.8   [9.4, 11.6] * 0.8   0
-        20 > Pts  Mala    0   [32.2, 39.6] * 0.8  [21, 25]* 0.8   [11.6, 13.8] * 0.8  0
-        8 > Pts   Pésima  0   [39.6, 47] * 0.8    [25, 29]* 0.8   [13.8, 16] * 0.8    0
+        60 < Pts  Optima
+        60 > Pts  Buena
+        30 > Pts  Normal
+        20 > Pts  Mala
+        8 > Pts   Pésima
         """
         if pts  < 8 :
             return Zonas.PESIMA

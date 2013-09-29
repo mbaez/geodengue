@@ -89,8 +89,10 @@ class Hora :
             self.nuves = 0.0
             self.direccion_viento = 0.0
 
-    def get_tipo_clima (self ):
+    def get_tipo_clima (self):
         """
+        Se encarga de clasificar el clima en alguna de las siguientes
+        categorias :
         T < 15  15 < T <20   20 < T < 25    25 < T < 36  T > 36
         Frio    Fresco       Normal          Cálido      Caluroso
         """

@@ -107,7 +107,7 @@ class AeAegypti :
             self._posicion = Point(kargs)
         self._edad = 0;
         self._madurez = 0;
-        self._espectativa_vida = 100;
+        self._espectativa_vida = kargs.get('espectativa_vida', 100)
         self.delta_vuelo = 0;
         self._tiempo_vida = 0
 

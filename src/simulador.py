@@ -78,15 +78,22 @@ class Simulador :
         """
         """
         if indiv.estado == Estado.HUEVO :
-            return Larva(sexo=indiv.sexo, posicion=indiv.posicion, zonas=self.zonas_table)
+            return Larva(sexo=indiv.sexo, posicion=indiv.posicion,\
+                    zonas=self.zonas_table)
 
         elif indiv.estado == Estado.LARVA :
-            return Pupa(sexo=indiv.sexo, posicion=indiv.posicion, zonas=self.zonas_table)
+            return Pupa(sexo=indiv.sexo, posicion=indiv.posicion, \
+                    zonas=self.zonas_table)
 
         elif indiv.estado == Estado.PUPA :
-            return Adulto(sexo=indiv.sexo, posicion=indiv.posicion, zonas=self.zonas_table)
-        else :
-            return indiv
+            if( indiv.espectativa_vida > 2 ) :
+                return Adulto(sexo=indiv.sexo, posicion=indiv.posicion,\
+                    zonas=self.zonas_table)
+            else :
+                return Adulto(sexo=indiv.sexo, posicion=indiv.posicion, \
+                    zonas=self.zonas_table, \
+                    espectativa_vida=indiv.espectativa_vida)
+
 
     def start(self):
         """

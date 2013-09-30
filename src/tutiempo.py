@@ -4,11 +4,6 @@ import json
 from config import *
 from datatype import *
 
-"""
-Caracterización de las zonas
-"""
-Clima = Enum(["FRIO", "FRESCO", "NORMAL", "CALIDO", "CALUROSO"])
-
 class Hora :
     """
     Define los datos climáticos para una hora en especifico.
@@ -110,6 +105,7 @@ class Hora :
 
         elif self.temperatura  >= 36 :
             return Clima.CALUROSO
+
     def __str__(self) :
         return str(self.hora) + "hs " + \
         str(self.precipitacion) + " " + \

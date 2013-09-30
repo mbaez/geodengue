@@ -41,3 +41,8 @@ Caracterización de las zonas
 """
 Zonas = Enum(["OPTIMA", "BUENA", "NORMAL", "MALA", "PESIMA"])
 
+"""
+Caracterización de las zonas
+"""
+Clima = Enum(["FRIO", "FRESCO", "NORMAL", "CALIDO", "CALUROSO"])
+

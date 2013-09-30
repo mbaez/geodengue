@@ -97,6 +97,11 @@ define(['libs/jquery',
             $(".btn").button("reset");
             var conf = $.extend({}, DataSource.rasterLayerConf);
             conf.name = this.model.get("layer");
+            var geojson_format = new OpenLayers.Format.GeoJSON();
+            var vector_layer = new OpenLayers.Layer.Vector();
+            this.mapPanel.map.addLayer(vector_layer);
+            var data = this.model.get("mosquitos");
+            vector_layer.addFeatures(geojson_format.read(data));
             //se construye el raster layer
             var raster = new Layer.WMS([conf]);
             // se añade el layer al mapa

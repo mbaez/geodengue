@@ -120,7 +120,7 @@ class GisController :
         print "Interpolando idw"
         interpolated_grid = alg.simple_idw(muestras_evol,grid)
         grid.z = interpolated_grid
-        return grid
+        return grid, muestras_evol
 
     def to_geoserver (self, grid, cols=300, rows=300, suffix="") :
         """

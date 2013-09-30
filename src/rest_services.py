@@ -42,11 +42,10 @@ def evolutive(muestra):
     col= row = 300
     gis = GisController(muestra);
     print "starting..."
-    resp = gis.method_evolutive()
+    resp, muestras_evol = gis.method_evolutive()
     print "parsing"
     layer_name = gis.to_geoserver(resp, col, row, "evol")
-    return jsonify(layer=layer_name)
-
+    return jsonify(layer=layer_name, mosquitos=str(muestras_evol))
 
 if __name__ == '__main__':
     app.run(debug=True)

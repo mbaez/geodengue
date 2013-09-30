@@ -6,10 +6,9 @@ Este módulo contiene la definición del estado Adulto
 @autors Maximiliano Báez, Roberto Bañuelos
 @contact mxbg.py@gmail.com, robertobanuelos@gmail.com
 """
-from db_manager import *
 
 from aaegypti import *
-DAO = PuntosRiesgoDao()
+
 
 class Adulto(AeAegypti) :
     """
@@ -363,7 +362,7 @@ class Adulto(AeAegypti) :
         """
         return randint (48, 96)
 
-    def poner_huevos(self, parent, hora) :
+    def poner_huevos(self, hora) :
         """
         Generalmente el apareamiento se realiza cuando la hembra busca
         alimentarse; se ha observado que el ruido que emite al volar es
@@ -394,7 +393,7 @@ class Adulto(AeAegypti) :
             una hora.
         """
 
-        huevos = None
+        huevos = 0
         #~ se obtiene el ciclo gonotrofico
         ciclo_gonotrofico = self.get_ciclo_gonotrofico(hora)
         # se aumenta el contador de ultima oviposición
@@ -408,20 +407,18 @@ class Adulto(AeAegypti) :
             Para hembras nuliperas, la primera generación de óvulos requiere
             por lo menos dos alimentaciones sanguíneas para su maduración.
             """
-            huevos = self.generar_huevos(parent)
+            huevos = self.generar_huevos()
 
         elif self.ultimo_alimento >= ciclo_gonotrofico :
             """
             Después de cada alimentación sanguínea la hembra desarrolla un
             lote de huevos.
             """
-            huevos = self.generar_huevos(parent)
-
-        huevos = self.generar_huevos(parent)
+            huevos = self.generar_huevos()
 
         return huevos
 
-    def generar_huevos (self, parent) :
+    def generar_huevos (self) :
         """
         Su ciclo para poner huevos es de aproximadamente cada tres días a
         cuatro días.
@@ -443,10 +440,8 @@ class Adulto(AeAegypti) :
             self.ultima_oviposicion % 6 == 0 ? poner huevos : no huevos
 
             """
-            cantidad = randint(80, 150)
-            huevos = []
-            for i in range(cantidad) :
-                huevos.append(parent.get_child())
+            huevos = randint(80, 150)
+
 
             # se reinicia el contador
             self._ultima_oviposicion = 1;
@@ -503,47 +498,6 @@ class Adulto(AeAegypti) :
             """
             self.posicion.move(100, angulo_vuelo)
 
-    def raking_zona(self, point, distancia) :
-        """
-        Este método se encarga de analizar los puntos criticos y dar un
-        puntaje a la zona. Una zona se califica teniendo en cuenta :
-
-        * La cantidad de puntos criticos que existen en la zona.
-        * El riesgo de los puntos criticos.
-        """
-        rank_value = 0.0
-        dist_value = 0.0
-        #~ Se obtienen todos los puntos de riesgo que se encuentran en la zona
-        #~ para analizar si el mosquito debe volar en busca de mejores
-        #~ condiciones
-        puntos_riesgo = DAO.get_within(point, distancia)
-        if len(puntos_riesgo) == 0 :
-            return 0
-
-        #~ se evaluan los puntos de riesgo
-        for i in range(len(puntos_riesgo)) :
-            rank_value += puntos_riesgo[i]['riesgo'];
-            dist_value += self.posicion.distance_to(puntos_riesgo[i])
-        #~ se calcula el promedio de riesgo
-        rank_value = rank_value / len(puntos_riesgo)
-        #~ se calcula el promedio de distancia
-        dist_value = dist_value / len(puntos_riesgo)
-
-        return rank_value / dist_value
-
-    def get_ranking (self, punto, distancia) :
-        """
-        Se ecarga de verificar si la zona ya fue rankeada, de ser así
-        se retorna el valor de la tabla de zonas rankeadas. Si no fue
-        rankeada se rankea la zona y se guarda en la tabla de ranking.
-        """
-        key = RankingTable.gen_key(punto, distancia)
-        if RankingTable.memory.has_key(key) :
-            return RankingTable.memory[key]
-        else :
-            rank_value = self.raking_zona(punto, distancia)
-            RankingTable.memory[key] = rank_value
-
     def move_to_neighbors (self, hora) :
         """
         Este método se encarga de evaluar el vecino inmediato y comparalo
@@ -577,18 +531,12 @@ class Adulto(AeAegypti) :
 
         distancia = 100
         #~ se evalua la zona
-        best_rank = self.get_ranking(self.posicion, distancia)
-        #~ se calcula el angulo de vuelo
-        angulo_vuelo = hora.direccion_viento + 180
+        rank = self.rank_zona()
+        #~ se verifica el estado de la zona
+        if(rank == Zonas.MALA or rank == Zonas.PESIMA) :
+            return False
 
-        #~ se evalua el vecino
-        punto_vecino = self.posicion.project(distancia, angulo_vuelo)
-        #~ se rankea la zona
-        rank_value = self.get_ranking(punto_vecino, distancia)
-        #~ se compara el valor de la zona
-        if(rank_value > best_rank) :
-            return True
-        return False
+        return True
 
     def velocidad_vuelo(self, hora, angulo_vuelo) :
         """

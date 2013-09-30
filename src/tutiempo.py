@@ -1,23 +1,13 @@
 #! /usr/bin/env python
 # -*- coding: utf-8 -*-
+import json
+from config import *
+from datatype import *
 
-#~ URL = 'http://www.tutiempo.net/tiempo/Asuncion_Aeropuerto/SGAS.htm?datos=por-horas'
-LOCALIDADES_HORA ={
-    "Asuncion" : 'tiempo/Asuncion_Aeropuerto/SGAS.htm?datos=por-horas'
-}
-# Datos utilizads para contruir los queryparams para realizar el get
-API_DATA = {
-    "appid" : "2d9be00662629ff5c269672af48013d8",
-    "type" : "day",
-    "id" : "3439389",
-    "mode" : "json"
-}
-# URLs de las fuentes de información de datos climaticos
-#~ API_URL = "http://api.openweathermap.org/data/2.5";
-API_URL = "http://localhost/geodengue/api.openweathermap.json";
-TUTIEMPO_URL = 'http://www.tutiempo.net/'
-
-import json    # or `import simplejson as json` if on Python < 2.6
+"""
+Caracterización de las zonas
+"""
+Clima = Enum(["FRIO", "FRESCO", "NORMAL", "CALIDO", "CALUROSO"])
 
 class Hora :
     """
@@ -41,7 +31,6 @@ class Hora :
         self._parse_main_node(data)
         self._parse_wind_node(data)
         self._parse_clouds_node(data)
-
 
     def _parse_rain_node (self, data) :
         """
@@ -77,7 +66,6 @@ class Hora :
             self.presion = float(data["main"].get('pressure', 0));
             self.humedad = float(data["main"].get('humidity', 0));
 
-
     def _parse_wind_node (self, data) :
         """
         wind         Wind
@@ -100,6 +88,35 @@ class Hora :
         else :
             self.nuves = 0.0
             self.direccion_viento = 0.0
+
+    def get_tipo_clima (self):
+        """
+        Se encarga de clasificar el clima en alguna de las siguientes
+        categorias :
+        T < 15  15 < T <20   20 < T < 25    25 < T < 36  T > 36
+        Frio    Fresco       Normal          Cálido      Caluroso
+        """
+        if self.temperatura  < 15 :
+            return Clima.FRIO
+
+        elif self.temperatura  >= 15 and self.temperatura  < 20 :
+            return Clima.FRESCO
+
+        elif self.temperatura  >= 20 and self.temperatura  < 25 :
+            return Clima.NORMAL
+
+        elif self.temperatura  >= 25 and self.temperatura  < 36 :
+            return Clima.CALIDO
+
+        elif self.temperatura  >= 36 :
+            return Clima.CALUROSO
+    def __str__(self) :
+        return str(self.hora) + "hs " + \
+        str(self.precipitacion) + " " + \
+        str(self.temperatura) + "¤C " + \
+        str(self.humedad) + " " + \
+        str(self.viento ) + " " + \
+        str(self.direccion_viento) + " "
 
 class Periodo :
     """

@@ -6,7 +6,7 @@ Este módulo contiene la definición del estados Larva
 @autors Maximiliano Báez, Roberto Bañuelos
 @contact mxbg.py@gmail.com, robertobanuelos@gmail.com
 """
-from pupa import *
+from aaegypti import *
 
 class Larva(AeAegypti) :
     """
@@ -43,21 +43,6 @@ class Larva(AeAegypti) :
         # se invoca al constructor de la clase padre.
         AeAegypti.__init__(self, **kargs);
 
-        """
-        Seleccion natural
-        "...del número inicial de individuos (larvas de primer estadio)
-        solamente emergió el 9%, es decir, que la mortalidad total de
-        las etapas inmaduras fue del 91%. La mayor tasa de mortalidad
-        se observó en las larvas de cuarto estadio (54%), mientras que
-        la menor mortalidad se observó en la etapa de pupa (18%).
-        La proporción de sexos de los adultos emergidos fue de 1:1..."
-
-        Aplicamos los porcentajes asociados a la mortalidad para simular
-        la seleccion natural de los mosquitos
-        """
-        if randint(0, 100) >= 10 :
-            self._espectativa_vida = 0
-
 
 
     def esta_muerto (self):
@@ -67,26 +52,10 @@ class Larva(AeAegypti) :
             Estado  Tiempo promedio
             larva   4 a 14 dias
         """
-        return (self.espectativa_vida <= 0 or self.edad > 14 * 24 )
+        return self.espectativa_vida <= 0
 
-
-    def desarrollar(self, hora) :
-        """
-        Este método se encarga de desarrollar el individuo que se encuentra
-        en el estado de larva
-
-        En condiciones óptimas el período larval puede durar 5 días pero
-        comúnmente se extiende de 7 a 14 días.
-
-        @type hora : Hora
-        @param hora: el objeto que contiene los datos climatologicos para
-            una hora.
-        """
-        #~ se verifica si el individuo puede realizar un cambio de estado
-        if self.madurez >= 100 :
-            #~ print "Larva -> Pupa " + str(self)
-            return Pupa(sexo=self.sexo,posicion=self.posicion)
-
+    @deprecated
+    def madurar (self, hora) :
         #~ Se inicializan las variables
         delta_vida = 0
         delta_madurez = 0
@@ -162,6 +131,32 @@ class Larva(AeAegypti) :
         self._espectativa_vida -= delta_vida
         #~ se incrementa la madurez del mosquito en un delta
         self._madurez += delta_madurez
+
+    def desarrollar(self, hora) :
+        """
+        Este método se encarga de desarrollar el individuo que se encuentra
+        en el estado de larva
+
+        En condiciones óptimas el período larval puede durar 5 días pero
+        comúnmente se extiende de 7 a 14 días.
+
+        @type hora : Hora
+        @param hora: el objeto que contiene los datos climatologicos para
+            una hora.
+        """
+        cantidad_dias = self.get_espectativa_zona(hora)
+        if (cantidad_dias > 0 ) :
+            #~ se calcula el promedio de días que puede vivir la larva
+            if self.tiempo_vida > 0 :
+                self._tiempo_vida = (self.tiempo_vida + cantidad_dias)/2
+            else :
+                self._tiempo_vida = cantidad_dias
+
+            #~ se hace madurar a pa pupa
+            self._madurez += 100/(cantidad_dias * 24)
+        #~ se disminuye la espectativa de vida de la pupa
+        self._espectativa_vida -= 100/(self.tiempo_vida * 24)
+        #~ se envejece la pupa
         self._edad +=1
 
         return self;

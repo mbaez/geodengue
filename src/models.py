@@ -47,6 +47,13 @@ class Bounds :
             self.x_max = x_array.max();
             self.y_max = y_array.max();
 
+    def __str__( self ) :
+        to_str = 'min x : ' + str(self.x_min) + \
+            'min y : ' + str(self.y_min) + \
+            'max x : ' + str(self.x_max) + \
+            'max y : ' + str(self.y_max)
+        return to_str
+
 class Grid :
     """
     Clase para representar la grilla de puntos en 3 dimensiones (x,y,z). Un
@@ -90,6 +97,7 @@ class Grid :
         """
         bounds = Bounds();
         bounds.parse_array(self.x, self.y);
+        print bounds
         return bounds;
 
     def extend (self, cols, rows) :
@@ -159,8 +167,8 @@ class Grid :
         # se obtiene la extensión del grid
         bounds = self.get_bounds()
         # Se calcula el size de la celda
-        size = abs((bounds.x_max - bounds.x_min)/cols)
-        #~ size = 100
+        size = abs((bounds.y_max - bounds.y_min)/(cols))
+
         # Se construye la cabecera del raster
         out = "ncols\t" + str(cols)
         out += "\nnrows\t" + str(rows)

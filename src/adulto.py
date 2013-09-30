@@ -166,7 +166,8 @@ class Adulto(AeAegypti) :
 
         return (self.espectativa_vida <= 0)
 
-    def desarrollar(self, hora) :
+    @deprecated
+    def madurar(self, hora) :
         """
         Este método se encarga de desarrollar el individuo que se encuentra
         en el estado final de adulto.
@@ -227,6 +228,37 @@ class Adulto(AeAegypti) :
 
         return self;
 
+    def desarrollar(self, hora) :
+        """
+        Este método se encarga de desarrollar el individuo que se encuentra
+        en el estado adulto
+
+        El tiempo de vida restante de un mosquito adulto depende de la
+        calidad de su zona, el clima y su capacidad de alimentarse
+
+        @type hora : Hora
+        @param hora: el objeto que contiene los datos climatologicos para
+            una hora.
+        """
+        cantidad_dias = self.get_espectativa_zona(hora)
+        if (cantidad_dias > 0 ) :
+            #~ se calcula el promedio de días que puede vivir el adulto
+            if self.tiempo_vida > 0 :
+                self._tiempo_vida = (self.tiempo_vida + cantidad_dias)/2
+            else :
+                self._tiempo_vida = cantidad_dias
+
+        #~ se disminuye la espectativa de vida del adulto
+        self._espectativa_vida -= 100/(self.tiempo_vida * 24)
+        #~ se envejece el adulto
+        self._edad +=1
+
+        if not hora.get_tipo_clima() == Clima.FRIO :
+            self.volar(hora)
+            self.buscar_alimento(hora)
+            self.inseminacion(hora)
+
+        return self;
     def buscar_alimento(self, hora):
         """
         Se tiene en cuenta la ubicacion del mosquito adulto y la densidad
@@ -533,10 +565,10 @@ class Adulto(AeAegypti) :
         #~ se evalua la zona
         rank = self.rank_zona()
         #~ se verifica el estado de la zona
-        if(rank == Zonas.MALA or rank == Zonas.PESIMA) :
-            return False
+        if rank == Zonas.MALA or rank == Zonas.PESIMA  :
+            return True
 
-        return True
+        return False
 
     def velocidad_vuelo(self, hora, angulo_vuelo) :
         """

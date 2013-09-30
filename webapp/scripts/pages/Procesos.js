@@ -101,7 +101,9 @@ define(['libs/jquery',
             var vector_layer = new OpenLayers.Layer.Vector();
             this.mapPanel.map.addLayer(vector_layer);
             var data = this.model.get("mosquitos");
-            vector_layer.addFeatures(geojson_format.read(data));
+            if(typeof data != 'undefined'){
+                vector_layer.addFeatures(geojson_format.read(data));
+            }
             //se construye el raster layer
             var raster = new Layer.WMS([conf]);
             // se añade el layer al mapa

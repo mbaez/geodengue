@@ -104,3 +104,49 @@ LARVA_PUPA_ZONE = {
     }
 }
 
+"""
+Tabla de adultos
+
+60 < P  Optima  [1, 3]  [15,20] [15,30] [20,30] 1
+60 > P  Buena   [1, 3]  [15,20] [15,30] [20,30] 1
+30 > P  Normal  [1, 3]  [15,20] [15,30] [20,30] 1
+20 > P  Mala    [1, 3]  [15,20] [15,30] [20,30] 1
+8 > P   Pésima  [1, 3]  [15,20] [15,30] [20,30] 1
+"""
+ADULTO_ZONE = {
+    "OPTIMA" : {
+        "FRIO"     : [1, 3],
+        "FRESCO"   : [15, 20],
+        "NORMAL"   : [15, 30],
+        "CALIDO"   : [20, 30],
+        "CALUROSO" : [1]
+    },
+    "BUENA"  : {
+        "FRIO"     : [1, 3],
+        "FRESCO"   : [15, 20],
+        "NORMAL"   : [15, 30],
+        "CALIDO"   : [20, 30],
+        "CALUROSO" : [1]
+    },
+    "NORMAL"  : {
+        "FRIO"     : [1, 3],
+        "FRESCO"   : [15, 20],
+        "NORMAL"   : [15, 30],
+        "CALIDO"   : [20, 30],
+        "CALUROSO" : [1]
+    },
+    "MALA"  : {
+        "FRIO"     : [1, 3],
+        "FRESCO"   : [15, 20],
+        "NORMAL"   : [15, 30],
+        "CALIDO"   : [20, 30],
+        "CALUROSO" : [1]
+    },
+    "PESIMA"  : {
+        "FRIO"     : [1, 3],
+        "FRESCO"   : [15, 20],
+        "NORMAL"   : [15, 30],
+        "CALIDO"   : [20, 30],
+        "CALUROSO" : [1]
+    }
+}

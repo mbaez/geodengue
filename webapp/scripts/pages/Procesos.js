@@ -97,12 +97,13 @@ define(['libs/jquery',
             $(".btn").button("reset");
             var conf = $.extend({}, DataSource.rasterLayerConf);
             conf.name = this.model.get("layer");
-            var geojson_format = new OpenLayers.Format.GeoJSON();
-            var vector_layer = new OpenLayers.Layer.Vector();
-            this.mapPanel.map.addLayer(vector_layer);
+            var geojsonFormat = new OpenLayers.Format.GeoJSON();
+            var vectorLayer = new OpenLayers.Layer.Vector();
+            vectorLayer.styleMap = this.style.styleMap;
+            this.mapPanel.map.addLayer(vectorLayer);
             var data = this.model.get("mosquitos");
             if(typeof data != 'undefined'){
-                vector_layer.addFeatures(geojson_format.read(data));
+                vectorLayer.addFeatures(geojsonFormat.read(data));
             }
             //se construye el raster layer
             var raster = new Layer.WMS([conf]);
@@ -131,9 +132,9 @@ define(['libs/jquery',
          * @name #initLayers
          */
         initLayers : function(){
-            var style = new Style.Layer('/geodengue/sld/pixel.xml');
+            this.style = new Style.Layer('/geodengue/sld/pixel.xml');
             this.puntosControl = new Layer.Vector(DataSource.puntosControlLayerConf);
-            this.puntosControl.styleMap = style.styleMap;
+            this.puntosControl.styleMap = this.style.styleMap;
             this.mapPanel.map.addLayer(this.puntosControl);
         }
     });

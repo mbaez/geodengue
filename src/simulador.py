@@ -17,6 +17,9 @@ from larva import *
 from pupa import *
 from adulto import *
 
+#test
+from controller import *
+
 class Simulador :
     """
     El proceso de evolución de las muestras consiste en un proceso, en el
@@ -106,6 +109,7 @@ class Simulador :
             #~ se procesa cada individuo de la población
             j=0
             nueva_poblacion = []
+
             if(i%24) == 0 :
                 print "Día Nro :" + str(i/24)
             for individuo in self.poblacion :
@@ -116,7 +120,7 @@ class Simulador :
                     """
                     si el individuo esta muerto se lo remueve de la poblacion
                     """
-                    print "Muerto " + str(individuo)
+                    #~ print "Muerto " + str(individuo)
                     self.poblacion.remove(individuo)
 
                 elif individuo.esta_maduro() == True:
@@ -128,7 +132,7 @@ class Simulador :
                     self.poblacion [j] = self.cambiar_estado(individuo)
 
                 elif individuo.estado == Estado.ADULTO :
-                    if(individuo.se_reproduce(hora) == True) :
+                    if individuo.se_reproduce(hora) :
                         huevos = individuo.poner_huevos(hora)
                         for c in range(huevos) :
                             nueva_poblacion.push(Huevo(posicion=individuo.posicion, zonas=self.zonas_table))
@@ -162,7 +166,7 @@ class Simulador :
             point = individuo.posicion
             key = str(point.x) + "-" + str(point.y)
             if not key_map.has_key(key) \
-                and not individuo.estado == Estado.HUEVO :
+                and individuo.estado == Estado.LARVA :
                 # se obtiene los datos
                 data = {}
                 data['x'] = point.x
@@ -174,7 +178,7 @@ class Simulador :
                 data_array.append(data)
                 # se añade el indice al array
                 key_map[key] = len(data_array) -1
-            elif not individuo.estado == Estado.HUEVO :
+            elif individuo.estado == Estado.LARVA :
                 index = key_map[key]
                 # se incrementa la cantidad de larvas
                 data_array[index]['cantidad'] += 1
@@ -183,9 +187,9 @@ class Simulador :
 
         #ajustar las escala de valores para tener cantidades en el rango
         #de 0 a 80
-        for data in data_array :
-            data['cantidad'] = \
-                float(data['cantidad'])*float(80.0/max_cantidad)
+        #~ for data in data_array :
+            #~ data['cantidad'] = \
+                #~ float(data['cantidad'])*float(80.0/max_cantidad)
 
         print 'cantidad de puntos a interpolar: ' + str(len(data_array))
 
@@ -204,11 +208,11 @@ class Simulador :
                     swapped = True
 
         # se realiza el parse a grid
-        grid = Grid();
+        grid = Grid()
         grid.parse(data_array)
 
         # se retorna la referencia al grid
-        return grid;
+        return grid
 
     """
     Metodo para comparar 2 puntos
@@ -279,9 +283,9 @@ if __name__ == "__main__" :
     evol = Simulador(periodo=periodo, poblacion=data)
 
     print "iniciando simulación"
+
     evol.start()
     """
     for ind in evol.poblacion :
         print str(ind)
     """
-    evol.to_grid()

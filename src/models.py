@@ -167,8 +167,10 @@ class Grid :
         # se obtiene la extensión del grid
         bounds = self.get_bounds()
         # Se calcula el size de la celda
+        size = float( abs((bounds.y_max - bounds.y_min)/(cols)))
+        print size
         size = abs((bounds.y_max - bounds.y_min)/(cols))
-
+        print size
         # Se construye la cabecera del raster
         out = "ncols\t" + str(cols)
         out += "\nnrows\t" + str(rows)
@@ -288,6 +290,7 @@ class Point :
         #~ Se encuentra la distancia de la longitud o distancia entre los
         #~ puntos y
         d_lng = (point.y - self.y)
+
         #~  se realiza una suma de las potencias
         suma_potencias = (d_lat * d_lat) + (d_lng * d_lng)
         resultado = math.sqrt(suma_potencias);

@@ -241,9 +241,7 @@ class Adulto(AeAegypti) :
         self._edad +=1
 
         if not hora.get_tipo_clima() == Clima.FRIO :
-            self.volar(hora)
             self.buscar_alimento(hora)
-            self.inseminacion(hora)
 
         return self;
     def buscar_alimento(self, hora):
@@ -269,7 +267,29 @@ class Adulto(AeAegypti) :
         @param hora: el objeto que contiene los datos climatologicos para
             una hora.
         """
-(??)        rank = self.rank_zona()
+        rank = self.rank_zona()
+
+        """
+        Permanece físicamente en donde emergió, siempre y cuando no
+        halla algún factor que la perturbe o no disponga de huéspedes,
+        sitios de reposo y de postura. El alcance noral es de 100 metros.
+
+        En caso de no haber recipientes adecuados, la hembra grávida
+        es capaz de volar hasta tres kilómetros en busca de este sitio.
+        Los machos suelen dispersarse en menor magnitud que las hembras
+        """
+        #aumenta el valor de su ultima alimentacion
+        self._ultimo_alimento += 1
+        if rank == Zonas.MALA or rank == Zonas.PESIMA  :
+            self.volar(hora)
+            self.inseminacion(hora)
+        else:
+            #se alimenta en horario diurno
+            if str(hora.hora) in ('05', '06', '07', '08') \
+                and self._se_alimenta == False :
+                self._se_alimenta = True
+                self._ultimo_alimento = 0
+                print 'se alimento a las ' + str(hora.hora) + ' hs '
 
     def alimentarse(self, hora) :
         """
@@ -303,13 +323,13 @@ class Adulto(AeAegypti) :
         """
         pass
 
-    def inseminar_hembra (self, hora) :
+ def inseminar_hembra (self, hora) :
         """
         Se encarga de verificar el estado de las hembras y verificar si
         estas pueden ser insemindadas.
 
         Sólo las hembras nulíperas son insemindandas debido a que una
-        inseminación es sufuiciente para que la hembra pueda poner huevos
+        inseminación es suficiente para que la hembra pueda poner huevos
         toda su vida.
 
         TODO : Se debe verificar si existe algun macho cerca para poder
@@ -327,7 +347,7 @@ class Adulto(AeAegypti) :
         porcentaje =  randint(1, 100)
         #~ Para las hembras nulíperas (no ha puesto ningún huevo)
         if self.cantidad_oviposicion == 0  \
-            and self.cantidad_alimentacion == 0 \
+            and self.se_alimenta \
             and porcentaje <= 58 \
             and self.is_inseminada == False :
                 """
@@ -340,12 +360,14 @@ class Adulto(AeAegypti) :
         elif  self.cantidad_oviposicion == 0 \
             and porcentaje <= 17 \
             and self.is_inseminada == False :
-                """El 17% durante durante la alimentación"""
+                """
+                El 17% durante durante la alimentación
+                """
                 self._is_inseminada = True
-                return True;
+                return True
 
         elif  self.cantidad_oviposicion <= 1 \
-            and self.cantidad_alimentacion == 0 \
+            and self.se_alimenta \
             and porcentaje <= 25 :
                 """
                 El 25% es inseminada entre la segunda alimentación y la
@@ -411,7 +433,7 @@ class Adulto(AeAegypti) :
             una hora.
         """
 
-        huevos = 0
+         huevos = 0
         #~ se obtiene el ciclo gonotrofico
         ciclo_gonotrofico = self.get_ciclo_gonotrofico(hora)
         # se aumenta el contador de ultima oviposición
@@ -419,8 +441,7 @@ class Adulto(AeAegypti) :
 
         #~ se realizan los controles de las condiciones
         if self.ultimo_alimento >= ciclo_gonotrofico \
-          and self.cantidad_oviposicion == 0 \
-          and self.cantidad_alimentacion >= 2 :
+            and self._se_alimento == True :
             """
             Para hembras nuliperas, la primera generación de óvulos requiere
             por lo menos dos alimentaciones sanguíneas para su maduración.
@@ -433,6 +454,8 @@ class Adulto(AeAegypti) :
             lote de huevos.
             """
             huevos = self.generar_huevos()
+            #digiere toda su alimentacion
+            self._se_alimento = False
 
         return huevos
 
@@ -492,26 +515,13 @@ class Adulto(AeAegypti) :
         viento de mayor velocidad le representa un mayor esfuerzo y suelen
         hacerlo (Kettle, 1993).
         """
-        #~ se genera un angulo 'delta', para simular las corrientes de aire
+       #~ se genera un angulo 'delta', para simular las corrientes de aire
         #~ que sigue el mosquito.
         delta = randint(-45, 45)
         #~ Vuelan en sentido contrario al viento
         angulo_vuelo = hora.direccion_viento + 180 + delta
         #~ TODO : averiguar la velocidad de vuelo en promedio
-        #~ Como determinar que una zona es buena?
-        se_mueve = self.move_to_neighbors(hora)
-        self.delta_vuelo += 1
-        """
-        Permanece físicamente en donde emergió, siempre y cuando no
-        halla algún factor que la perturbe o no disponga de huéspedes,
-        sitios de reposo y de postura. El alcance noral es de 100 metros.
-        """
-        if  se_mueve == True:
-            """
-            En caso de no haber recipientes adecuados, la hembra grávida
-            es capaz de volar hasta tres kilómetros en busca de este sitio.
-            Los machos suelen dispersarse en menor magnitud que las hembras
-            """
+
         self.posicion.move(100, angulo_vuelo)
 
     def move_to_neighbors (self, hora) :
@@ -547,10 +557,11 @@ class Adulto(AeAegypti) :
         #~ se evalua la zona
         rank = self.rank_zona()
         #~ se verifica el estado de la zona
-        if rank == Zonas.MALA or rank == Zonas.PESIMA  :
+        if rank == Zonas.MALA or rank == Zonas.PESIMA :
             return True
 
         return False
+
 
     def velocidad_vuelo(self, hora, angulo_vuelo) :
         """

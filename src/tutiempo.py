@@ -4,7 +4,11 @@ import json
 from config import *
 from datatype import *
 
+#para convertir horas
+
+
 class Hora :
+
     """
     Define los datos climáticos para una hora en especifico.
     """
@@ -26,6 +30,7 @@ class Hora :
         self._parse_main_node(data)
         self._parse_wind_node(data)
         self._parse_clouds_node(data)
+        self._parse_datetime(data)
 
     def _parse_rain_node (self, data) :
         """
@@ -58,8 +63,8 @@ class Hora :
             # se transforma los grados Kelvin a celcius.
             temp = data["main"].get('temp', 0)
             self.temperatura = float(temp) - 273.15
-            self.presion = float(data["main"].get('pressure', 0));
-            self.humedad = float(data["main"].get('humidity', 0));
+            self.presion = float(data["main"].get('pressure', 0))
+            self.humedad = float(data["main"].get('humidity', 0))
 
     def _parse_wind_node (self, data) :
         """
@@ -105,6 +110,15 @@ class Hora :
 
         elif self.temperatura  >= 36 :
             return Clima.CALUROSO
+
+    def _parse_datetime( self, data ) :
+        """
+        Convierte el timestamp obtenido del json a formato hh (hora)
+        """
+        from datetime import datetime
+
+        dt = datetime.fromtimestamp(float(data.get('dt',0)))
+        self.hora = dt.strftime('%H')
 
     def __str__(self) :
         return str(self.hora) + "hs " + \

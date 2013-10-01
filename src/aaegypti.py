@@ -164,9 +164,6 @@ class AeAegypti :
         elif(self.estado == Estado.ADULTO) :
             return self.__get_dias__(ADULTO_ZONE ,tipo_zona, tipo_clima, 1)
 
-        else :
-            return
-
 
     def __get_dias__(self, table,tipo_zona, tipo_clima, p) :
         """

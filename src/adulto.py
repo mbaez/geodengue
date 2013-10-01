@@ -75,7 +75,7 @@ class Adulto(AeAegypti) :
         """
         Tiempo transcurrido desde la ultima alimentación.
         """
-        return self._ultimo_alimento
+        return self._ultimo_alimento;
 
     @property
     def cantidad_alimentacion (self):
@@ -85,18 +85,11 @@ class Adulto(AeAegypti) :
         return self._cantidad_alimentacion;
 
     @property
-    def se_alimenta( self ):
-        """
-        Boolean que determina si se alimento o no
-        """
-        return self._se_alimenta
-
-    @property
     def distancia_recorrida (self):
         """
         La distancia en metros recorrida por el mosquito adulto.
         """
-        return self._distancia_recorrida
+        return self._distancia_recorrida;
 
     @property
     def is_inseminada (self):
@@ -115,16 +108,14 @@ class Adulto(AeAegypti) :
         # se invoca al constructor de la clase padre.
         kargs['estado'] = Estado.ADULTO
         # se invoca al constructor de la clase padre.
-        AeAegypti.__init__(self,**kargs)
+        AeAegypti.__init__(self,**kargs);
         #~ print "new "+ str(self)
         self._ultima_oviposicion = 1
-        self._ultimo_alimento = 1
-        self._distancia_recorrida = 0
-        self._cantidad_oviposicion = 0
-        self._cantidad_alimentacion = 0
-        self._is_inseminada = False
-        self._se_alimenta = False
-
+        self._ultimo_alimento = 1;
+        self._distancia_recorrida = 0;
+        self._cantidad_oviposicion = 0;
+        self._cantidad_alimentacion = 0;
+        self._is_inseminada = False;
 
     def se_reproduce (self, hora):
         """
@@ -160,19 +151,6 @@ class Adulto(AeAegypti) :
         * Si la población emergente original es grande, la restante es suficiente
           para transmitir la enfermedad y mantener o provocar una epidemia (Nelson,1986).
         """
-        #~ 10% de mortalidad diaria
-        if randint(0,100) <= 10 and (self.edad % 24) == 0 :
-            return True;
-
-        #~ 50% mueren en la primera semana
-        elif randint(0,100) <= 50 and (self.edad / (7*24)) > 1 \
-          and (self.edad / (7*24)) < 2 :
-            return True;
-
-        #~ 95% durante el primer mes
-        elif randint(0,100) <= 95 and (self.edad % (30*24)) == 0 :
-            return True;
-
         return (self.espectativa_vida <= 0)
 
     @deprecated
@@ -263,11 +241,11 @@ class Adulto(AeAegypti) :
         self._edad +=1
 
         if not hora.get_tipo_clima() == Clima.FRIO :
+            self.volar(hora)
             self.buscar_alimento(hora)
+            self.inseminacion(hora)
 
-
-        return self
-
+        return self;
     def buscar_alimento(self, hora):
         """
         Se tiene en cuenta la ubicacion del mosquito adulto y la densidad
@@ -291,29 +269,17 @@ class Adulto(AeAegypti) :
         @param hora: el objeto que contiene los datos climatologicos para
             una hora.
         """
-        rank = self.rank_zona()
+(??)        rank = self.rank_zona()
 
+    def alimentarse(self, hora) :
         """
-        Permanece físicamente en donde emergió, siempre y cuando no
-        halla algún factor que la perturbe o no disponga de huéspedes,
-        sitios de reposo y de postura. El alcance noral es de 100 metros.
-
-        En caso de no haber recipientes adecuados, la hembra grávida
-        es capaz de volar hasta tres kilómetros en busca de este sitio.
-        Los machos suelen dispersarse en menor magnitud que las hembras
+        * Las hembras se alimentan de sangre de cualquier vertebrado.
+        * Las hembras y machos se alimentan de carbohidratos de cualquier fuente
+          accesible como frutos o néctar de flores.
+        * La hembra queda completamente satisfecha con de dos a tres miligramos
+          de sangre
         """
-        #aumenta el valor de su ultima alimentacion
-        self._ultimo_alimento += 1
-        if rank == Zonas.MALA or rank == Zonas.PESIMA  :
-            self.volar(hora)
-            self.inseminacion(hora)
-        else:
-            #se alimenta en horario diurno
-            if str(hora.hora) in ('05', '06', '07', '08') \
-                and self._se_alimenta == False :
-                self._se_alimenta = True
-                self._ultimo_alimento = 0
-                print 'se alimento a las ' + str(hora.hora) + ' hs '
+        pass
 
     def inseminacion (self, hora):
         """
@@ -343,7 +309,7 @@ class Adulto(AeAegypti) :
         estas pueden ser insemindadas.
 
         Sólo las hembras nulíperas son insemindandas debido a que una
-        inseminación es suficiente para que la hembra pueda poner huevos
+        inseminación es sufuiciente para que la hembra pueda poner huevos
         toda su vida.
 
         TODO : Se debe verificar si existe algun macho cerca para poder
@@ -361,7 +327,7 @@ class Adulto(AeAegypti) :
         porcentaje =  randint(1, 100)
         #~ Para las hembras nulíperas (no ha puesto ningún huevo)
         if self.cantidad_oviposicion == 0  \
-            and self.se_alimenta \
+            and self.cantidad_alimentacion == 0 \
             and porcentaje <= 58 \
             and self.is_inseminada == False :
                 """
@@ -374,14 +340,12 @@ class Adulto(AeAegypti) :
         elif  self.cantidad_oviposicion == 0 \
             and porcentaje <= 17 \
             and self.is_inseminada == False :
-                """
-                El 17% durante durante la alimentación
-                """
+                """El 17% durante durante la alimentación"""
                 self._is_inseminada = True
-                return True
+                return True;
 
         elif  self.cantidad_oviposicion <= 1 \
-            and self.se_alimenta \
+            and self.cantidad_alimentacion == 0 \
             and porcentaje <= 25 :
                 """
                 El 25% es inseminada entre la segunda alimentación y la
@@ -455,14 +419,20 @@ class Adulto(AeAegypti) :
 
         #~ se realizan los controles de las condiciones
         if self.ultimo_alimento >= ciclo_gonotrofico \
-            and self._se_alimento == True :
+          and self.cantidad_oviposicion == 0 \
+          and self.cantidad_alimentacion >= 2 :
+            """
+            Para hembras nuliperas, la primera generación de óvulos requiere
+            por lo menos dos alimentaciones sanguíneas para su maduración.
+            """
+            huevos = self.generar_huevos()
+
+        elif (self.ultimo_alimento % 48) == 0 :
             """
             Después de cada alimentación sanguínea la hembra desarrolla un
             lote de huevos.
             """
             huevos = self.generar_huevos()
-            #digiere toda su alimentacion
-            self._se_alimento = False
 
         return huevos
 
@@ -478,7 +448,7 @@ class Adulto(AeAegypti) :
         Un solo mosquito hembra puede poner 80 a 150 huevos, cuatro veces
         al día.
         """
-        huevos = None
+        huevos = 0
         if (self.ultima_oviposicion % 6) == 0 :
             """
             Un solo mosquito puede poner 80 a 150 huevos, cuatro veces
@@ -489,8 +459,6 @@ class Adulto(AeAegypti) :
 
             """
             huevos = randint(80, 150)
-
-
             # se reinicia el contador
             self._ultima_oviposicion = 1;
 
@@ -530,7 +498,20 @@ class Adulto(AeAegypti) :
         #~ Vuelan en sentido contrario al viento
         angulo_vuelo = hora.direccion_viento + 180 + delta
         #~ TODO : averiguar la velocidad de vuelo en promedio
-
+        #~ Como determinar que una zona es buena?
+        se_mueve = self.move_to_neighbors(hora)
+        self.delta_vuelo += 1
+        """
+        Permanece físicamente en donde emergió, siempre y cuando no
+        halla algún factor que la perturbe o no disponga de huéspedes,
+        sitios de reposo y de postura. El alcance noral es de 100 metros.
+        """
+        if  se_mueve == True:
+            """
+            En caso de no haber recipientes adecuados, la hembra grávida
+            es capaz de volar hasta tres kilómetros en busca de este sitio.
+            Los machos suelen dispersarse en menor magnitud que las hembras
+            """
         self.posicion.move(100, angulo_vuelo)
 
     def move_to_neighbors (self, hora) :
@@ -563,8 +544,6 @@ class Adulto(AeAegypti) :
             contrario.
         @rtype Boolean
         """
-
-        distancia = 100
         #~ se evalua la zona
         rank = self.rank_zona()
         #~ se verifica el estado de la zona

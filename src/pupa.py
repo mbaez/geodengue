@@ -144,9 +144,10 @@ class Pupa(AeAegypti) :
             else :
                 self._tiempo_vida = cantidad_dias
             #~ se hace madurar a pa pupa
-            self._madurez += 100/(cantidad_dias * 24)
-        #~ se disminuye la espectativa de vida de la pupa
-        self._espectativa_vida -= 100/(self.tiempo_vida * 24)
+            self._madurez += 100/(cantidad_dias * 24.0)
+        if self.tiempo_vida > 0 :
+            #~ se disminuye la espectativa de vida de la pupa
+            self._espectativa_vida -= 100/(self.tiempo_vida * 24.0)
         #~ se envejece la pupa
         self._edad +=1
 

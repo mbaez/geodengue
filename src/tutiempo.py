@@ -207,7 +207,7 @@ class TuTiempo:
         """
         periodo = Periodo()
         periodo.parse_json(self.history());
-        #~ periodo.parse_dict(self.process_dom_hora());
+        periodo.parse_dict(self.process_dom_hora());
         return periodo
 
     def download_page(self, domain) :
@@ -280,6 +280,9 @@ class TuTiempo:
                             value = float(value)
                         elif attr == attributes["IcoViento"] :
                             value = self.__dom_direccion_viento(td)
+                        elif attr == attributes["hora"] :
+                            value = value.replace(":00","").strip()
+                            value = int(value)
 
                         tr_els[day][i][attr] = value
 

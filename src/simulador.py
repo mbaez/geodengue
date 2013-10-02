@@ -103,6 +103,10 @@ class Simulador :
         init_dic = self.stats()
         i=0
         total_huevos = 0;
+        huevos_muertas = 0;
+        larvas_muertas = 0;
+        pupas_muertas = 0;
+        adultos_muertas = 0;
         for hora in self.periodo.horas :
             #~ se procesa cada individuo de la población
             j=0
@@ -117,7 +121,15 @@ class Simulador :
                     """
                     si el individuo esta muerto se lo remueve de la poblacion
                     """
-                    #~ print "Muerto " + str(individuo)
+                    if individuo.estado == Estado.LARVA :
+                        larvas_muertas += 1
+                    elif individuo.estado == Estado.PUPA :
+                        pupas_muertas += 1
+                    elif individuo.estado == Estado.ADULTO:
+                        adultos_muertas += 1
+                    else :
+                        huevos_muertas += 1
+
                     self.poblacion.remove(individuo)
 
                 elif individuo.esta_maduro() == True:
@@ -131,11 +143,14 @@ class Simulador :
                 elif individuo.estado == Estado.ADULTO :
                     if(individuo.se_reproduce(hora) == True) :
                         huevos = individuo.poner_huevos(hora)
-                        total_huevos + huevos
+                        total_huevos += huevos
+                        for c in range(huevos) :
+                            nueva_poblacion.append(\
+                                Huevo(posicion=individuo.posicion,\
+                                    zonas=self.zonas_table))
+
                         if huevos > 0 :
                             print "Pone " + str(huevos) +" huevos"
-                        for c in range(huevos) :
-                            nueva_poblacion.append(Huevo(posicion=individuo.posicion, zonas=self.zonas_table))
                 #~ fin del preiodo
                 j += 1
             #~ fin del preriodo
@@ -149,7 +164,13 @@ class Simulador :
 
         print 'Poblacion final'
         out_dic = self.stats()
+
         print "Total de huevos generados : "+ str(total_huevos)
+        print "Total huevos muertos : "+ str(huevos_muertas)
+        print "Total larvas muertas : "+ str(larvas_muertas)
+        print "Total pupas muertas : "+ str(pupas_muertas)
+        print "Total adultos muertos : "+ str(adultos_muertas)
+
         for k in out_dic.keys() :
             print( 'nro de ' + str(k) + ' = ' + str(out_dic[k]))
 

@@ -85,6 +85,13 @@ class Adulto(AeAegypti) :
         return self._cantidad_alimentacion;
 
     @property
+    def se_alimenta( self ):
+        """
+        Boolean que determina si se alimento o no
+        """
+        return self._se_alimenta
+
+    @property
     def distancia_recorrida (self):
         """
         La distancia en metros recorrida por el mosquito adulto.
@@ -116,6 +123,7 @@ class Adulto(AeAegypti) :
         self._cantidad_oviposicion = 0;
         self._cantidad_alimentacion = 0;
         self._is_inseminada = False;
+        self._se_alimenta = False
 
     def se_reproduce (self, hora):
         """
@@ -282,14 +290,14 @@ class Adulto(AeAegypti) :
         self._ultimo_alimento += 1
         if rank == Zonas.MALA or rank == Zonas.PESIMA  :
             self.volar(hora)
-            self.inseminacion(hora)
         else:
             #se alimenta en horario diurno
             if str(hora.hora) in ('05', '06', '07', '08') \
                 and self._se_alimenta == False :
+                print 'se alimento a las ' + str(hora) + ' hs '
+                self.inseminacion(hora)
                 self._se_alimenta = True
                 self._ultimo_alimento = 0
-                print 'se alimento a las ' + str(hora.hora) + ' hs '
 
     def alimentarse(self, hora) :
         """
@@ -323,7 +331,7 @@ class Adulto(AeAegypti) :
         """
         pass
 
- def inseminar_hembra (self, hora) :
+    def inseminar_hembra (self, hora) :
         """
         Se encarga de verificar el estado de las hembras y verificar si
         estas pueden ser insemindadas.
@@ -400,7 +408,7 @@ class Adulto(AeAegypti) :
         El intervalo de tiempo entre la alimentación y la postura (ciclo
         gonotrófico) es de 48 horas en condiciones óptimas de temperatura.
         """
-        return randint (48, 96)
+        return randint (48, 72)
 
     def poner_huevos(self, hora) :
         """
@@ -433,29 +441,25 @@ class Adulto(AeAegypti) :
             una hora.
         """
 
-         huevos = 0
+        huevos = 0
         #~ se obtiene el ciclo gonotrofico
         ciclo_gonotrofico = self.get_ciclo_gonotrofico(hora)
         # se aumenta el contador de ultima oviposición
         self._ultima_oviposicion += 1
-
+        #~ print "ALIMENTO " + str(self._ultima_oviposicion) + "\t" \
+            #~ + str(ciclo_gonotrofico) + "\t" + str(self._se_alimenta)
         #~ se realizan los controles de las condiciones
-        if self.ultimo_alimento >= ciclo_gonotrofico \
-            and self._se_alimento == True :
+        if self._ultima_oviposicion >= ciclo_gonotrofico \
+            and self._se_alimenta == True :
             """
             Para hembras nuliperas, la primera generación de óvulos requiere
             por lo menos dos alimentaciones sanguíneas para su maduración.
-            """
-            huevos = self.generar_huevos()
 
-        elif (self.ultimo_alimento % 48) == 0 :
-            """
             Después de cada alimentación sanguínea la hembra desarrolla un
             lote de huevos.
             """
             huevos = self.generar_huevos()
-            #digiere toda su alimentacion
-            self._se_alimento = False
+            self._se_alimenta = False
 
         return huevos
 

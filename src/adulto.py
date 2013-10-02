@@ -252,6 +252,7 @@ class Adulto(AeAegypti) :
             self.buscar_alimento(hora)
 
         return self;
+
     def buscar_alimento(self, hora):
         """
         Se tiene en cuenta la ubicacion del mosquito adulto y la densidad
@@ -290,24 +291,16 @@ class Adulto(AeAegypti) :
         self._ultimo_alimento += 1
         if rank == Zonas.MALA or rank == Zonas.PESIMA  :
             self.volar(hora)
-        else:
-            #se alimenta en horario diurno
-            if str(hora.hora) in ('05', '06', '07', '08') \
-                and self._se_alimenta == False :
-                print 'se alimento a las ' + str(hora) + ' hs '
-                self.inseminacion(hora)
-                self._se_alimenta = True
-                self._ultimo_alimento = 0
 
-    def alimentarse(self, hora) :
-        """
-        * Las hembras se alimentan de sangre de cualquier vertebrado.
-        * Las hembras y machos se alimentan de carbohidratos de cualquier fuente
-          accesible como frutos o néctar de flores.
-        * La hembra queda completamente satisfecha con de dos a tres miligramos
-          de sangre
-        """
-        pass
+        elif str(hora.hora) in ('05', '06', '07', '08') \
+            and self.se_alimenta == False :
+            #se alimenta en horario diurno
+            #~ print 'se alimento a las ' + str(hora) + ' hs '
+            self.inseminacion(hora)
+            self._se_alimenta = True
+            self._ultimo_alimento = 0
+            self._cantidad_alimentacion = 4
+
 
     def inseminacion (self, hora):
         """
@@ -391,18 +384,6 @@ class Adulto(AeAegypti) :
         """
         return False
 
-    def digestion(self, hora):
-        """
-        Dependiendo a la temperatura los mosquitos-hembra adultas digieren
-        más rápidamente/lentamente la sangre y se alimentan más/menos
-        frecuentemente.
-
-        @type hora : Hora
-        @param hora: el objeto que contiene los datos climatologicos para
-            una hora.
-        """
-        pass
-
     def get_ciclo_gonotrofico (self, hora) :
         """
         El intervalo de tiempo entre la alimentación y la postura (ciclo
@@ -434,7 +415,7 @@ class Adulto(AeAegypti) :
         El mosquito hembra necesita la sangre para obtener proteínas y
         poner sus huevos.
 
-        * La mayoría de las posturas ocurre cerca del crepúsculo.
+        La mayoría de las posturas ocurre cerca del crepúsculo.
 
         @type hora : Hora
         @param hora: el objeto que contiene los datos climatologicos para
@@ -449,7 +430,7 @@ class Adulto(AeAegypti) :
         #~ print "ALIMENTO " + str(self._ultima_oviposicion) + "\t" \
             #~ + str(ciclo_gonotrofico) + "\t" + str(self._se_alimenta)
         #~ se realizan los controles de las condiciones
-        if self._ultima_oviposicion >= ciclo_gonotrofico \
+        if self.ultima_oviposicion >= ciclo_gonotrofico \
             and self._se_alimenta == True :
             """
             Para hembras nuliperas, la primera generación de óvulos requiere
@@ -485,7 +466,7 @@ class Adulto(AeAegypti) :
             self.ultima_oviposicion % 6 == 0 ? poner huevos : no huevos
 
             """
-            huevos = randint(80, 150)
+            huevos = randint(80, 150)*4
             # se reinicia el contador
             self._ultima_oviposicion = 1;
 

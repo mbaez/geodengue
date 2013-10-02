@@ -102,6 +102,7 @@ class Simulador :
 
         init_dic = self.stats()
         i=0
+        total_huevos = 0;
         for hora in self.periodo.horas :
             #~ se procesa cada individuo de la población
             j=0
@@ -130,7 +131,9 @@ class Simulador :
                 elif individuo.estado == Estado.ADULTO :
                     if(individuo.se_reproduce(hora) == True) :
                         huevos = individuo.poner_huevos(hora)
-                        #~ print "Pone " + str(huevos) +" huevos"
+                        total_huevos + huevos
+                        if huevos > 0 :
+                            print "Pone " + str(huevos) +" huevos"
                         for c in range(huevos) :
                             nueva_poblacion.append(Huevo(posicion=individuo.posicion, zonas=self.zonas_table))
                 #~ fin del preiodo
@@ -146,6 +149,7 @@ class Simulador :
 
         print 'Poblacion final'
         out_dic = self.stats()
+        print "Total de huevos generados : "+ str(total_huevos)
         for k in out_dic.keys() :
             print( 'nro de ' + str(k) + ' = ' + str(out_dic[k]))
 

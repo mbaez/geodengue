@@ -130,6 +130,7 @@ class Simulador :
                     else :
                         huevos_muertas += 1
 
+                    #~ print "MUEEEREEEE..  "+ str(individuo)
                     self.poblacion.remove(individuo)
 
                 elif individuo.esta_maduro() == True:
@@ -142,7 +143,7 @@ class Simulador :
 
                 elif individuo.estado == Estado.ADULTO :
                     if(individuo.se_reproduce(hora) == True) :
-                        huevos = individuo.poner_huevos(hora) * 4
+                        huevos = individuo.poner_huevos(hora)*4
                         total_huevos += huevos
                         for c in range(huevos) :
                             nueva_poblacion.append(\

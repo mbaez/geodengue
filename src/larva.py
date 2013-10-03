@@ -145,14 +145,21 @@ class Larva(AeAegypti) :
             una hora.
         """
         cantidad_dias = self.get_expectativa_zona(hora)
-        tiempo_vida = self._get_expectativa_zona(hora);
+        tiempo_vida = 14 * 24.0
         if cantidad_dias > 0  :
+            if self.tiempo_vida > 0 :
+                self._tiempo_vida += cantidad_dias
+            else :
+                self._tiempo_vida = cantidad_dias
             #~ se hace madurar a pa pupa
             self._madurez += 100/(cantidad_dias * 24.0)
 
+        #~ se calcula el promedio de días que puede vivir la pupa
+        tiempo_vida = self.tiempo_vida * 24.0 / (self.edad + 1.0 )
+        #~ print "T " +str(tiempo_vida) + "\t"+ str(self.tiempo_vida) +"\t"+ str(self.edad)
         if tiempo_vida > 0 :
             #~ se disminuye la expectativa de vida de la pupa
-            self._expectativa_vida -= 100/(tiempo_vida * 24.0)
+            self._expectativa_vida -= 100/(tiempo_vida)
 
         #~ se envejece la pupa
         self._edad +=1

@@ -59,8 +59,9 @@ class Simulador :
         generar los inidividuos para inicializar la población.
 
         """
-        grid = Grid();
-        grid.parse(data);
+        grid = Grid()
+        grid.parse(data)
+        id_mosquito = 0
         for i in range(len(grid)):
             # se obtine la cantidad de individuos
             cantidad_larvas = int(grid.z[i]);
@@ -70,7 +71,10 @@ class Simulador :
                 indv = Larva(x=grid.x[i], y=grid.y[i], \
                     estado=Estado.LARVA, zonas=self.zonas_table)
 
+                # id del mosquito
+                indv._id_mosquito = id_mosquito
                 self.poblacion.append(indv)
+                id_mosquito += 1
 
         self.__grid = grid
 
@@ -114,6 +118,14 @@ class Simulador :
             if(i%24) == 0 :
                 print "Día Nro :" + str(i/24)
             for individuo in self.poblacion :
+
+                if individuo.id_mosquito == 400 :
+                    print "------------------Dia  " + str(i/24) + \
+                        " hora : " + str(hora.hora) + \
+                        "-----------------------------------------"
+                    print "T : " + str(hora.temperatura)
+                    print "status individuo 1 " + str(individuo)
+
                 #~ Se desarrolla el inidividuo
                 individuo.desarrollar(hora)
                 #~ Se verifica el estado del individuo
@@ -130,7 +142,8 @@ class Simulador :
                     else :
                         huevos_muertas += 1
 
-                    #~ print "MUEEEREEEE..  "+ str(individuo)
+                    if individuo.id_mosquito == 400 :
+                        print "MUEEEREEEE..  "+ str(individuo)
                     self.poblacion.remove(individuo)
 
                 elif individuo.esta_maduro() == True:
@@ -143,13 +156,12 @@ class Simulador :
 
                 elif individuo.estado == Estado.ADULTO :
                     if(individuo.se_reproduce(hora) == True) :
-                        huevos = individuo.poner_huevos(hora)*4
+                        huevos = individuo.poner_huevos(hora)
                         total_huevos += huevos
                         for c in range(huevos) :
                             nueva_poblacion.append(\
                                 Huevo(posicion=individuo.posicion,\
                                     zonas=self.zonas_table))
-
                         if huevos > 0 :
                             print "Pone " + str(huevos) +" huevos"
                 #~ fin del preiodo
@@ -165,6 +177,8 @@ class Simulador :
 
         print 'Poblacion final'
         out_dic = self.stats()
+        for k in out_dic.keys() :
+            print( 'nro de ' + str(k) + ' = ' + str(out_dic[k]))
 
         print "Total de huevos generados : "+ str(total_huevos)
         print "Total huevos muertos : "+ str(huevos_muertas)
@@ -172,8 +186,7 @@ class Simulador :
         print "Total pupas muertas : "+ str(pupas_muertas)
         print "Total adultos muertos : "+ str(adultos_muertas)
 
-        for k in out_dic.keys() :
-            print( 'nro de ' + str(k) + ' = ' + str(out_dic[k]))
+
 
     def to_grid (self):
         """
@@ -262,19 +275,12 @@ class Simulador :
         """
         #~ inicializamos el diccionario con los valores que contabilizaremos
         stats_dic = {}
-        stats_dic['macho'] = 0
-        stats_dic['hembra'] = 0
         stats_dic['huevo'] = 0
         stats_dic['larva'] = 0
         stats_dic['pupa'] = 0
         stats_dic['adulto'] = 0
 
         for individuo in self.poblacion :
-            if individuo.sexo == Sexo.MACHO :
-                stats_dic['macho'] += 1
-            else :
-                stats_dic['hembra'] += 1
-
             if individuo.estado == Estado.HUEVO :
                 stats_dic['huevo'] += 1
             elif individuo.estado == Estado.LARVA :

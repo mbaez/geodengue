@@ -44,7 +44,7 @@ class Pupa(AeAegypti) :
         @see Dengeue en Mexico
 
         """
-        return self.espectativa_vida <= 0
+        return self.expectativa_vida <= 0
 
     @deprecated
     def madurar (self, hora) :
@@ -112,7 +112,7 @@ class Pupa(AeAegypti) :
         TODO Como afecta las condiciones climáticas al desarrollo de la
         pupa ?
         """
-        self._espectativa_vida -= 0.1389
+        self._expectativa_vida -= 0.1389
         self._madurez += delta_madurez
 
     def desarrollar(self, hora) :
@@ -136,7 +136,7 @@ class Pupa(AeAegypti) :
         @see The effect of temperature on the growth rate and survival
              of the immature stages of Aedes aegypti
         """
-        cantidad_dias = self.get_espectativa_zona(hora)
+        cantidad_dias = self.get_expectativa_zona(hora)
         if (cantidad_dias > 0 ) :
             #~ se calcula el promedio de días que puede vivir la pupa
             if self.tiempo_vida > 0 :
@@ -146,8 +146,8 @@ class Pupa(AeAegypti) :
             #~ se hace madurar a pa pupa
             self._madurez += 100/(cantidad_dias * 24.0)
         if self.tiempo_vida > 0 :
-            #~ se disminuye la espectativa de vida de la pupa
-            self._espectativa_vida -= 100/(self.tiempo_vida * 24.0)
+            #~ se disminuye la expectativa de vida de la pupa
+            self._expectativa_vida -= 100/(self.tiempo_vida * 24.0)
         #~ se envejece la pupa
         self._edad +=1
 

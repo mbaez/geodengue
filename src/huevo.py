@@ -39,7 +39,7 @@ class Huevo(AeAegypti) :
             Estado  Tiempo promedio
             huevo   2 a 5 dias
         """
-        return self.espectativa_vida <= 0 or self.edad > 5*24
+        return self.expectativa_vida <= 0 or self.edad > 5*24
 
     def desarrollar(self, hora) :
         """
@@ -64,7 +64,7 @@ class Huevo(AeAegypti) :
         delta_vida = 0
         delta_madurez = 0
         #~ Se realizan los controles para aumentar y/o disminuir la
-        #~ espectativa de vida y la madurez de la larva de acuerdo con
+        #~ expectativa de vida y la madurez de la larva de acuerdo con
         #~ la temperatura del medio.
         if hora.temperatura >= 27 :
             """
@@ -81,7 +81,7 @@ class Huevo(AeAegypti) :
             temperaturas bajas.
             """
             delta_madurez = 100/120.0
-            #~ Arbitrariamente se disminuye la espectativa de vida del huevo
+            #~ Arbitrariamente se disminuye la expectativa de vida del huevo
             delta_vida = 100/ 140.0
         else :
             """
@@ -91,8 +91,8 @@ class Huevo(AeAegypti) :
             temp_med = randint(27,40)
             delta_madurez = (hora.temperatura * 48.0 )/(temp_med * 1.0)
 
-        #~ Se disminuye la espectativa de vida en un delta
-        self._espectativa_vida -= delta_vida
+        #~ Se disminuye la expectativa de vida en un delta
+        self._expectativa_vida -= delta_vida
         #~ se incrementa la madurez del mosquito en un delta
         self._madurez += delta_madurez
         self._edad +=1

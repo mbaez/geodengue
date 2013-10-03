@@ -86,13 +86,13 @@ class Simulador :
                     zonas=self.zonas_table)
 
         elif indiv.estado == Estado.PUPA :
-            if( indiv.espectativa_vida > 2 ) :
+            if( indiv.expectativa_vida > 2 ) :
                 return Adulto(sexo=indiv.sexo, posicion=indiv.posicion,\
                     zonas=self.zonas_table)
             else :
                 return Adulto(sexo=indiv.sexo, posicion=indiv.posicion, \
                     zonas=self.zonas_table, \
-                    espectativa_vida=indiv.espectativa_vida)
+                    expectativa_vida=indiv.expectativa_vida)
 
 
     def start(self):
@@ -142,7 +142,7 @@ class Simulador :
 
                 elif individuo.estado == Estado.ADULTO :
                     if(individuo.se_reproduce(hora) == True) :
-                        huevos = individuo.poner_huevos(hora)
+                        huevos = individuo.poner_huevos(hora) * 4
                         total_huevos += huevos
                         for c in range(huevos) :
                             nueva_poblacion.append(\

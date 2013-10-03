@@ -17,14 +17,14 @@ class AeAegypti :
     Clase base, contiene la definición los atributos básicos.
     """
     @property
-    def espectativa_vida(self):
+    def expectativa_vida(self):
         """
         La expectativa de vida es un valor numérico(entre 0 y 100) que
         varía de acuerdo a las condiciones climáticas a las que es
-        sometido el mosquito. Cuando la espectativa de vida es creo el
+        sometido el mosquito. Cuando la expectativa de vida es creo el
         mosquito muere.
         """
-        return self._espectativa_vida
+        return self._expectativa_vida
 
     @property
     def edad(self):
@@ -86,7 +86,7 @@ class AeAegypti :
 
     def __init__(self, **kargs) :
         """
-        Inicializa la clase setenado la espectativa de vida y la edad a
+        Inicializa la clase setenado la expectativa de vida y la edad a
         cero.
 
         @param kargs: Parametros de inicialización de la clase
@@ -107,7 +107,7 @@ class AeAegypti :
             self._posicion = Point(kargs)
         self._edad = 0;
         self._madurez = 0;
-        self._espectativa_vida = kargs.get('espectativa_vida', 100)
+        self._expectativa_vida = kargs.get('expectativa_vida', 100)
         self.delta_vuelo = 0;
         self._tiempo_vida = 0
 
@@ -135,8 +135,7 @@ class AeAegypti :
         #~ se retorna el tipo de zona
         return self.zonas.get_tipo_zona(pts);
 
-
-    def get_espectativa_zona (self, hora) :
+    def get_expectativa_zona (self, hora) :
         """
         Se encarga de mapear el puntaje asignado a la zona del mosquito
         a la cantidad de días estimado de vida.
@@ -151,18 +150,21 @@ class AeAegypti :
         """
         tipo_zona = str(self.rank_zona())
         tipo_clima = str(hora.get_tipo_clima())
+        cantidad_dias = 0
 
         if(self.estado == Estado.HUEVO) :
-            return
+            cantidad_dias = 0
 
         elif(self.estado == Estado.LARVA) :
-            return self.__get_dias__(LARVA_PUPA_ZONE, tipo_zona, tipo_clima, 0.8)
+            cantidad_dias = self.__get_dias__(LARVA_PUPA_ZONE, tipo_zona, tipo_clima, 0.8)
 
         elif(self.estado == Estado.PUPA) :
-            return self.__get_dias__(LARVA_PUPA_ZONE ,tipo_zona, tipo_clima, 0.2)
+            cantidad_dias = self.__get_dias__(LARVA_PUPA_ZONE ,tipo_zona, tipo_clima, 0.2)
 
         elif(self.estado == Estado.ADULTO) :
-            return self.__get_dias__(ADULTO_ZONE ,tipo_zona, tipo_clima, 1)
+            cantidad_dias = self.__get_dias__(ADULTO_ZONE ,tipo_zona, tipo_clima, 1)
+        #~ se retorna la cantidad de días
+        return cantidad_dias
 
 
     def __get_dias__(self, table,tipo_zona, tipo_clima, p) :
@@ -200,7 +202,7 @@ class AeAegypti :
         Metodo que se encarga de traducir la clase a un string
         """
         return str(self.estado) + "(" + str(self.sexo) + ")" + \
-            " vida=" + str(self.espectativa_vida) + \
+            " vida=" + str(self.expectativa_vida) + \
             " edad=" + str(self.edad / 24.0) + \
             " tiempo_vida=" + str(self.tiempo_vida)+ \
             " madurez=" + str(self.madurez)

@@ -153,13 +153,13 @@ class Adulto(AeAegypti) :
         La supervivencia de los mosquitos depende de la capacidad para alimentarse,
         reproducirse, protegerse y dispersarse.
 
-        adulto  si espectativa de vida <= 0, si edad >= 30 dias.
+        adulto  si expectativa de vida <= 0, si edad >= 30 dias.
 
         * Muchos mueren al momento de emerger
         * Si la población emergente original es grande, la restante es suficiente
           para transmitir la enfermedad y mantener o provocar una epidemia (Nelson,1986).
         """
-        return (self.espectativa_vida <= 0)
+        return (self.expectativa_vida <= 0)
 
     @deprecated
     def madurar(self, hora) :
@@ -190,7 +190,7 @@ class Adulto(AeAegypti) :
             (T máxima diaria >40o C), ó aire muy seco. Se consideran
             fenecidas todas las formas adultas, y larvarias en el caso térmico,
             """
-            self._espectativa_vida -= 4.3;
+            self._expectativa_vida -= 4.3;
 
         elif hora.temperatura < 15 :
             """
@@ -201,18 +201,18 @@ class Adulto(AeAegypti) :
             delta = 100/(10*24)
             """
             puede_volar = False
-            self._espectativa_vida -= 100/(10*24)
+            self._expectativa_vida -= 100/(10*24)
 
         else:
             """
             En el mejor de los casos y en condiciones optimas el individuo
-            llegaría a los 30 días. Teniendo en cuenta que su espectativa
-            de vida es 100, se debería disminuir su espectativa de vida
+            llegaría a los 30 días. Teniendo en cuenta que su expectativa
+            de vida es 100, se debería disminuir su expectativa de vida
             según el siguiente cálculo:
 
                delta = 100/(30*24)
             """
-            self._espectativa_vida -= 0.1389
+            self._expectativa_vida -= 0.1389
 
         self._edad +=1
 
@@ -235,7 +235,7 @@ class Adulto(AeAegypti) :
         @param hora: el objeto que contiene los datos climatologicos para
             una hora.
         """
-        cantidad_dias = self.get_espectativa_zona(hora)
+        cantidad_dias = self.get_expectativa_zona(hora)
         if (cantidad_dias > 0 ) :
             #~ se calcula el promedio de días que puede vivir el adulto
             if self.tiempo_vida > 0 :
@@ -243,8 +243,8 @@ class Adulto(AeAegypti) :
             else :
                 self._tiempo_vida = cantidad_dias
 
-        #~ se disminuye la espectativa de vida del adulto
-        self._espectativa_vida -= 100/(self.tiempo_vida * 24)
+        #~ se disminuye la expectativa de vida del adulto
+        self._expectativa_vida -= 100/(self.tiempo_vida * 24)
         #~ se envejece el adulto
         self._edad +=1
 
@@ -466,7 +466,7 @@ class Adulto(AeAegypti) :
             self.ultima_oviposicion % 6 == 0 ? poner huevos : no huevos
 
             """
-            huevos = randint(80, 150)*4
+            huevos = randint(80, 150)
             # se reinicia el contador
             self._ultima_oviposicion = 1;
 

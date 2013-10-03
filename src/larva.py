@@ -52,7 +52,7 @@ class Larva(AeAegypti) :
             Estado  Tiempo promedio
             larva   4 a 14 dias
         """
-        return self.espectativa_vida <= 0
+        return self.expectativa_vida <= 0
 
     @deprecated
     def madurar (self, hora) :
@@ -60,7 +60,7 @@ class Larva(AeAegypti) :
         delta_vida = 0
         delta_madurez = 0
         #~ Se realizan los controles para aumentar y/o disminuir la
-        #~ espectativa de vida y la madurez de la larva de acuerdo con
+        #~ expectativa de vida y la madurez de la larva de acuerdo con
         #~ la temperatura del medio.
         if hora.temperatura >= 34 :
             """
@@ -94,7 +94,7 @@ class Larva(AeAegypti) :
             abruptamente por debajo de 15oC hasta inhibición bajo medias
             diarias de 12oC.
 
-            Para evitar su desarrollo se disminuye la espectativa de vida
+            Para evitar su desarrollo se disminuye la expectativa de vida
             del individuo considerablemente como para que muera en un
             lapso de 72 hs(Arbitrariamente).
             delta = 100/72
@@ -109,7 +109,7 @@ class Larva(AeAegypti) :
             relativamente alta. Por debajo de esa temperatura, las larvas
             eclosionadas no alcanzan el estado adulto.
 
-            Para evitar su desarrollo se disminuye la espectativa de vida
+            Para evitar su desarrollo se disminuye la expectativa de vida
             del individuo considerablemente como para que muera en un
             lapso de 96 hs(Arbitrariamente).
             delta = 100/96
@@ -127,8 +127,8 @@ class Larva(AeAegypti) :
             delta_madurez = 100.0/ duracion_periodo
             delta_vida = 0.1389
 
-        #~ Se disminuye la espectativa de vida en un delta
-        self._espectativa_vida -= delta_vida
+        #~ Se disminuye la expectativa de vida en un delta
+        self._expectativa_vida -= delta_vida
         #~ se incrementa la madurez del mosquito en un delta
         self._madurez += delta_madurez
 
@@ -144,20 +144,16 @@ class Larva(AeAegypti) :
         @param hora: el objeto que contiene los datos climatologicos para
             una hora.
         """
-        cantidad_dias = self.get_espectativa_zona(hora)
-        if (cantidad_dias > 0 ) :
-            #~ se calcula el promedio de días que puede vivir la larva
-            if self.tiempo_vida > 0 :
-                self._tiempo_vida = (self.tiempo_vida + cantidad_dias)/2
-            else :
-                self._tiempo_vida = cantidad_dias
-
+        cantidad_dias = self.get_expectativa_zona(hora)
+        tiempo_vida = self._get_expectativa_zona(hora);
+        if cantidad_dias > 0  :
             #~ se hace madurar a pa pupa
             self._madurez += 100/(cantidad_dias * 24.0)
 
-        if self.tiempo_vida > 0 :
-            #~ se disminuye la espectativa de vida de la pupa
-            self._espectativa_vida -= 100/(self.tiempo_vida * 24.0)
+        if tiempo_vida > 0 :
+            #~ se disminuye la expectativa de vida de la pupa
+            self._expectativa_vida -= 100/(tiempo_vida * 24.0)
+
         #~ se envejece la pupa
         self._edad +=1
 

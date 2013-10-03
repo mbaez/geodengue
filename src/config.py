@@ -152,3 +152,53 @@ ADULTO_ZONE = {
         "CALUROSO" : [1]
     }
 }
+
+"""
+Tabla de expectativa de vida de las larvas y pupas
+
+        T<15    15<T<20     20<T<25     25<T<36    T>36
+        Frio    Fresco      Normal      Cálido      Caluroso
+Optima  [1,42]  [3,39]      [3,28]      [4,16]      [2,7]
+Buena   [1,42]  [3,39]      [3,28]      [4,16]      [2,7]
+Normal  [1,42]  [3,39]      [3,28]      [4,16]      [2,7]
+Mala    [1,42]  [3,39]      [3,28]      [4,16]      [2,7]
+Pesima  [1,42]  [3,39]      [3,28]      [4,16]      [2,7]
+        p=100   p= 60       p=23        P= 68       p= 100
+"""
+LARVA_PUPA_EXPECTATIVA = {
+    "OPTIMA" : {
+        "FRIO"     : [1,42],
+        "FRESCO"   : [3,39],
+        "NORMAL"   : [3,28],
+        "CALIDO"   : [4,16],
+        "CALUROSO" : [2,7]
+    },
+    "BUENA"  : {
+        "FRIO"     : [1,42],
+        "FRESCO"   : [3,39],
+        "NORMAL"   : [3,28],
+        "CALIDO"   : [4,16],
+        "CALUROSO" : [2,7]
+    },
+    "NORMAL"  : {
+        "FRIO"     : [1,42],
+        "FRESCO"   : [3,39],
+        "NORMAL"   : [3,28],
+        "CALIDO"   : [4,16],
+        "CALUROSO" : [2,7]
+    },
+    "MALA"  : {
+        "FRIO"     : [1,42],
+        "FRESCO"   : [3,39],
+        "NORMAL"   : [3,28],
+        "CALIDO"   : [4,16],
+        "CALUROSO" : [2,7]
+    },
+    "PESIMA"  : {
+        "FRIO"     : [1,42],
+        "FRESCO"   : [3,39],
+        "NORMAL"   : [3,28],
+        "CALIDO"   : [4,16],
+        "CALUROSO" : [2,7]
+    }
+}

@@ -36,7 +36,8 @@ Configuraciones de los servicios de datos climáticos
 """
 #~ URL = 'http://www.tutiempo.net/tiempo/Asuncion_Aeropuerto/SGAS.htm?datos=por-horas'
 LOCALIDADES_HORA ={
-    "Asuncion" : 'tiempo/Asuncion_Aeropuerto/SGAS.htm?datos=por-horas'
+    "Asuncion" : ''
+    #~ "Asuncion" : 'tiempo/Asuncion_Aeropuerto/SGAS.htm?datos=por-horas'
 }
 # Datos utilizads para contruir los queryparams para realizar el get
 API_DATA = {
@@ -48,7 +49,8 @@ API_DATA = {
 # URLs de las fuentes de información de datos climaticos
 #~ API_URL = "http://api.openweathermap.org/data/2.5";
 API_URL = "http://localhost/geodengue/api.openweathermap.json";
-TUTIEMPO_URL = 'http://www.tutiempo.net/'
+TUTIEMPO_URL = "http://localhost/geodengue/tutiempo.dom";
+#~ TUTIEMPO_URL = 'http://www.tutiempo.net/'
 
 """
 Configuraciones de las Zonas

@@ -136,23 +136,20 @@ class Pupa(AeAegypti) :
         @see The effect of temperature on the growth rate and survival
              of the immature stages of Aedes aegypti
         """
-        cantidad_dias = self.get_expectativa_zona(hora)
-        tiempo_vida = 10 * 24.0
+        cantidad_dias = self.get_madurez_zona(hora)
+        tiempo_vida = self.get_expectativa_zona(hora)
+        self._tiempo_vida = tiempo_vida
+        self._tiempo_madurez = cantidad_dias
         if cantidad_dias > 0  :
-            #~ se calcula el promedio de días que puede vivir la pupa
-            if self.tiempo_vida > 0 :
-                self._tiempo_vida += cantidad_dias
-            else :
-                self._tiempo_vida = cantidad_dias
-            #~ se hace madurar a pa pupa
+            #~ se hace madurar a pupa
             self._madurez += 100/(cantidad_dias * 24.0)
 
-        #~ se calcula el promedio de días que puede vivir la pupa
-        tiempo_vida = self.tiempo_vida * 24.0 / (self.edad + 1.0 )
         if tiempo_vida > 0 :
             #~ se disminuye la expectativa de vida de la pupa
-            self._expectativa_vida -= 100/(tiempo_vida)
+            self._expectativa_vida -= 100/(tiempo_vida * 24.0)
+
         #~ se envejece la pupa
-        self._edad +=1
+        self._edad += 1
 
         return self
+

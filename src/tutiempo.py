@@ -118,7 +118,7 @@ class Hora :
         from datetime import datetime
 
         dt = datetime.fromtimestamp(float(data.get('dt',0)))
-        self.hora = dt.strftime('%H')
+        self.hora = int(dt.strftime('%H'))
 
     def __str__(self) :
         return str(self.hora) + "hs " + \

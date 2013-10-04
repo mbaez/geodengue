@@ -167,38 +167,38 @@ Pesima  [1,42]  [3,39]      [3,28]      [4,16]      [2,7]
 """
 LARVA_PUPA_EXPECTATIVA = {
     "OPTIMA" : {
-        "FRIO"     : [1,42],
-        "FRESCO"   : [3,39],
-        "NORMAL"   : [3,28],
-        "CALIDO"   : [4,16],
-        "CALUROSO" : [2,7]
+        "FRIO"     : [33.8, 42],
+        "FRESCO"   : [31.8, 39],
+        "NORMAL"   : [23, 28],
+        "CALIDO"   : [13.6, 16],
+        "CALUROSO" : [6, 7]
     },
     "BUENA"  : {
-        "FRIO"     : [1,42],
-        "FRESCO"   : [3,39],
-        "NORMAL"   : [3,28],
-        "CALIDO"   : [4,16],
-        "CALUROSO" : [2,7]
+        "FRIO"     : [25.6, 33.8],
+        "FRESCO"   : [24.6, 31.8],
+        "NORMAL"   : [18, 23],
+        "CALIDO"   : [11.2, 13.6],
+        "CALUROSO" : [5, 6]
     },
     "NORMAL"  : {
-        "FRIO"     : [1,42],
-        "FRESCO"   : [3,39],
-        "NORMAL"   : [3,28],
-        "CALIDO"   : [4,16],
-        "CALUROSO" : [2,7]
+        "FRIO"     : [17.4, 25.6],
+        "FRESCO"   : [17.4, 24.6],
+        "NORMAL"   : [13, 18],
+        "CALIDO"   : [8.8, 11.2],
+        "CALUROSO" : [4, 5]
     },
     "MALA"  : {
-        "FRIO"     : [1,42],
-        "FRESCO"   : [3,39],
-        "NORMAL"   : [3,28],
-        "CALIDO"   : [4,16],
-        "CALUROSO" : [2,7]
+        "FRIO"     : [9.2, 17.4],
+        "FRESCO"   : [10.2,17.4],
+        "NORMAL"   : [8, 13],
+        "CALIDO"   : [6.4, 8.8],
+        "CALUROSO" : [3, 4]
     },
     "PESIMA"  : {
-        "FRIO"     : [1,42],
-        "FRESCO"   : [3,39],
-        "NORMAL"   : [3,28],
-        "CALIDO"   : [4,16],
-        "CALUROSO" : [2,7]
+        "FRIO"     : [1, 9.2],
+        "FRESCO"   : [3, 10.2],
+        "NORMAL"   : [3, 8],
+        "CALIDO"   : [4, 6.4],
+        "CALUROSO" : [2, 3]
     }
 }

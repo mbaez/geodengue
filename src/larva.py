@@ -44,7 +44,6 @@ class Larva(AeAegypti) :
         AeAegypti.__init__(self, **kargs);
 
 
-
     def esta_muerto (self):
         """
         La supervivencia de los mosquitos depende de la capacidad para alimentarse,
@@ -54,83 +53,6 @@ class Larva(AeAegypti) :
         """
         return self.expectativa_vida <= 0
 
-    @deprecated
-    def madurar (self, hora) :
-        #~ Se inicializan las variables
-        delta_vida = 0
-        delta_madurez = 0
-        #~ Se realizan los controles para aumentar y/o disminuir la
-        #~ expectativa de vida y la madurez de la larva de acuerdo con
-        #~ la temperatura del medio.
-        if hora.temperatura >= 34 :
-            """
-            La temperatura más alta que permite el desarrollo es 36oC,
-            con una menor duración del estado larval.
-
-            En condiciones óptimas el período larval puede durar 5 días,
-            Lo que significa que maduraría en razon a
-            delta_madurez = 100/(5*24)
-            """
-            delta_madurez = 100.0/(5.0*24.0)
-
-        elif hora.temperatura >= 20 and hora.temperatura <= 34 :
-            """
-            Las temperaturas más cálidas ayudan a la rápida maduración
-            de las larvas.
-
-            En condiciones calidas el período larvar pude durar 5 y 8 días,
-            de forma aleatoria se calcula la duración del periodo larvario
-            para calcular el delta de la maduración
-            """
-            duracion_periodo = randint(5, 8) * 24.0
-            delta_madurez = 100.0/ duracion_periodo
-
-        elif hora.temperatura <= 11 :
-            """
-            El desarrollo cero se sitúa en 13,3oC, con un umbral inferior
-            de desarrollo ubicado entre 9 y 10oC
-
-            Christophers (1960) señala que la actividad del insecto disminuye
-            abruptamente por debajo de 15oC hasta inhibición bajo medias
-            diarias de 12oC.
-
-            Para evitar su desarrollo se disminuye la expectativa de vida
-            del individuo considerablemente como para que muera en un
-            lapso de 72 hs(Arbitrariamente).
-            delta = 100/72
-            """
-            delta_vida = 100.0/72.0
-            #~ delta_madurez = 100/(14*24)
-            delta_madurez = 100.0/(14.0*24.0)
-
-        elif hora.temperatura <= 15 :
-            """
-            El desarrollo larval a 14 C es irregular y la mortalidad
-            relativamente alta. Por debajo de esa temperatura, las larvas
-            eclosionadas no alcanzan el estado adulto.
-
-            Para evitar su desarrollo se disminuye la expectativa de vida
-            del individuo considerablemente como para que muera en un
-            lapso de 96 hs(Arbitrariamente).
-            delta = 100/96
-            """
-            delta_vida = 100.0/92.0
-            #~ se aumenta la madurez del individuo.
-            delta_madurez = 100.0/(14.0*24.0)
-
-        else :
-            """
-            De forma aleatoria se calcula la duración del periodo larvario
-            para calcular el delta de la maduración
-            """
-            duracion_periodo = randint(5, 14) * 24.0
-            delta_madurez = 100.0/ duracion_periodo
-            delta_vida = 0.1389
-
-        #~ Se disminuye la expectativa de vida en un delta
-        self._expectativa_vida -= delta_vida
-        #~ se incrementa la madurez del mosquito en un delta
-        self._madurez += delta_madurez
 
     def desarrollar(self, hora) :
         """
@@ -146,8 +68,10 @@ class Larva(AeAegypti) :
         """
         cantidad_dias = self.get_madurez_zona(hora)
         tiempo_vida = self.get_expectativa_zona(hora)
+
         self._tiempo_vida = tiempo_vida
         self._tiempo_madurez = cantidad_dias
+
         if cantidad_dias > 0  :
             #~ se hace madurar a pupa
             self._madurez += 100/(cantidad_dias * 24.0)

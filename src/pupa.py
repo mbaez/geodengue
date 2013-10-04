@@ -42,78 +42,8 @@ class Pupa(AeAegypti) :
         El estadio de pupa dura aproximadamente dos o tres días, emergiendo
         alrededor del 88% de los adultos en cuestión de 48 horas (Méndez et al., 1996)
         @see Dengeue en Mexico
-
         """
         return self.expectativa_vida <= 0
-
-    @deprecated
-    def madurar (self, hora) :
-        #~  se inicializa la varible
-        delta_madurez = 0.0
-        if hora.temperatura >= 27  and hora.temperatura <= 32:
-            """
-            Entre los 27-32oC la pupa se transforma a un adulto, escenario
-            ideal :
-
-            Macho 1.9 días : delta_madurez = 100 /(1.9 * 24)
-            Hembra 2.5 días: delta_madurez = 100 /(2.5 * 24)
-
-            TODO : ¿Que pasa cuando la temperatura supera los 32 C ?
-            """
-            #~ Si es hembra el proceso de madurez tarda más
-            if self.sexo == Sexo.HEMBRA :
-                delta_madurez = 100/(2.5 * 24.0)
-            else :
-                delta_madurez = 100/(1.9 * 24)
-
-        elif hora.temperatura > 20  and hora.temperatura <= 25:
-            """
-            [17,59 (9-29)] * 0.206 días a 25oC
-            Para determinar  la cantidad de días que toma a un macho y
-            una hembra se partio del punto que para el desarrollo, en
-            condiciones optimas se dearrolla un
-            Macho 1.9 días
-            Hembra 2.5 días
-
-            Suponiendo que el estado por defecto es la hembra se calcula
-            la relación:
-
-            Macho = 2.5 / 1.9 Hembras = 1,315789474 Hembras
-
-            """
-            delta_madurez = 100.0 / (randint(9, 29) * 0.206 * 24.0)
-            #~  si es macho madura más rápido
-            if Sexo.MACHO == self.sexo :
-                delta_madurez =  delta_madurez / 1.315789474
-
-        elif hora.temperatura <= 20:
-            """
-            [26,83 (10-47)] * 0.206 días a 20oC
-
-            Para determinar  la cantidad de días que toma a un macho y
-            una hembra se partio del punto que para el desarrollo, en
-            condiciones optimas se dearrolla un
-            Macho 1.9 días
-            Hembra 2.5 días
-
-            Suponiendo que el estado por defecto es la hembra se calcula
-            la relación:
-
-            Macho = 2.5 / 1.9 Hembras = 1,315789474 Hembras
-
-            """
-            delta_madurez =100.0 / (randint(10,47) * 0.206 * 24.0)
-            #~  si es macho madura más rápido
-            if Sexo.MACHO == self.sexo :
-                delta_madurez =  delta_madurez / 1.315789474
-
-
-        """
-        TODO Como afecta las condiciones climáticas al desarrollo de la
-        pupa ?
-        """
-        self._expectativa_vida -= 0.1389
-        self._madurez += delta_madurez
 
     def desarrollar(self, hora) :
         """
@@ -138,8 +68,10 @@ class Pupa(AeAegypti) :
         """
         cantidad_dias = self.get_madurez_zona(hora)
         tiempo_vida = self.get_expectativa_zona(hora)
+
         self._tiempo_vida = tiempo_vida
         self._tiempo_madurez = cantidad_dias
+
         if cantidad_dias > 0  :
             #~ se hace madurar a pupa
             self._madurez += 100/(cantidad_dias * 24.0)

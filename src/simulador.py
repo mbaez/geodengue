@@ -83,20 +83,21 @@ class Simulador :
         """
         if indiv.estado == Estado.HUEVO :
             return Larva(sexo=indiv.sexo, posicion=indiv.posicion,\
-                    zonas=self.zonas_table)
+                    zonas=self.zonas_table, id=indiv.id_mosquito)
 
         elif indiv.estado == Estado.LARVA :
             return Pupa(sexo=indiv.sexo, posicion=indiv.posicion, \
-                    zonas=self.zonas_table)
+                    zonas=self.zonas_table, id=indiv.id_mosquito)
 
         elif indiv.estado == Estado.PUPA :
             if( indiv.expectativa_vida > 2 ) :
                 return Adulto(sexo=indiv.sexo, posicion=indiv.posicion,\
-                    zonas=self.zonas_table)
+                    zonas=self.zonas_table, id=indiv.id_mosquito)
             else :
                 return Adulto(sexo=indiv.sexo, posicion=indiv.posicion, \
                     zonas=self.zonas_table, \
-                    expectativa_vida=indiv.expectativa_vida)
+                    expectativa_vida=indiv.expectativa_vida,\
+                    id=indiv.id_mosquito)
 
 
     def start(self):
@@ -111,15 +112,16 @@ class Simulador :
         larvas_muertas = 0;
         pupas_muertas = 0;
         adultos_muertas = 0;
+        olimpia = False
         for hora in self.periodo.horas :
             #~ se procesa cada individuo de la población
             j=0
             nueva_poblacion = []
-            if(i%24) == 0 :
-                print "Día Nro :" + str(i/24)
+            #~ if(i%24) == 0 :
+                #~ print "Día Nro :" + str(i/24)
             for individuo in self.poblacion :
 
-                if individuo.id_mosquito == 400 :
+                if individuo.id_mosquito == 300 :
                     print "------------------Dia  " + str(i/24) + \
                         " hora : " + str(hora.hora) + \
                         "-----------------------------------------"
@@ -142,8 +144,9 @@ class Simulador :
                     else :
                         huevos_muertas += 1
 
-                    if individuo.id_mosquito == 400 :
+                    if individuo.id_mosquito == 300 :
                         print "MUEEEREEEE..  "+ str(individuo)
+
                     self.poblacion.remove(individuo)
 
                 elif individuo.esta_maduro() == True:
@@ -155,14 +158,16 @@ class Simulador :
                     self.poblacion [j] = self.cambiar_estado(individuo)
 
                 elif individuo.estado == Estado.ADULTO :
-                    if(individuo.se_reproduce(hora) == True) :
+                    if(individuo.se_reproduce(hora) == True \
+                        and olimpia == False) :
                         huevos = individuo.poner_huevos(hora)
                         total_huevos += huevos
                         for c in range(huevos) :
                             nueva_poblacion.append(\
                                 Huevo(posicion=individuo.posicion,\
                                     zonas=self.zonas_table))
-                        if huevos > 0 :
+
+                        if individuo.id_mosquito == 300 :
                             print "Pone " + str(huevos) +" huevos"
                 #~ fin del preiodo
                 j += 1
@@ -250,13 +255,13 @@ class Simulador :
         # se retorna la referencia al grid
         return grid;
 
-    """
-    Metodo para comparar 2 puntos
-    @param p1, p2
-    array puntos
-        ej> p1 = (x1, y1)
-    """
     def compare_coordinates( self, p1, p2 ) :
+        """
+        Metodo para comparar 2 puntos
+        @param p1, p2
+        array puntos
+            ej> p1 = (x1, y1)
+        """
         if float(p1[0]) == float(p2[0]) :
             return float(p1[1]) - float(p2[1])
         else :

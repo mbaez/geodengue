@@ -57,6 +57,10 @@ Configuraciones de las Zonas
 """
 #~ El tamaño esta a un radio de 200 metros de la del punto de origen
 TAMANHO_ZONA = 200
+#~ Porcentaje de las etapas inmaduras que abarca cada fase
+TIEMPO_PUPA = 0.26
+TIEMPO_LARVA = 0.74
+
 #~ La duración en día de la pupa+larva de acuerdo a las condiciones climáticas
 #~ y el tipo de zona
 """
@@ -115,7 +119,7 @@ Tabla de adultos
 20 > P  Mala    [1, 3]  [15,20] [15,30] [20,30] 1
 8 > P   Pésima  [1, 3]  [15,20] [15,30] [20,30] 1
 """
-ADULTO_ZONE = {
+ADULTO__EXPECTATIVA = {
     "OPTIMA" : {
         "FRIO"     : [1, 3],
         "FRESCO"   : [15, 20],

@@ -126,7 +126,7 @@ class AeAegypti :
         self.delta_vuelo = 0
         self._tiempo_vida = 0
         self._tiempo_madurez = 0
-        self._id_mosquito = 0
+        self._id_mosquito = kargs.get('id', 0)
 
     def se_reproduce (self, hora) :
         """
@@ -156,16 +156,10 @@ class AeAegypti :
         """
         Se encarga de mapear el puntaje asignado a la zona del mosquito
         a la cantidad de días estimado de vida.
-
-        Para LARVAS (P=0.8) Y PUPAS(P=0.2)
-
-        60 < Pts  Optima  0   [10, 17.4] * P    [9, 13]* P    [5, 7.2] * P  0
-        60 > Pts  Buena   0   [17.4, 24.8] * P  [13, 17]* P   [7.2, 9.4] * P    0
-        30 > Pts  Normal  0   [24.8, 32.2] * P  [17, 21]* P   [9.4, 11.6] * P   0
-        20 > Pts  Mala    0   [32.2, 39.6] * P  [21, 25]* P   [11.6, 13.8] * P  0
-        8 > Pts   Pésima  0   [39.6, 47] * P    [25, 29]* P   [13.8, 16] * P    0
         """
+        #~ se obtiene el tipo de zona
         tipo_zona = str(self.rank_zona())
+        #~ se obitne el tipo de clima
         tipo_clima = str(hora.get_tipo_clima())
         cantidad_dias = 0
 
@@ -174,14 +168,16 @@ class AeAegypti :
 
         elif(self.estado == Estado.LARVA) :
             cantidad_dias = self.__get_dias__(LARVA_PUPA_EXPECTATIVA, \
-                tipo_zona, tipo_clima, 0.8)
+                tipo_zona, tipo_clima, TIEMPO_LARVA)
 
         elif(self.estado == Estado.PUPA) :
             cantidad_dias = self.__get_dias__(LARVA_PUPA_EXPECTATIVA, \
-                tipo_zona, tipo_clima, 0.2)
+                tipo_zona, tipo_clima, TIEMPO_PUPA)
 
         elif(self.estado == Estado.ADULTO) :
-            cantidad_dias = self.__get_dias__(ADULTO_ZONE ,tipo_zona, tipo_clima, 1)
+            cantidad_dias = self.__get_dias__(ADULTO__EXPECTATIVA , \
+                tipo_zona, tipo_clima)
+
         #~ se retorna la cantidad de días
         return cantidad_dias
 
@@ -198,7 +194,9 @@ class AeAegypti :
         20 > Pts  Mala    0   [32.2, 39.6] * P  [21, 25]* P   [11.6, 13.8] * P  0
         8 > Pts   Pésima  0   [39.6, 47] * P    [25, 29]* P   [13.8, 16] * P    0
         """
+        #~ se obtiene el tipo de zona
         tipo_zona = str(self.rank_zona())
+        #~ se obitne el tipo de clima
         tipo_clima = str(hora.get_tipo_clima())
         cantidad_dias = 0
 
@@ -206,17 +204,16 @@ class AeAegypti :
             cantidad_dias = 0
 
         elif(self.estado == Estado.LARVA) :
-            cantidad_dias = self.__get_dias__(LARVA_PUPA_ZONE, tipo_zona, tipo_clima, 0.8)
+            cantidad_dias = self.__get_dias__(LARVA_PUPA_ZONE, tipo_zona,\
+                tipo_clima, TIEMPO_LARVA)
 
         elif(self.estado == Estado.PUPA) :
-            cantidad_dias = self.__get_dias__(LARVA_PUPA_ZONE ,tipo_zona, tipo_clima, 0.2)
+            cantidad_dias = self.__get_dias__(LARVA_PUPA_ZONE ,tipo_zona,\
+                tipo_clima, TIEMPO_PUPA)
 
-        elif(self.estado == Estado.ADULTO) :
-            cantidad_dias = self.__get_dias__(ADULTO_ZONE ,tipo_zona, tipo_clima, 1)
-        #~ se retorna la cantidad de días
         return cantidad_dias
 
-    def __get_dias__(self, table,tipo_zona, tipo_clima, p) :
+    def __get_dias__(self, table,tipo_zona, tipo_clima, p=1) :
         """
         Obtiene el valor que corersponde a la zona y el tipo de clima
 

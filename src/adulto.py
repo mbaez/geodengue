@@ -146,7 +146,7 @@ class Adulto(AeAegypti) :
         return self.is_inseminada == True \
             and self.esta_muerto() == False \
             and self.sexo == Sexo.HEMBRA \
-            and hora.temperatura > 18
+            and hora.get_tipo_clima() != Clima.FRIO
 
     def esta_muerto (self):
         """
@@ -159,7 +159,7 @@ class Adulto(AeAegypti) :
         * Si la población emergente original es grande, la restante es suficiente
           para transmitir la enfermedad y mantener o provocar una epidemia (Nelson,1986).
         """
-        return (self.expectativa_vida <= 0)
+        return self.expectativa_vida <= 0
 
     @deprecated
     def madurar(self, hora) :
@@ -236,15 +236,13 @@ class Adulto(AeAegypti) :
             una hora.
         """
         cantidad_dias = self.get_expectativa_zona(hora)
-        if (cantidad_dias > 0 ) :
-            #~ se calcula el promedio de días que puede vivir el adulto
-            if self.tiempo_vida > 0 :
-                self._tiempo_vida = (self.tiempo_vida + cantidad_dias)/2
-            else :
-                self._tiempo_vida = cantidad_dias
+        #~ se calcula el promedio de días que puede vivir el adulto
+        self._tiempo_vida += cantidad_dias
 
-        #~ se disminuye la expectativa de vida del adulto
-        self._expectativa_vida -= 100/(self.tiempo_vida * 24)
+        if (cantidad_dias > 0 ) :
+            #~ se disminuye la expectativa de vida del adulto
+            self._expectativa_vida -= 100/(cantidad_dias * 24)
+
         #~ se envejece el adulto
         self._edad +=1
 
@@ -292,10 +290,8 @@ class Adulto(AeAegypti) :
         if rank == Zonas.MALA or rank == Zonas.PESIMA  :
             self.volar(hora)
 
-        elif str(hora.hora) in ('05', '06', '07', '08') \
-            and self.se_alimenta == False :
+        elif hora.hora == randint(5, 8) and self.se_alimenta == False :
             #se alimenta en horario diurno
-            #~ print 'se alimento a las ' + str(hora) + ' hs '
             self.inseminacion(hora)
             self._se_alimenta = True
             self._ultimo_alimento = 0
@@ -505,9 +501,16 @@ class Adulto(AeAegypti) :
         delta = randint(-45, 45)
         #~ Vuelan en sentido contrario al viento
         angulo_vuelo = hora.direccion_viento + 180 + delta
-        #~ TODO : averiguar la velocidad de vuelo en promedio
+        #~ se calcula la velocidad de vuelo
+        velocidad = self.velocidad_vuelo(hora, angulo_vuelo);
+        """
+        Como la velocidad de vuelo esta en m/h y el tiempo de estudio
+        es 1 hora, se utiliza la velocidad como distancia a recorrer
 
-        self.posicion.move(100, angulo_vuelo)
+        distancia = Xo + Velocidad * Tiempo = Velocidad * 1h
+
+        """
+        self.posicion.move(velocidad, angulo_vuelo)
 
     def move_to_neighbors (self, hora) :
         """
@@ -546,7 +549,6 @@ class Adulto(AeAegypti) :
             return True
 
         return False
-
 
     def velocidad_vuelo(self, hora, angulo_vuelo) :
         """

@@ -113,6 +113,7 @@ class Simulador :
         pupas_muertas = 0;
         adultos_muertas = 0;
         olimpia = False
+        OBS = 300
         for hora in self.periodo.horas :
             #~ se procesa cada individuo de la población
             j=0
@@ -121,7 +122,7 @@ class Simulador :
                 #~ print "Día Nro :" + str(i/24)
             for individuo in self.poblacion :
 
-                if individuo.id_mosquito == 300 :
+                if individuo.id_mosquito == OBS :
                     print "------------------Dia  " + str(i/24) + \
                         " hora : " + str(hora.hora) + \
                         "-----------------------------------------"
@@ -144,7 +145,7 @@ class Simulador :
                     else :
                         huevos_muertas += 1
 
-                    if individuo.id_mosquito == 300 :
+                    if individuo.id_mosquito == OBS :
                         print "MUEEEREEEE..  "+ str(individuo)
 
                     self.poblacion.remove(individuo)
@@ -167,7 +168,7 @@ class Simulador :
                                 Huevo(posicion=individuo.posicion,\
                                     zonas=self.zonas_table))
 
-                        if individuo.id_mosquito == 300 :
+                        if individuo.id_mosquito == OBS :
                             print "Pone " + str(huevos) +" huevos"
                 #~ fin del preiodo
                 j += 1

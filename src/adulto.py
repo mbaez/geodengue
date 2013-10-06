@@ -161,11 +161,14 @@ class Adulto(AeAegypti) :
         """
         return self.expectativa_vida <= 0
 
-    @deprecated
-    def madurar(self, hora) :
+
+    def desarrollar(self, hora) :
         """
         Este método se encarga de desarrollar el individuo que se encuentra
-        en el estado final de adulto.
+        en el estado adulto
+
+        El tiempo de vida restante de un mosquito adulto depende de la
+        calidad de su zona, el clima y su capacidad de alimentarse
 
         Cómo le afecta la temperatura : Limitantes para el desarrollo poblacional.
         Entre ellos, dentro del ambiente abiótico el potencial del vector
@@ -177,59 +180,6 @@ class Adulto(AeAegypti) :
         Déficit de saturación       entre 15 y 20 mb    10
         Temperatura máxima          > 40 oC             1
         Temperatura mínima          < 0 oC              1
-
-
-        @type hora : Hora
-        @param hora: el objeto que contiene los datos climatologicos para
-            una hora.
-        """
-        puede_volar = True
-        if hora.temperatura >= 40 or hora.temperatura <= 0 :
-            """
-            Día letal: si ocurre T<0o (T mínima diaria <0o) ó T> 40o C
-            (T máxima diaria >40o C), ó aire muy seco. Se consideran
-            fenecidas todas las formas adultas, y larvarias en el caso térmico,
-            """
-            self._expectativa_vida -= 4.3;
-
-        elif hora.temperatura < 15 :
-            """
-            Día adverso, si T máxima <15oC no vuela (por debajo de este
-            umbral de vuelo, no vuela, no pica, ni ovipone)
-
-            TODO: Averiguar cuanto tiempo puede vivir sin alimentarse
-            delta = 100/(10*24)
-            """
-            puede_volar = False
-            self._expectativa_vida -= 100/(10*24)
-
-        else:
-            """
-            En el mejor de los casos y en condiciones optimas el individuo
-            llegaría a los 30 días. Teniendo en cuenta que su expectativa
-            de vida es 100, se debería disminuir su expectativa de vida
-            según el siguiente cálculo:
-
-               delta = 100/(30*24)
-            """
-            self._expectativa_vida -= 0.1389
-
-        self._edad +=1
-
-        if puede_volar == True :
-            self.volar(hora)
-            self.buscar_alimento(hora)
-            self.inseminacion(hora)
-
-        return self;
-
-    def desarrollar(self, hora) :
-        """
-        Este método se encarga de desarrollar el individuo que se encuentra
-        en el estado adulto
-
-        El tiempo de vida restante de un mosquito adulto depende de la
-        calidad de su zona, el clima y su capacidad de alimentarse
 
         @type hora : Hora
         @param hora: el objeto que contiene los datos climatologicos para
@@ -287,16 +237,17 @@ class Adulto(AeAegypti) :
         """
         #aumenta el valor de su ultima alimentacion
         self._ultimo_alimento += 1
+
         if rank == Zonas.MALA or rank == Zonas.PESIMA  :
             self.volar(hora)
 
-        elif hora.hora == randint(5, 8) and self.se_alimenta == False :
+        elif hora.get_tipo_hora() == Horario.MADUGRADA_MANHANA \
+            and self.se_alimenta == False :
             #se alimenta en horario diurno
             self.inseminacion(hora)
             self._se_alimenta = True
             self._ultimo_alimento = 0
             self._cantidad_alimentacion = 4
-
 
     def inseminacion (self, hora):
         """
@@ -344,7 +295,7 @@ class Adulto(AeAegypti) :
         porcentaje =  randint(1, 100)
         #~ Para las hembras nulíperas (no ha puesto ningún huevo)
         if self.cantidad_oviposicion == 0  \
-            and self.se_alimenta \
+            and self.se_alimenta == False\
             and porcentaje <= 58 \
             and self.is_inseminada == False :
                 """
@@ -364,7 +315,7 @@ class Adulto(AeAegypti) :
                 return True
 
         elif  self.cantidad_oviposicion <= 1 \
-            and self.se_alimenta \
+            and self.se_alimenta == True  \
             and porcentaje <= 25 :
                 """
                 El 25% es inseminada entre la segunda alimentación y la
@@ -437,6 +388,7 @@ class Adulto(AeAegypti) :
             """
             huevos = self.generar_huevos()
             self._se_alimenta = False
+            self._cantidad_oviposicion +=1
 
         return huevos
 

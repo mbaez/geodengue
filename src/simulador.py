@@ -80,31 +80,32 @@ class Simulador :
 
     def cambiar_estado (self, indiv) :
         """
+        Se encarga de realizar el cambio de estado para el individuo de
+        acuerdo a su estado actual.
         """
-        if indiv.estado == Estado.HUEVO :
-            return Larva(sexo=indiv.sexo, posicion=indiv.posicion,\
-                    zonas=self.zonas_table, id=indiv.id_mosquito)
 
-        elif indiv.estado == Estado.LARVA :
-            return Pupa(sexo=indiv.sexo, posicion=indiv.posicion, \
-                    zonas=self.zonas_table, id=indiv.id_mosquito)
+        Clazz = {
+            "HUEVO" : Larva,
+            "LARVA" : Pupa,
+            "PUPA" : Adulto
+        }
 
-        elif indiv.estado == Estado.PUPA :
-            if( indiv.expectativa_vida > 2 ) :
-                return Adulto(sexo=indiv.sexo, posicion=indiv.posicion,\
-                    zonas=self.zonas_table, id=indiv.id_mosquito)
-            else :
-                return Adulto(sexo=indiv.sexo, posicion=indiv.posicion, \
+        if( indiv.expectativa_vida > 10 ) :
+            return Clazz[indiv.estado](sexo=indiv.sexo,\
+                    posicion=indiv.posicion,\
+                    zonas=self.zonas_table,\
+                    id=indiv.id_mosquito)
+        else :
+            return Clazz[indiv.estado](sexo=indiv.sexo,\
+                    posicion=indiv.posicion, \
                     zonas=self.zonas_table, \
                     expectativa_vida=indiv.expectativa_vida,\
                     id=indiv.id_mosquito)
-
 
     def start(self):
         """
         Se encarga de iniciar el simulador.
         """
-
         init_dic = self.stats()
         i=0
         total_huevos = 0;
@@ -112,7 +113,7 @@ class Simulador :
         larvas_muertas = 0;
         pupas_muertas = 0;
         adultos_muertas = 0;
-        olimpia = False
+        olimpia = True
         OBS = 300
         for hora in self.periodo.horas :
             #~ se procesa cada individuo de la población
@@ -125,6 +126,7 @@ class Simulador :
                 if individuo.id_mosquito == OBS :
                     print "------------------Dia  " + str(i/24) + \
                         " hora : " + str(hora.hora) + \
+                        " poblacion :" + str(len(self.poblacion)) +\
                         "-----------------------------------------"
                     print "T : " + str(hora.temperatura)
                     print "status individuo 1 " + str(individuo)
@@ -138,10 +140,13 @@ class Simulador :
                     """
                     if individuo.estado == Estado.LARVA :
                         larvas_muertas += 1
+
                     elif individuo.estado == Estado.PUPA :
                         pupas_muertas += 1
+
                     elif individuo.estado == Estado.ADULTO:
                         adultos_muertas += 1
+
                     else :
                         huevos_muertas += 1
 
@@ -191,8 +196,6 @@ class Simulador :
         print "Total larvas muertas : "+ str(larvas_muertas)
         print "Total pupas muertas : "+ str(pupas_muertas)
         print "Total adultos muertos : "+ str(adultos_muertas)
-
-
 
     def to_grid (self):
         """

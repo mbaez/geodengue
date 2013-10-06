@@ -111,6 +111,27 @@ class Hora :
         elif self.temperatura  >= 36 :
             return Clima.CALUROSO
 
+    def get_tipo_hora (self):
+        """
+        """
+        if self.hora  >= 20 :
+            return Horario.NOCHE
+
+        elif self.hora  >= 18 and self.hora  < 20 :
+            return Horario.TARDE_NOCHE
+
+        elif self.hora  >= 14 and self.hora  < 18 :
+            return Horario.TARDE
+
+        elif self.hora  >= 9 and self.hora  < 14 :
+            return Horario.MANHANA
+
+        elif self.hora  >= 5 and self.hora  < 9 :
+            return Horario.MADUGRADA_MANHANA
+
+        elif self.hora  >= 0 and self.hora  < 5 :
+            return Horario.MADUGRADA
+
     def _parse_datetime( self, data ) :
         """
         Convierte el timestamp obtenido del json a formato hh (hora)

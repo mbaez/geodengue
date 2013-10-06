@@ -17,6 +17,9 @@ from larva import *
 from pupa import *
 from adulto import *
 
+#log de eventos
+from logger import EventLogger
+
 class Simulador :
     """
     El proceso de evolución de las muestras consiste en un proceso, en el
@@ -52,6 +55,9 @@ class Simulador :
         self.historial_clima =[]
         #~ se inicializa el atributo periodo
         self.periodo = kargs.get('periodo',[])
+
+        # se inicializa la clase que hace log de los eventos
+        self.logger = EventLogger('event_log_')
 
     def generar_poblacion (self, data ):
         """
@@ -115,6 +121,7 @@ class Simulador :
         adultos_muertas = 0;
         olimpia = True
         OBS = 300
+        args = {}
         for hora in self.periodo.horas :
             #~ se procesa cada individuo de la población
             j=0
@@ -130,6 +137,9 @@ class Simulador :
                         "-----------------------------------------"
                     print "T : " + str(hora.temperatura)
                     print "status individuo 1 " + str(individuo)
+
+                poner_huevos = False
+                cantidad_huevos = 0
 
                 #~ Se desarrolla el inidividuo
                 individuo.desarrollar(hora)
@@ -175,6 +185,18 @@ class Simulador :
 
                         if individuo.id_mosquito == OBS :
                             print "Pone " + str(huevos) +" huevos"
+                            poner_huevos = True
+                            cantidad_huevos = huevos
+
+                args['individuo'] = individuo
+                args['hora'] = hora.hora
+                args['dia'] = str(i/24)
+                args['temperatura'] = hora.temperatura
+                args['pone_huevos'] = poner_huevos
+                args['cantidad_huevos'] = cantidad_huevos
+
+                # log de eventos
+                self.logger.to_csv( args )
                 #~ fin del preiodo
                 j += 1
             #~ fin del preriodo

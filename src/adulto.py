@@ -118,12 +118,13 @@ class Adulto(AeAegypti) :
         AeAegypti.__init__(self,**kargs);
         #~ print "new "+ str(self)
         self._ultima_oviposicion = 1
-        self._ultimo_alimento = 1;
-        self._distancia_recorrida = 0;
-        self._cantidad_oviposicion = 0;
-        self._cantidad_alimentacion = 0;
-        self._is_inseminada = False;
+        self._ultimo_alimento = 1
+        self._distancia_recorrida = 0
+        self._cantidad_oviposicion = 0
+        self._cantidad_alimentacion = 0
+        self._is_inseminada = False
         self._se_alimenta = False
+        self._se_reproduce = False
 
     def se_reproduce (self, hora):
         """
@@ -143,10 +144,13 @@ class Adulto(AeAegypti) :
             una hora.
 
         """
-        return self.is_inseminada == True \
+
+        self._se_reproduce = self.is_inseminada == True \
             and self.esta_muerto() == False \
             and self.sexo == Sexo.HEMBRA \
             and hora.get_tipo_clima() != Clima.FRIO
+
+        return self._se_reproduce
 
     def esta_muerto (self):
         """

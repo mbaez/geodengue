@@ -126,6 +126,7 @@ class Simulador :
                 if individuo.id_mosquito == OBS :
                     print "------------------Dia  " + str(i/24) + \
                         " hora : " + str(hora.hora) + \
+                        " poblacion :" + str(len(self.poblacion)) +\
                         "-----------------------------------------"
                     print "T : " + str(hora.temperatura)
                     print "status individuo 1 " + str(individuo)

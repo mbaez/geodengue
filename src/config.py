@@ -56,7 +56,7 @@ TUTIEMPO_URL = "http://localhost/geodengue/tutiempo.dom";
 Configuraciones de las Zonas
 """
 #~ El tamaño esta a un radio de 200 metros de la del punto de origen
-TAMANHO_ZONA = 200
+TAMANHO_ZONA = 100
 #~ Porcentaje de las etapas inmaduras que abarca cada fase
 TIEMPO_PUPA = 0.26
 TIEMPO_LARVA = 0.74

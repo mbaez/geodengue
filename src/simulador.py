@@ -185,6 +185,8 @@ class Simulador :
 
                         if individuo.id_mosquito == OBS :
                             print "Pone " + str(huevos) +" huevos"
+
+                        if huevos > 0 :
                             poner_huevos = True
                             cantidad_huevos = huevos
 

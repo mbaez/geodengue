@@ -96,7 +96,7 @@ class Simulador :
             "PUPA" : Adulto
         }
 
-        if( indiv.expectativa_vida > 10 ) :
+        if( indiv.expectativa_vida > 15 ) :
             return Clazz[indiv.estado](sexo=indiv.sexo,\
                     posicion=indiv.posicion,\
                     zonas=self.zonas_table,\
@@ -126,8 +126,8 @@ class Simulador :
             #~ se procesa cada individuo de la población
             j=0
             nueva_poblacion = []
-            #~ if(i%24) == 0 :
-                #~ print "Día Nro :" + str(i/24)
+            if(i%24) == 0 :
+                print "Día Nro :" + str(i/24) + " poblacion :" + str(len(self.poblacion))
             for individuo in self.poblacion :
 
                 if individuo.id_mosquito == OBS :
@@ -198,7 +198,7 @@ class Simulador :
                 args['cantidad_huevos'] = cantidad_huevos
 
                 # log de eventos
-                self.logger.to_csv( args )
+                #~ self.logger.to_csv( args )
                 #~ fin del preiodo
                 j += 1
             #~ fin del preriodo

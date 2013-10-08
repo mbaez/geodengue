@@ -165,7 +165,6 @@ class Adulto(AeAegypti) :
         """
         return self.expectativa_vida <= 0
 
-
     def desarrollar(self, hora) :
         """
         Este método se encarga de desarrollar el individuo que se encuentra
@@ -229,7 +228,7 @@ class Adulto(AeAegypti) :
             una hora.
         """
         rank = self.rank_zona()
-
+        self.inseminacion(hora)
         """
         Permanece físicamente en donde emergió, siempre y cuando no
         halla algún factor que la perturbe o no disponga de huéspedes,
@@ -239,19 +238,73 @@ class Adulto(AeAegypti) :
         es capaz de volar hasta tres kilómetros en busca de este sitio.
         Los machos suelen dispersarse en menor magnitud que las hembras
         """
-        #aumenta el valor de su ultima alimentacion
         self._ultimo_alimento += 1
 
         if rank == Zonas.MALA or rank == Zonas.PESIMA  :
             self.volar(hora)
 
         elif hora.get_tipo_hora() == Horario.MADUGRADA_MANHANA \
-            and self.se_alimenta == False :
-            #se alimenta en horario diurno
-            self.inseminacion(hora)
+            or hora.get_tipo_hora() == Horario.TARDE_NOCHE \
+            or self._se_alimenta == False:
             self._se_alimenta = True
             self._ultimo_alimento = 0
-            self._cantidad_alimentacion = 4
+            """
+            2-3 mg = 20-30 cg
+            """
+            self._cantidad_alimentacion += randint(0, MAX_ALIMENTACION)
+
+    def poner_huevos(self, hora) :
+        """
+        Generalmente el apareamiento se realiza cuando la hembra busca
+        alimentarse; se ha observado que el ruido que emite al volar es
+        un mecanismo por el cual el macho es atraído.
+
+        Una vez copulada e inseminada la hembra, el esperma que lleva es
+        suficiente para fecundar todos los huevitos que produce durante su
+        existencia, no aceptando otra inseminación adicional.
+
+        Su ciclo para poner huevos es de aproximadamente cada tres días.
+        Su alimentación puede hacerla en cualquier momento (puede picar
+        varias veces a las personas de una casa). Las proteínas contenidas
+        en la sangre le son indispensables para la maduración de los huevos.
+        La variación de temperatura y humedad, así como la latitud pueden
+        hacer variar estos rangos del ciclo de vida de los mosquitos.
+
+        La hembra deposita sus huevos en las paredes de recipientes con
+        agua estancada, limpia y a la sombra. Un solo mosquito puede poner
+        80 a 150 huevos, cuatro veces al día.
+
+        El mosquito hembra necesita la sangre para obtener proteínas y
+        poner sus huevos.
+
+        La mayoría de las posturas ocurre cerca del crepúsculo.
+
+        @type hora : Hora
+        @param hora: el objeto que contiene los datos climatologicos para
+            una hora.
+        """
+        huevos = 0
+        #~ se obtiene el ciclo gonotrofico
+        ciclo_gonotrofico = self.get_ciclo_gonotrofico(hora)
+        # se aumenta el contador de ultima oviposición
+        self._ultima_oviposicion += 1
+
+        #~ se realizan los controles de las condiciones
+        if self.ultima_oviposicion >= ciclo_gonotrofico \
+            and self.cantidad_alimentacion >= 10:
+
+            huevos = self.generar_huevos()
+            print ("="*30)
+            print str(self) + "poner_huevos %s \nultima ovi %s \ncantidad ali %s \mcantidad oiv %s"%( huevos,\
+                self.ultima_oviposicion,\
+                self.cantidad_alimentacion,\
+                self.cantidad_oviposicion)
+
+            self._se_alimenta = False
+            self._cantidad_alimentacion = 0
+            self._cantidad_oviposicion +=1
+
+        return huevos
 
     def inseminacion (self, hora):
         """
@@ -263,11 +316,16 @@ class Adulto(AeAegypti) :
         * La inseminación,generalmente, se efectúa durante el vuelo.
         * Una vez alimentada de sangre ocurren pocos apareamientos.
         """
-        if self.sexo == Sexo.MACHO :
-            #~ buscar a hembras para inseminarse
-            self.inseminar_macho(hora)
-        else :
-            self.inseminar_hembra(hora)
+        p = randint(1, 24)
+        if (hora.get_tipo_hora() == Horario.MADUGRADA_MANHANA \
+            or hora.get_tipo_hora() == Horario.TARDE_NOCHE) \
+            and p <= self.edad:
+
+            if self.sexo == Sexo.MACHO :
+                #~ buscar a hembras para inseminarse
+                self.inseminar_macho(hora)
+            else :
+                self.inseminar_hembra(hora)
 
     def inseminar_macho (self, hora) :
         """
@@ -342,60 +400,6 @@ class Adulto(AeAegypti) :
         """
         return randint (48, 72)
 
-    def poner_huevos(self, hora) :
-        """
-        Generalmente el apareamiento se realiza cuando la hembra busca
-        alimentarse; se ha observado que el ruido que emite al volar es
-        un mecanismo por el cual el macho es atraído.
-
-        Una vez copulada e inseminada la hembra, el esperma que lleva es
-        suficiente para fecundar todos los huevitos que produce durante su
-        existencia, no aceptando otra inseminación adicional.
-
-        Su ciclo para poner huevos es de aproximadamente cada tres días.
-        Su alimentación puede hacerla en cualquier momento (puede picar
-        varias veces a las personas de una casa). Las proteínas contenidas
-        en la sangre le son indispensables para la maduración de los huevos.
-        La variación de temperatura y humedad, así como la latitud pueden
-        hacer variar estos rangos del ciclo de vida de los mosquitos.
-
-        La hembra deposita sus huevos en las paredes de recipientes con
-        agua estancada, limpia y a la sombra. Un solo mosquito puede poner
-        80 a 150 huevos, cuatro veces al día.
-
-        El mosquito hembra necesita la sangre para obtener proteínas y
-        poner sus huevos.
-
-        La mayoría de las posturas ocurre cerca del crepúsculo.
-
-        @type hora : Hora
-        @param hora: el objeto que contiene los datos climatologicos para
-            una hora.
-        """
-
-        huevos = 0
-        #~ se obtiene el ciclo gonotrofico
-        ciclo_gonotrofico = self.get_ciclo_gonotrofico(hora)
-        # se aumenta el contador de ultima oviposición
-        self._ultima_oviposicion += 1
-        #~ print "ALIMENTO " + str(self._ultima_oviposicion) + "\t" \
-            #~ + str(ciclo_gonotrofico) + "\t" + str(self._se_alimenta)
-        #~ se realizan los controles de las condiciones
-        if self.ultima_oviposicion >= ciclo_gonotrofico \
-            and self._se_alimenta == True :
-            """
-            Para hembras nuliperas, la primera generación de óvulos requiere
-            por lo menos dos alimentaciones sanguíneas para su maduración.
-
-            Después de cada alimentación sanguínea la hembra desarrolla un
-            lote de huevos.
-            """
-            huevos = self.generar_huevos()
-            self._se_alimenta = False
-            self._cantidad_oviposicion +=1
-
-        return huevos
-
     def generar_huevos (self) :
         """
         Su ciclo para poner huevos es de aproximadamente cada tres días a
@@ -408,19 +412,9 @@ class Adulto(AeAegypti) :
         Un solo mosquito hembra puede poner 80 a 150 huevos, cuatro veces
         al día.
         """
-        huevos = 0
-        if (self.ultima_oviposicion % 6) == 0 :
-            """
-            Un solo mosquito puede poner 80 a 150 huevos, cuatro veces
-            al día.
-
-            24 horas / 4 veces al día = cada 6 horas
-            self.ultima_oviposicion % 6 == 0 ? poner huevos : no huevos
-
-            """
-            huevos = randint(80, 150)
-            # se reinicia el contador
-            self._ultima_oviposicion = 1;
+        huevos = self.cantidad_alimentacion * MAX_HUEVOS / MAX_ALIMENTACION
+        # se reinicia el contador
+        self._ultima_oviposicion = 0;
 
         return huevos
 

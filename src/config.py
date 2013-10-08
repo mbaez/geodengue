@@ -56,7 +56,11 @@ TUTIEMPO_URL = "http://localhost/geodengue/tutiempo.dom";
 Configuraciones de las Zonas
 """
 #~ El tamaño esta a un radio de 200 metros de la del punto de origen
-TAMANHO_ZONA = 100
+TAMANHO_ZONA = 400
+#~ la cantidad máxima de huevos que puede poner un indiviudo de una vez
+MAX_HUEVOS = 150
+#~ cantidad de alimento que debe ingerir el individuo hasta estar satisfecho
+MAX_ALIMENTACION = 30
 #~ Porcentaje de las etapas inmaduras que abarca cada fase
 TIEMPO_PUPA = 0.26
 TIEMPO_LARVA = 0.74
@@ -169,7 +173,7 @@ Mala    [1,42]  [3,39]      [3,28]      [4,16]      [2,7]
 Pesima  [1,42]  [3,39]      [3,28]      [4,16]      [2,7]
         p=100   p= 60       p=23        P= 68       p= 100
 """
-LARVA_PUPA_EXPECTATIVA_OLD = {
+__LARVA_PUPA_EXPECTATIVA = {
     "OPTIMA" : {
         "FRIO"     : [33.8, 42],
         "FRESCO"   : [31.8, 39],
@@ -217,42 +221,41 @@ Buena   2.6,21.8    23.6,26.5   15,23.6     8,16        2.6, 7.2
 Normal  2.6,21.8    23.6,26.5   15,23.6     8,16        2.6, 7.2
 Mala    2.6,21.8    23.6,26.5   15,23.6     8,16        2.6, 7.2
 Pesima  2.6,21.8    23.6,26.5   15,23.6     8,16        2.6, 7.2
-
 """
 LARVA_PUPA_EXPECTATIVA = {
     "OPTIMA" : {
-        "FRIO"     : [2.6,21.8],
-        "FRESCO"   : [23.6,26.5],
-        "NORMAL"   : [15.0,23.6],
+        "FRIO"     : [17.96, 21.8],
+        "FRESCO"   : [25.92,26.5],
+        "NORMAL"   : [21.88,23.6],
         "CALIDO"   : [8.0,16.0],
-        "CALUROSO" : [2.6, 7.2]
+        "CALUROSO" : [6.28, 7.2]
     },
     "BUENA"  : {
-        "FRIO"     : [2.6,21.8],
-        "FRESCO"   : [23.6,26.5],
-        "NORMAL"   : [15.0,23.6],
-        "CALIDO"   : [8.0,16.0],
-        "CALUROSO" : [2.6, 7.2]
+        "FRIO"     : [14.12, 17.96],
+        "FRESCO"   : [25.34,25.92],
+        "NORMAL"   : [20.16,21.88],
+        "CALIDO"   : [14.4,16.0],
+        "CALUROSO" : [5.36, 6.28]
     },
     "NORMAL"  : {
-        "FRIO"     : [2.6,21.8],
-        "FRESCO"   : [23.6,26.5],
-        "NORMAL"   : [15.0,23.6],
-        "CALIDO"   : [8.0,16.0],
-        "CALUROSO" : [2.6, 7.2]
+        "FRIO"     : [10.28, 14.12],
+        "FRESCO"   : [24.76,25.34],
+        "NORMAL"   : [18.44,20.16],
+        "CALIDO"   : [12.8,14.4],
+        "CALUROSO" : [4.44, 5.36]
     },
     "MALA"  : {
-        "FRIO"     : [2.6,21.8],
-        "FRESCO"   : [23.6,26.5],
-        "NORMAL"   : [15.0,23.6],
-        "CALIDO"   : [8.0,16.0],
-        "CALUROSO" : [2.6, 7.2]
+        "FRIO"     : [6.44, 10.28],
+        "FRESCO"   : [24.18,24.76],
+        "NORMAL"   : [16.72,18.44],
+        "CALIDO"   : [9.6, 11.2],
+        "CALUROSO" : [3.52, 4.44]
     },
     "PESIMA"  : {
-        "FRIO"     : [2.6,21.8],
-        "FRESCO"   : [23.6,26.5],
-        "NORMAL"   : [15.0,23.6],
-        "CALIDO"   : [8.0,16.0],
-        "CALUROSO" : [2.6, 7.2]
+        "FRIO"     : [2.6, 6.44],
+        "FRESCO"   : [23.6,24.18],
+        "NORMAL"   : [15.0,16.72],
+        "CALIDO"   : [8.0,9.6],
+        "CALUROSO" : [2.6, 3.52]
     }
 }

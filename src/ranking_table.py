@@ -75,12 +75,23 @@ class RankingTable:
         if len(zona_muestras) == 0 :
             return 0
 
+        sum_wi= 0
+        p = 1.7
         #~ se evaluan los puntos de riesgo
         for i in range(len(zona_muestras)) :
-            rank_value += zona_muestras[i]['cantidad'];
+            dx = point.distance_to(zona_muestras[i])
+            if dx > 0 :
+                sum_wi += 1/( dx ** p)
 
+        for i in range(len(zona_muestras)) :
+            dx = point.distance_to(zona_muestras[i])
+            if dx > 0 :
+                wi = 1/( dx ** p)
+                rank_value += (wi * zona_muestras[i]['cantidad'])/sum_wi
+
+        print rank_value
         #~ se calcula el promedio de riesgo
-        rank_value = rank_value / len(zona_muestras)
+        #~ rank_value = rank_value / len(zona_muestras)
 
         return rank_value
 

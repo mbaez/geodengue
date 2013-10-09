@@ -142,13 +142,14 @@ class Adulto(AeAegypti) :
         @type hora : Hora
         @param hora: el objeto que contiene los datos climatologicos para
             una hora.
-
         """
 
         self._se_reproduce = self.is_inseminada == True \
             and self.esta_muerto() == False \
             and self.sexo == Sexo.HEMBRA \
             and hora.get_tipo_clima() != Clima.FRIO
+            #~ and (hora.get_tipo_hora == Horario.TARDE_NOCHE \
+                #~ or hora.get_tipo_hora == Horario.NOCHE ) \
 
         return self._se_reproduce
 
@@ -239,19 +240,23 @@ class Adulto(AeAegypti) :
         Los machos suelen dispersarse en menor magnitud que las hembras
         """
         self._ultimo_alimento += 1
+        #~ el mosquito se alimenta por primera vez de 20 a 72 horas
+        p = randint(20, 72)
 
-        if rank == Zonas.MALA or rank == Zonas.PESIMA  :
+        if rank == Zonas.MALA or rank == Zonas.PESIMA:
             self.volar(hora)
 
-        elif hora.get_tipo_hora() == Horario.MADUGRADA_MANHANA \
-            or hora.get_tipo_hora() == Horario.TARDE_NOCHE \
-            or self._se_alimenta == False:
-            self._se_alimenta = True
-            self._ultimo_alimento = 0
-            """
-            2-3 mg = 20-30 cg
-            """
-            self._cantidad_alimentacion += randint(0, MAX_ALIMENTACION)
+        elif (hora.get_tipo_hora() == Horario.MADUGRADA_MANHANA \
+            or hora.get_tipo_hora() == Horario.TARDE_NOCHE) \
+            and self._se_alimenta == False \
+            and p % (self.edad + 1 ) == 0:
+
+                self._se_alimenta = True
+                self._ultimo_alimento = 0
+                """
+                2-3 mg = 20-30 cg
+                """
+                self._cantidad_alimentacion += randint(0, MAX_ALIMENTACION)
 
     def poner_huevos(self, hora) :
         """
@@ -294,12 +299,6 @@ class Adulto(AeAegypti) :
             and self.cantidad_alimentacion >= 10:
 
             huevos = self.generar_huevos()
-            print ("="*30)
-            print str(self) + "poner_huevos %s \nultima ovi %s \ncantidad ali %s \mcantidad oiv %s"%( huevos,\
-                self.ultima_oviposicion,\
-                self.cantidad_alimentacion,\
-                self.cantidad_oviposicion)
-
             self._se_alimenta = False
             self._cantidad_alimentacion = 0
             self._cantidad_oviposicion +=1
@@ -357,7 +356,7 @@ class Adulto(AeAegypti) :
         porcentaje =  randint(1, 100)
         #~ Para las hembras nulíperas (no ha puesto ningún huevo)
         if self.cantidad_oviposicion == 0  \
-            and self.se_alimenta == False\
+            and self._cantidad_alimentacion == 0\
             and porcentaje <= 58 \
             and self.is_inseminada == False :
                 """
@@ -369,6 +368,7 @@ class Adulto(AeAegypti) :
 
         elif  self.cantidad_oviposicion == 0 \
             and porcentaje <= 17 \
+            and self.se_alimenta == True  \
             and self.is_inseminada == False :
                 """
                 El 17% durante durante la alimentación
@@ -395,10 +395,32 @@ class Adulto(AeAegypti) :
 
     def get_ciclo_gonotrofico (self, hora) :
         """
-        El intervalo de tiempo entre la alimentación y la postura (ciclo
-        gonotrófico) es de 48 horas en condiciones óptimas de temperatura.
+        El ciclo gonotrófrico de los mosquitos es el nombre que se le
+        adjudico al período que existe desde que el mosquito chupa la
+        sangre- ovopostura- hasta que vuelve a alimentarse.
+
+        Consiste en la absorción de sangre, seguido de la digestión, la
+        maduración de los oocytos y la oviposición. El tiempo para la
+        digestión de sangre y su consecuente producción de huevos varía
+        de 3 a 5 días dependiendo de la temperatura ambiental.
+        La temperatura influye en la duración de la digestión y el desarrollo
+        de los ovarios, ya que cuando las temperaturas son bajas la digestión
+        tarda más tiempo.
         """
-        return randint (48, 72)
+        if hora.get_tipo_clima() == Clima.FRIO :
+            return randint (96, 120)
+
+        elif hora.get_tipo_clima() == Clima.FRESCO :
+            return randint (72, 96)
+
+        elif hora.get_tipo_clima() == Clima.NORMAL :
+            return randint (48, 96)
+
+        elif hora.get_tipo_clima() == Clima.CALIDO :
+            return randint (48, 72)
+
+        elif hora.get_tipo_clima() == Clima.CALUROSO :
+            return randint (48, 72)
 
     def generar_huevos (self) :
         """
@@ -460,6 +482,7 @@ class Adulto(AeAegypti) :
         distancia = Xo + Velocidad * Tiempo = Velocidad * 1h
 
         """
+        #~ print "Vel : "+str(velocidad)
         self.posicion.move(velocidad, angulo_vuelo)
 
     def move_to_neighbors (self, hora) :
@@ -525,6 +548,6 @@ class Adulto(AeAegypti) :
         """
         vx = math.sin(180 - angulo_vuelo) * speed - wind_speed
         vy = math.cos(180 - angulo_vuelo) * speed
-        v = sqrt (vx^2 + vy^2 )
+        v = math.sqrt (vx**2 + vy**2 )
 
         return  v

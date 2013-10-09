@@ -144,8 +144,8 @@ class Hora :
     def __str__(self) :
         return str(self.hora) + "hs " + \
         str(self.precipitacion) + " " + \
-        str(self.temperatura) + "¤C " + \
-        str(self.humedad) + " " + \
+        str(self.temperatura) + "*C " + \
+        str(self.humedad) + "% " + \
         str(self.viento ) + " " + \
         str(self.direccion_viento) + " "
 
@@ -299,8 +299,16 @@ class TuTiempo:
                         if attr == attributes["Temp"] :
                             value = value.replace("°C","").strip()
                             value = float(value)
+
                         elif attr == attributes["IcoViento"] :
                             value = self.__dom_direccion_viento(td)
+
+                        elif attr == attributes["vv"] :
+                            str_value = value.split(" ")[0].lower();
+                            value = 0
+                            if str_value.isdigit() :
+                                value = float(str_value);
+
                         elif attr == attributes["hora"] :
                             value = value.replace(":00","").strip()
                             value = int(value)
@@ -412,4 +420,5 @@ if __name__ == "__main__":
     clima = TuTiempo("Asuncion")
     #~ clima.process_dom_hora();
     periodo = clima.get_periodo()
-    print periodo.horas
+    for h in periodo.horas :
+        print h

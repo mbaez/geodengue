@@ -126,37 +126,37 @@ Tabla de adultos
 ADULTO__EXPECTATIVA = {
     "OPTIMA" : {
         "FRIO"     : [1, 3],
-        "FRESCO"   : [15, 20],
-        "NORMAL"   : [15, 30],
-        "CALIDO"   : [20, 30],
+        "FRESCO"   : [5, 15],
+        "NORMAL"   : [5, 20],
+        "CALIDO"   : [5, 30],
         "CALUROSO" : [1]
     },
     "BUENA"  : {
         "FRIO"     : [1, 3],
-        "FRESCO"   : [15, 20],
-        "NORMAL"   : [15, 30],
-        "CALIDO"   : [20, 30],
+        "FRESCO"   : [5, 15],
+        "NORMAL"   : [5, 20],
+        "CALIDO"   : [5, 30],
         "CALUROSO" : [1]
     },
     "NORMAL"  : {
         "FRIO"     : [1, 3],
-        "FRESCO"   : [15, 20],
-        "NORMAL"   : [15, 30],
-        "CALIDO"   : [20, 30],
+        "FRESCO"   : [5, 15],
+        "NORMAL"   : [5, 20],
+        "CALIDO"   : [5, 30],
         "CALUROSO" : [1]
     },
     "MALA"  : {
         "FRIO"     : [1, 3],
-        "FRESCO"   : [15, 20],
-        "NORMAL"   : [15, 30],
-        "CALIDO"   : [20, 30],
+        "FRESCO"   : [5, 15],
+        "NORMAL"   : [5, 20],
+        "CALIDO"   : [5, 30],
         "CALUROSO" : [1]
     },
     "PESIMA"  : {
         "FRIO"     : [1, 3],
-        "FRESCO"   : [15, 20],
-        "NORMAL"   : [15, 30],
-        "CALIDO"   : [20, 30],
+        "FRESCO"   : [5, 15],
+        "NORMAL"   : [5, 20],
+        "CALIDO"   : [5, 30],
         "CALUROSO" : [1]
     }
 }
@@ -224,38 +224,38 @@ Pesima  2.6,21.8    23.6,26.5   15,23.6     8,16        2.6, 7.2
 """
 LARVA_PUPA_EXPECTATIVA = {
     "OPTIMA" : {
-        "FRIO"     : [17.96, 21.8],
-        "FRESCO"   : [25.92,26.5],
-        "NORMAL"   : [21.88,23.6],
-        "CALIDO"   : [8.0,16.0],
-        "CALUROSO" : [6.28, 7.2]
+        "FRIO"     : [2.6, 21.8],
+        "FRESCO"   : [23.6,26.5],
+        "NORMAL"   : [15.0,23.6],
+        "CALIDO"   : [8.0, 16.0],
+        "CALUROSO" : [2.6, 7.2]
     },
     "BUENA"  : {
-        "FRIO"     : [14.12, 17.96],
-        "FRESCO"   : [25.34,25.92],
-        "NORMAL"   : [20.16,21.88],
-        "CALIDO"   : [14.4,16.0],
-        "CALUROSO" : [5.36, 6.28]
+        "FRIO"     : [2.6, 17.96],
+        "FRESCO"   : [23.6,25.92],
+        "NORMAL"   : [15.0,21.88],
+        "CALIDO"   : [8.0,16.0],
+        "CALUROSO" : [2.6, 6.28]
     },
     "NORMAL"  : {
-        "FRIO"     : [10.28, 14.12],
-        "FRESCO"   : [24.76,25.34],
-        "NORMAL"   : [18.44,20.16],
-        "CALIDO"   : [12.8,14.4],
-        "CALUROSO" : [4.44, 5.36]
+        "FRIO"     : [2.6, 14.12],
+        "FRESCO"   : [23.6,25.34],
+        "NORMAL"   : [15.0,20.16],
+        "CALIDO"   : [8.0,14.4],
+        "CALUROSO" : [2.6, 5.36]
     },
     "MALA"  : {
-        "FRIO"     : [6.44, 10.28],
-        "FRESCO"   : [24.18,24.76],
-        "NORMAL"   : [16.72,18.44],
-        "CALIDO"   : [9.6, 11.2],
-        "CALUROSO" : [3.52, 4.44]
+        "FRIO"     : [2.6, 10.28],
+        "FRESCO"   : [23.6,24.76],
+        "NORMAL"   : [15.0,18.44],
+        "CALIDO"   : [8.0, 11.2],
+        "CALUROSO" : [2.6, 4.44]
     },
     "PESIMA"  : {
         "FRIO"     : [2.6, 6.44],
         "FRESCO"   : [23.6,24.18],
         "NORMAL"   : [15.0,16.72],
-        "CALIDO"   : [8.0,9.6],
+        "CALIDO"   : [8.0, 9.6],
         "CALUROSO" : [2.6, 3.52]
     }
 }

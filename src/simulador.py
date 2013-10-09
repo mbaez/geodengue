@@ -96,7 +96,7 @@ class Simulador :
             "PUPA" : Adulto
         }
 
-        if( indiv.expectativa_vida > 15 ) :
+        if( indiv.expectativa_vida > 10 ) :
             return Clazz[indiv.estado](sexo=indiv.sexo,\
                     posicion=indiv.posicion,\
                     zonas=self.zonas_table,\
@@ -119,8 +119,8 @@ class Simulador :
         larvas_muertas = 0;
         pupas_muertas = 0;
         adultos_muertas = 0;
-        olimpia = True
-        OBS = 300
+        olimpia = False
+        OBS = 400
         args = {}
         for hora in self.periodo.horas :
             #~ se procesa cada individuo de la población

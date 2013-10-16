@@ -64,6 +64,7 @@ MAX_ALIMENTACION = 30
 #~ Porcentaje de las etapas inmaduras que abarca cada fase
 TIEMPO_PUPA = 0.26
 TIEMPO_LARVA = 0.74
+SELECCION_NATURAL = 0.9
 
 #~ La duración en día de la pupa+larva de acuerdo a las condiciones climáticas
 #~ y el tipo de zona
@@ -225,7 +226,7 @@ Pesima  2.6,21.8    23.6,26.5   15,23.6     8,16        2.6, 7.2
 LARVA_PUPA_EXPECTATIVA = {
     "OPTIMA" : {
         "FRIO"     : [2.6, 21.8],
-        "FRESCO"   : [23.6,26.5],
+        "FRESCO"   : [23.6, 26.5],
         "NORMAL"   : [15.0,23.6],
         "CALIDO"   : [8.0, 16.0],
         "CALUROSO" : [2.6, 7.2]
@@ -259,3 +260,4 @@ LARVA_PUPA_EXPECTATIVA = {
         "CALUROSO" : [2.6, 3.52]
     }
 }
+

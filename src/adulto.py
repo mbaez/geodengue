@@ -148,8 +148,6 @@ class Adulto(AeAegypti) :
             and self.esta_muerto() == False \
             and self.sexo == Sexo.HEMBRA \
             and hora.get_tipo_clima() != Clima.FRIO
-            #~ and (hora.get_tipo_hora == Horario.TARDE_NOCHE \
-                #~ or hora.get_tipo_hora == Horario.NOCHE ) \
 
         return self._se_reproduce
 
@@ -407,20 +405,23 @@ class Adulto(AeAegypti) :
         de los ovarios, ya que cuando las temperaturas son bajas la digestión
         tarda más tiempo.
         """
+        ciclo = 0
         if hora.get_tipo_clima() == Clima.FRIO :
-            return randint (96, 120)
+            ciclo = randint (96, 120)
 
         elif hora.get_tipo_clima() == Clima.FRESCO :
-            return randint (72, 96)
+            ciclo = randint (72, 96)
 
         elif hora.get_tipo_clima() == Clima.NORMAL :
-            return randint (48, 96)
+            ciclo = randint (48, 96)
 
         elif hora.get_tipo_clima() == Clima.CALIDO :
-            return randint (48, 72)
+            ciclo = randint (48, 72)
 
         elif hora.get_tipo_clima() == Clima.CALUROSO :
-            return randint (48, 72)
+            ciclo = randint (48, 72)
+        #~ se retorna el ciclo
+        return ciclo
 
     def generar_huevos (self) :
         """
@@ -482,7 +483,6 @@ class Adulto(AeAegypti) :
         distancia = Xo + Velocidad * Tiempo = Velocidad * 1h
 
         """
-        #~ print "Vel : "+str(velocidad)
         self.posicion.move(velocidad, angulo_vuelo)
 
     def move_to_neighbors (self, hora) :

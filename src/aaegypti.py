@@ -231,14 +231,15 @@ class AeAegypti :
         """
         dias = table[tipo_zona][tipo_clima]
         if(len(dias) > 1) :
+            peso = 100.0
             #~ se obitnene los extremos, se multiplica por 100 para realizar
             #~ un ranint entre los extremos ya que no existe un 'randfloat'
-            start = int(dias[0] * 100)
-            end = int(dias[1] * 100)
+            start = int(dias[0] * peso)
+            end = int(dias[1] * peso)
             #~ se calcula un número aleatorio en entre los extremos
             cantidad_dias = randint(start, end)
             #~ print "cantidad dias " +str(cantidad_dias)
-            return  (cantidad_dias * p) /100.0
+            return  (cantidad_dias * p) /peso
         #~ si tiene un solo elemento se retorna el elemento multiplicado
         #~  por el porcentaje
         return dias[0] * p;

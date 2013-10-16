@@ -71,11 +71,16 @@ class Simulador :
         for i in range(len(grid)):
             # se obtine la cantidad de individuos
             cantidad_larvas = int(grid.z[i]);
+            prob = cantidad_larvas * SELECCION_NATURAL
             for cantidad in range(cantidad_larvas) :
                 #se inicializa los inidviduos
-
-                indv = Larva(x=grid.x[i], y=grid.y[i], \
-                    estado=Estado.LARVA, zonas=self.zonas_table)
+                if cantidad > prob :
+                    indv = Larva(x=grid.x[i], y=grid.y[i], \
+                        estado=Estado.LARVA, zonas=self.zonas_table)
+                else :
+                    indv = Larva(x=grid.x[i], y=grid.y[i], \
+                        estado=Estado.LARVA, zonas=self.zonas_table,\
+                        expectativa_vida=randint(30,100))
 
                 # id del mosquito
                 indv._id_mosquito = id_mosquito
@@ -95,8 +100,9 @@ class Simulador :
             "LARVA" : Pupa,
             "PUPA" : Adulto
         }
-
-        if( indiv.expectativa_vida > 10 ) :
+        #~ intervalo = randint(10, 50)
+        intervalo = 10
+        if( indiv.expectativa_vida > intervalo ) :
             return Clazz[indiv.estado](sexo=indiv.sexo,\
                     posicion=indiv.posicion,\
                     zonas=self.zonas_table,\
@@ -178,10 +184,17 @@ class Simulador :
                         and olimpia == False) :
                         huevos = individuo.poner_huevos(hora)
                         total_huevos += huevos
+                        prob = huevos * SELECCION_NATURAL
                         for c in range(huevos) :
-                            nueva_poblacion.append(\
-                                Huevo(posicion=individuo.posicion,\
-                                    zonas=self.zonas_table))
+                            if huevos > prob :
+                                nueva_poblacion.append(\
+                                    Huevo(posicion=individuo.posicion,\
+                                        zonas=self.zonas_table))
+                            else :
+                                nueva_poblacion.append(\
+                                    Huevo(posicion=individuo.posicion,\
+                                        zonas=self.zonas_table,\
+                                        expectativa_vida=randint(30,100)))
 
                         if individuo.id_mosquito == OBS :
                             print "Pone " + str(huevos) +" huevos"

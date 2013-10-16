@@ -12,6 +12,7 @@ de control.
 #Se impotan los modulos.
 
 from ranking_table import *
+from models import *
 from huevo import *
 from larva import *
 from pupa import *
@@ -37,6 +38,7 @@ class Simulador :
         reproductivo y el desplazamiento.
 
     """
+    ID = 0
 
     def __init__ (self, **kargs) :
         """
@@ -58,6 +60,37 @@ class Simulador :
 
         # se inicializa la clase que hace log de los eventos
         self.logger = EventLogger('event_log_')
+    def __generar_poblacion__(self, **kargs):
+        """
+        """
+        cantidad_larvas = kargs.get('cantidad_larvas', 0)
+        clazz = kargs.get('clazz', Huevo)
+        posicion = kargs.get('posicion', Point(kargs))
+        sub_poblacion = []
+        prob = cantidad_larvas * SELECCION_NATURAL
+        intervalo = cantidad_larvas * 0.1
+        print intervalo
+        tope = 90
+        for cantidad in range(cantidad_larvas) :
+            if cantidad%intervalo == 0 :
+                tope -= 10
+            #se inicializa los inidviduos
+            if cantidad > prob :
+                indv = clazz(posicion=posicion, zonas=self.zonas_table)
+            else :
+                print tope
+                indv = clazz(\
+                    posicion=posicion,\
+                    zonas=self.zonas_table,\
+                    expectativa_vida=randint(0, tope)\
+                )
+            # id del mosquito
+            indv._id_mosquito = Simulador.ID
+            Simulador.ID += 1
+            #~ se añade el individuo a la sub población
+            sub_poblacion.append(indv)
+
+        return sub_poblacion
 
     def generar_poblacion (self, data ):
         """
@@ -67,25 +100,16 @@ class Simulador :
         """
         grid = Grid()
         grid.parse(data)
-        id_mosquito = 0
         for i in range(len(grid)):
             # se obtine la cantidad de individuos
             cantidad_larvas = int(grid.z[i]);
-            prob = cantidad_larvas * SELECCION_NATURAL
-            for cantidad in range(cantidad_larvas) :
-                #se inicializa los inidviduos
-                if cantidad > prob :
-                    indv = Larva(x=grid.x[i], y=grid.y[i], \
-                        estado=Estado.LARVA, zonas=self.zonas_table)
-                else :
-                    indv = Larva(x=grid.x[i], y=grid.y[i], \
-                        estado=Estado.LARVA, zonas=self.zonas_table,\
-                        expectativa_vida=randint(30,100))
+            #~ se genera la sub población de larvas
+            sub_poblacion = self.__generar_poblacion__(\
+                cantidad_larvas=cantidad_larvas,\
+                clazz=Larva,\
+                x=grid.x[i], y=grid.y[i])
 
-                # id del mosquito
-                indv._id_mosquito = id_mosquito
-                self.poblacion.append(indv)
-                id_mosquito += 1
+            self.poblacion.extend(sub_poblacion)
 
         self.__grid = grid
 
@@ -184,23 +208,14 @@ class Simulador :
                         and olimpia == False) :
                         huevos = individuo.poner_huevos(hora)
                         total_huevos += huevos
-                        prob = huevos * SELECCION_NATURAL
-                        for c in range(huevos) :
-                            if huevos > prob :
-                                nueva_poblacion.append(\
-                                    Huevo(posicion=individuo.posicion,\
-                                        zonas=self.zonas_table))
-                            else :
-                                nueva_poblacion.append(\
-                                    Huevo(posicion=individuo.posicion,\
-                                        zonas=self.zonas_table,\
-                                        expectativa_vida=randint(30,100)))
+                        self.__generar_poblacion__(\
+                                posicion=individuo.posicion,\
+                                cantidad_larvas=huevos)
 
                         if individuo.id_mosquito == OBS :
                             print "Pone " + str(huevos) +" huevos"
 
                         if huevos > 0 :
-                            poner_huevos = True
                             cantidad_huevos = huevos
 
                 args['individuo'] = individuo

@@ -261,3 +261,11 @@ LARVA_PUPA_EXPECTATIVA = {
     }
 }
 
+
+CICLO_GONOTROFICO = {
+    "FRIO" : [96, 120],
+    "FRESCO" :[72, 96],
+    "NORMAL" :[48, 96],
+    "CALIDO" :[48, 72],
+    "CALUROSO" : [48, 72]
+}

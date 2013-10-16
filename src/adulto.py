@@ -405,23 +405,10 @@ class Adulto(AeAegypti) :
         de los ovarios, ya que cuando las temperaturas son bajas la digestión
         tarda más tiempo.
         """
-        ciclo = 0
-        if hora.get_tipo_clima() == Clima.FRIO :
-            ciclo = randint (96, 120)
-
-        elif hora.get_tipo_clima() == Clima.FRESCO :
-            ciclo = randint (72, 96)
-
-        elif hora.get_tipo_clima() == Clima.NORMAL :
-            ciclo = randint (48, 96)
-
-        elif hora.get_tipo_clima() == Clima.CALIDO :
-            ciclo = randint (48, 72)
-
-        elif hora.get_tipo_clima() == Clima.CALUROSO :
-            ciclo = randint (48, 72)
+        tipo_clima = hora.get_tipo_clima()
+        rango = CICLO_GONOTROFICO.get(tipo_clima)
         #~ se retorna el ciclo
-        return ciclo
+        return randint(rango[0], rango[1])
 
     def generar_huevos (self) :
         """

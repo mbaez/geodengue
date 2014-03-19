@@ -21,8 +21,9 @@ Dependencias
 * **Librerias bases**
 
 ```sh
+sudo apt-get install python-pip
 sudo easy_install flask
-sudo easy_install scipy
+sudo pip install scipy
 sudo apt-get install python-numpy
 sudo easy_install gsconfig
 sudo apt-get install python-psycopg2

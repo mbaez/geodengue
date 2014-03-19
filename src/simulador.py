@@ -69,20 +69,16 @@ class Simulador :
         sub_poblacion = []
         prob = cantidad_larvas * SELECCION_NATURAL
         intervalo = cantidad_larvas * 0.1
-        print intervalo
-        tope = 90
         for cantidad in range(cantidad_larvas) :
-            if cantidad%intervalo == 0 :
-                tope -= 10
+
             #se inicializa los inidviduos
             if cantidad > prob :
                 indv = clazz(posicion=posicion, zonas=self.zonas_table)
             else :
-                print tope
                 indv = clazz(\
                     posicion=posicion,\
                     zonas=self.zonas_table,\
-                    expectativa_vida=randint(0, tope)\
+                    expectativa_vida=randint(65, 100)\
                 )
             # id del mosquito
             indv._id_mosquito = Simulador.ID

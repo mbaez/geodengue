@@ -245,8 +245,10 @@ class PuntosRiesgoDao :
 
 if __name__ == "__main__" :
     #~ dic = da.get_by(1)
-    a = PuntosRiesgoDao()
-    dic = a.get_all();
+    #a = PuntosRiesgoDao()
+    #dic = a.get_all();
+    dao = PuntosControlModel()
+    dic = dao.get_by(1);
     print dic;
     #~ cursor = a.persist({'id_muestra': 1, 'descripcion': 'test'})
     #~ print cursor.fetchone()[0]

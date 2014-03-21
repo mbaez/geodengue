@@ -146,7 +146,7 @@ class Simulador :
         pupas_muertas = 0;
         adultos_muertas = 0;
         olimpia = False
-        OBS = 400
+        OBS = -1
         args = {}
         for hora in self.periodo.horas :
             #~ se procesa cada individuo de la población
@@ -204,15 +204,14 @@ class Simulador :
                         and olimpia == False) :
                         huevos = individuo.poner_huevos(hora)
                         total_huevos += huevos
-                        self.__generar_poblacion__(\
+                        sub_poblacion = self.__generar_poblacion__(\
                                 posicion=individuo.posicion,\
                                 cantidad_larvas=huevos)
 
-                        if individuo.id_mosquito == OBS :
-                            print "Pone " + str(huevos) +" huevos"
-
                         if huevos > 0 :
                             cantidad_huevos = huevos
+                            nueva_poblacion.extend(sub_poblacion)
+                            #~ print "Pone " + str(huevos) +" huevos"
 
                 args['individuo'] = individuo
                 args['hora'] = hora.hora
@@ -226,7 +225,9 @@ class Simulador :
                 #~ fin del preiodo
                 j += 1
             #~ fin del preriodo
-            self.poblacion.extend(nueva_poblacion)
+            if len(nueva_poblacion) > 0 :
+                print "Pone " + str(len(nueva_poblacion)) +" huevos"
+                self.poblacion.extend(nueva_poblacion)
             i+= 1
 
 

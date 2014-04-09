@@ -362,6 +362,9 @@ class Point :
         point["y"] = self.y
         return Point(point)
 
+    def __str__(self) :
+        return "("+str(self.x) +", " +str(self.y)+ ")"
+
 
 if __name__ == "__main__" :
     p1 = {"x" : -57.6581, "y" :  -25.2928}
@@ -373,4 +376,3 @@ if __name__ == "__main__" :
     print str(des.x) +" "+str(des.y)
 
     print src.distance_to(des)
-

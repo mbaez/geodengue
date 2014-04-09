@@ -12,6 +12,10 @@ from datatype import *
 from models import *
 from config import *
 
+from db_manager import *
+
+COEF_SH_DE = CoefSarpeDemicheleModel();
+
 class AeAegypti :
     """
     Clase base, contiene la definición los atributos básicos.
@@ -120,6 +124,7 @@ class AeAegypti :
             self._posicion = kargs.get('posicion', None)
         else :
             self._posicion = Point(kargs)
+        self._posicion = self.posicion.clone()
         self._edad = 0;
         self._madurez = 0;
         self._expectativa_vida = kargs.get('expectativa_vida', 100)
@@ -163,57 +168,43 @@ class AeAegypti :
         tipo_clima = str(hora.get_tipo_clima())
         cantidad_dias = 0
 
-        if(self.estado == Estado.HUEVO) :
-            cantidad_dias = 0
-
-        elif(self.estado == Estado.LARVA) :
-            cantidad_dias = self.__get_dias__(LARVA_PUPA_EXPECTATIVA, \
-                tipo_zona, tipo_clima, TIEMPO_LARVA)
-
-        elif(self.estado == Estado.PUPA) :
-            cantidad_dias = self.__get_dias__(LARVA_PUPA_EXPECTATIVA, \
-                tipo_zona, tipo_clima, TIEMPO_PUPA)
-
-        elif(self.estado == Estado.ADULTO) :
-            cantidad_dias = self.__get_dias__(ADULTO__EXPECTATIVA , \
-                tipo_zona, tipo_clima)
-
         #~ se retorna la cantidad de días
-        return cantidad_dias
+        return 1/self.mortalidad(hora.temperatura)
 
     def get_madurez_zona( self, hora ) :
         """
         Se encarga de mapear el puntaje asignado a la zona del mosquito
-        a la cantidad de días estimado de vida.
+        a la cantidad de días estimado de vida. para ello se utiliza
+        el modelo de sharpe&demichele.
 
-        Para LARVAS (P=0.8) Y PUPAS(P=0.2)
-
-        60 < Pts  Optima  0   [10, 17.4] * P    [9, 13]* P    [5, 7.2] * P  0
-        60 > Pts  Buena   0   [17.4, 24.8] * P  [13, 17]* P   [7.2, 9.4] * P    0
-        30 > Pts  Normal  0   [24.8, 32.2] * P  [17, 21]* P   [9.4, 11.6] * P   0
-        20 > Pts  Mala    0   [32.2, 39.6] * P  [21, 25]* P   [11.6, 13.8] * P  0
-        8 > Pts   Pésima  0   [39.6, 47] * P    [25, 29]* P   [13.8, 16] * P    0
         """
         #~ se obtiene el tipo de zona
         tipo_zona = str(self.rank_zona())
         #~ se obitne el tipo de clima
         tipo_clima = str(hora.get_tipo_clima())
         cantidad_dias = 0
-
-        if(self.estado == Estado.HUEVO) :
-            cantidad_dias = 0
-
-        elif(self.estado == Estado.LARVA) :
-            cantidad_dias = self.__get_dias__(LARVA_PUPA_ZONE, tipo_zona,\
-                tipo_clima, TIEMPO_LARVA)
-
-        elif(self.estado == Estado.PUPA) :
-            cantidad_dias = self.__get_dias__(LARVA_PUPA_ZONE ,tipo_zona,\
-                tipo_clima, TIEMPO_PUPA)
-
+        coef = COEF_SH_DE.get_by(self.estado);
+        #~ print "Madurez :" + str(cantidad_dias)
+        cantidad_dias = 1/self.sharpe_demichele(hora.temperatura, coef[0])
+        #~ print "Madurez :" + str(cantidad_dias)
         return cantidad_dias
 
-    def __get_dias__(self, table,tipo_zona, tipo_clima, p=1) :
+    def sharpe_demichele(self, temperatura, coef) :
+        """
+        @type  temperatura: Integer
+        @param temperatura: La temperatura en grados centigrados.
+
+        @type  coef: Dicionario
+        @param coef: Coeficientes para el modelo enzimatico
+        """
+        k = temperatura + 273.15
+        return coef["rh025"] * ( (k/298.15) *\
+                math.exp((coef["ha"]/1.987)*(1/298.15 - 1/k))\
+                )\
+                / (1 + math.exp((coef["hh"]/1.987)*(1/coef["th"] - 1/k)))
+
+
+    def __get_dias__(self, table, tipo_zona, tipo_clima, p=1) :
         """
         Obtiene el valor que corersponde a la zona y el tipo de clima
 
@@ -252,7 +243,7 @@ class AeAegypti :
             " \nid=" + str(self.id_mosquito) + \
             " \nexp_vida=" + str(self.expectativa_vida ) + \
             " \nedad=" + str(self.edad / 24.0) + \
-            " \ntiempo_vida=" + str(self.tiempo_vida) + \
+            " \nubicacion=" + str(self.posicion) + \
             " \ntiempo_madurez=" + str(self.tiempo_madurez) + \
             " \nmadurez=" + str(self.madurez) + \
             " \nzonas= " + str(self.rank_zona())

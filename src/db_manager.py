@@ -9,7 +9,6 @@ import psycopg2.extras
 @contact mxbg.py@gmail.com, robertobanuelos@gmail.com
 """
 
-
 class DBManager :
     def __init__(self):
         self.connection = connect(
@@ -88,7 +87,6 @@ class DBManager :
         #se retorna la lista de resultados
         return results
 
-
 class PuntosControlModel :
     """
     Esta clase define la capa de acceso y comunicación para la tabla
@@ -154,6 +152,62 @@ class PuntosControlModel :
         cursor = self.db.query(sql_string, args)
         return self.db.to_dict(cursor)
 
+class CoefSarpeDemicheleModel :
+    """
+    Esta clase define la capa de acceso y comunicación para la tabla
+    `coef_sharpe_demichele`.
+    id integer NOT NULL DEFAULT nextval('coef_sharpe_demichele_id_seq'::regclass),
+    descripcion character varying(100),
+    rh025 double precision,
+    ha double precision,
+    hh double precision,
+    th double precision,
+    codigo character varying(15),
+    """
+    def __init__(self):
+        self.db = DBManager()
+
+    def get_all(self):
+        """
+        Se encarga de obtener los datos de la tabla de coeficientes para
+        el modelo de sharpe&demichele
+
+            SELECT codigo, rh025, ha, hh, th
+            FROM coef_sharpe_demichele
+
+        @rtype  Dictionaries
+        @return Un diccionario con el resultado de la consulta
+        """
+        # se definie el query de la consulta.
+        sql_string = """
+            SELECT codigo, rh025, ha, hh, th
+            FROM coef_sharpe_demichele
+        """
+        # se construye el diccionario que contiene los parametros del query.
+        cursor = self.db.query(sql_string)
+        return self.db.to_dict(cursor)
+
+    def get_by(self, codigo):
+        """
+        Se encarga de obtener los datos de la tabla de coeficientes para
+        el modelo de sharpe&demichele
+
+            SELECT codigo, rh025, ha, hh, th
+            FROM coef_sharpe_demichele
+            where codigo= :codigo
+
+        @rtype  Dictionaries
+        @return Un diccionario con el resultado de la consulta
+        """
+        # se definie el query de la consulta.
+        sql_string = """
+            SELECT codigo, rh025, ha, hh, th
+            FROM coef_sharpe_demichele
+            WHERE codigo = %(codigo)s
+        """
+        # se construye el diccionario que contiene los parametros del query.
+        cursor = self.db.query(sql_string, {"codigo" : codigo})
+        return self.db.to_dict(cursor)
 
 class InterpolacionModel :
     """
@@ -182,7 +236,6 @@ class InterpolacionModel :
         # se construye el diccionario que contiene los parametros del query.
         cursor = self.db.query(sql_string, args)
         return cursor
-
 
 class PuntosRiesgoDao :
     """
@@ -247,8 +300,8 @@ if __name__ == "__main__" :
     #~ dic = da.get_by(1)
     #a = PuntosRiesgoDao()
     #dic = a.get_all();
-    dao = PuntosControlModel()
-    dic = dao.get_by(1);
-    print dic;
+    dao = CoefSarpeDemicheleModel()
+    dic = dao.get_by("HUEVO")
+    print dic[0]["codigo"];
     #~ cursor = a.persist({'id_muestra': 1, 'descripcion': 'test'})
     #~ print cursor.fetchone()[0]

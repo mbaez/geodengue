@@ -9,6 +9,7 @@ Dependencias
 sudo easy_install scipy
 sudo apt-get install python-numpy
 sudo easy_install gsconfig
+sudo pip install geojson
 sudo apt-get install python-psycopg2
 ```
 

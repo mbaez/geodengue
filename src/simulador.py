@@ -11,13 +11,8 @@ de control.
 
 #Se impotan los modulos.
 
-from ranking_table import *
-from models import *
-from huevo import *
-from larva import *
-from pupa import *
-from adulto import *
 
+from poblacion import *
 #log de eventos
 from logger import EventLogger
 
@@ -38,7 +33,7 @@ class Simulador :
         reproductivo y el desplazamiento.
 
     """
-    ID = 0
+
 
     def __init__ (self, **kargs) :
         """
@@ -50,9 +45,7 @@ class Simulador :
         """
         self.zonas_table = RankingTable();
         #~ se inicializa el atributo periodo
-        self.poblacion =  [];
-        if kargs.has_key("poblacion") == True:
-            self.generar_poblacion(kargs["poblacion"])
+        self.poblacion = Poblacion(kargs);
         #~ se inicializa el atributo periodo
         self.historial_clima =[]
         #~ se inicializa el atributo periodo
@@ -60,79 +53,7 @@ class Simulador :
 
         # se inicializa la clase que hace log de los eventos
         self.logger = EventLogger('event_log_')
-    def __generar_poblacion__(self, **kargs):
-        """
-        """
-        cantidad_larvas = kargs.get('cantidad_larvas', 0)
-        clazz = kargs.get('clazz', Huevo)
-        posicion = kargs.get('posicion', Point(kargs))
-        sub_poblacion = []
-        prob = cantidad_larvas * SELECCION_NATURAL
-        intervalo = cantidad_larvas * 0.1
-        for cantidad in range(cantidad_larvas) :
 
-            #se inicializa los inidviduos
-            if cantidad > prob :
-                indv = clazz(posicion=posicion, zonas=self.zonas_table)
-            else :
-                indv = clazz(\
-                    posicion=posicion,\
-                    zonas=self.zonas_table,\
-                    expectativa_vida=randint(65, 100)\
-                )
-            # id del mosquito
-            indv._id_mosquito = Simulador.ID
-            Simulador.ID += 1
-            #~ se añade el individuo a la sub población
-            sub_poblacion.append(indv)
-
-        return sub_poblacion
-
-    def generar_poblacion (self, data ):
-        """
-        Este método se encarga de procesar los datos de las muestras y
-        generar los inidividuos para inicializar la población.
-
-        """
-        grid = Grid()
-        grid.parse(data)
-        for i in range(len(grid)):
-            # se obtine la cantidad de individuos
-            cantidad_larvas = int(grid.z[i]);
-            #~ se genera la sub población de larvas
-            sub_poblacion = self.__generar_poblacion__(\
-                cantidad_larvas=cantidad_larvas,\
-                clazz=Larva,\
-                x=grid.x[i], y=grid.y[i])
-
-            self.poblacion.extend(sub_poblacion)
-
-        self.__grid = grid
-
-    def cambiar_estado (self, indiv) :
-        """
-        Se encarga de realizar el cambio de estado para el individuo de
-        acuerdo a su estado actual.
-        """
-
-        Clazz = {
-            "HUEVO" : Larva,
-            "LARVA" : Pupa,
-            "PUPA" : Adulto
-        }
-        #~ intervalo = randint(10, 50)
-        intervalo = 10
-        if( indiv.expectativa_vida > intervalo ) :
-            return Clazz[indiv.estado](sexo=indiv.sexo,\
-                    posicion=indiv.posicion,\
-                    zonas=self.zonas_table,\
-                    id=indiv.id_mosquito)
-        else :
-            return Clazz[indiv.estado](sexo=indiv.sexo,\
-                    posicion=indiv.posicion, \
-                    zonas=self.zonas_table, \
-                    expectativa_vida=indiv.expectativa_vida,\
-                    id=indiv.id_mosquito)
 
     def start(self):
         """
@@ -145,51 +66,39 @@ class Simulador :
         larvas_muertas = 0;
         pupas_muertas = 0;
         adultos_muertas = 0;
-        olimpia = False
+        olimpia = True
         OBS = -1
         args = {}
-        for hora in self.periodo.horas :
+        for hora in self.periodo.dias :
             #~ se procesa cada individuo de la población
             j=0
             nueva_poblacion = []
-            if(i%24) == 0 :
-                print "Día Nro :" + str(i/24) + " poblacion :" + str(len(self.poblacion))
-            for individuo in self.poblacion :
+            print "Día Nro :" + str(i) + " poblacion :" + str(len(self.poblacion.individuos))
 
-                if individuo.id_mosquito == OBS :
-                    print "------------------Dia  " + str(i/24) + \
-                        " hora : " + str(hora.hora) + \
-                        " poblacion :" + str(len(self.poblacion)) +\
-                        "-----------------------------------------"
-                    print "T : " + str(hora.temperatura)
-                    print "status individuo 1 " + str(individuo)
-
+            for individuo in self.poblacion.individuos :
                 poner_huevos = False
                 cantidad_huevos = 0
-
+                #~ if individuo.id_mosquito ==308  :
+                    #~ print 10*"="
+                    #~ print individuo
+                    #~ print 10*"="
                 #~ Se desarrolla el inidividuo
                 individuo.desarrollar(hora)
                 #~ Se verifica el estado del individuo
-                if(individuo.esta_muerto() == True) :
+                if self.poblacion.regular(individuo, hora, i) :
                     """
                     si el individuo esta muerto se lo remueve de la poblacion
                     """
                     if individuo.estado == Estado.LARVA :
                         larvas_muertas += 1
-
                     elif individuo.estado == Estado.PUPA :
                         pupas_muertas += 1
-
                     elif individuo.estado == Estado.ADULTO:
                         adultos_muertas += 1
-
                     else :
                         huevos_muertas += 1
 
-                    if individuo.id_mosquito == OBS :
-                        print "MUEEEREEEE..  "+ str(individuo)
-
-                    self.poblacion.remove(individuo)
+                    self.poblacion.kill(individuo)
 
                 elif individuo.esta_maduro() == True:
                     """
@@ -197,28 +106,29 @@ class Simulador :
                     estado.
                     """
                     #~ print  "\tCamibar de estado "+  str(individuo)
-                    self.poblacion [j] = self.cambiar_estado(individuo)
+                    individuo = self.poblacion.cambiar_estado(individuo)
+                    self.poblacion.individuos[j] = individuo
 
                 elif individuo.estado == Estado.ADULTO :
                     if(individuo.se_reproduce(hora) == True \
                         and olimpia == False) :
-                        huevos = individuo.poner_huevos(hora)
-                        total_huevos += huevos
-                        sub_poblacion = self.__generar_poblacion__(\
-                                posicion=individuo.posicion,\
-                                cantidad_larvas=huevos)
-
-                        if huevos > 0 :
-                            cantidad_huevos = huevos
+                        #~ se genera un nueva poblacion
+                        sub_poblacion = self.poblacion.ovipostura(individuo)
+                        """
+                        se extiende la poblacion unicamente si se puso
+                        huevos.
+                        """
+                        if len(sub_poblacion) > 0 :
+                            cantidad_huevos = len(sub_poblacion)
+                            print "Huevos " + str(cantidad_huevos)
                             nueva_poblacion.extend(sub_poblacion)
-                            #~ print "Pone " + str(huevos) +" huevos"
 
-                args['individuo'] = individuo
-                args['hora'] = hora.hora
-                args['dia'] = str(i/24)
-                args['temperatura'] = hora.temperatura
-                args['pone_huevos'] = poner_huevos
-                args['cantidad_huevos'] = cantidad_huevos
+                #~ args['individuo'] = individuo
+                #~ args['hora'] = hora.hora
+                #~ args['dia'] = str(i)
+                #~ args['temperatura'] = hora.temperatura
+                #~ args['pone_huevos'] = poner_huevos
+                #~ args['cantidad_huevos'] = cantidad_huevos
 
                 # log de eventos
                 #~ self.logger.to_csv( args )
@@ -227,6 +137,7 @@ class Simulador :
             #~ fin del preriodo
             if len(nueva_poblacion) > 0 :
                 print "Pone " + str(len(nueva_poblacion)) +" huevos"
+                total_huevos += len(nueva_poblacion)
                 self.poblacion.extend(nueva_poblacion)
             i+= 1
 
@@ -256,7 +167,7 @@ class Simulador :
         key_map = {}
         data_array = []
         max_cantidad = 0
-        for individuo in self.poblacion :
+        for individuo in self.poblacion.individuos :
             point = individuo.posicion
             key = str(point.x) + "-" + str(point.y)
             if not key_map.has_key(key) \
@@ -276,9 +187,6 @@ class Simulador :
                 index = key_map[key]
                 # se incrementa la cantidad de larvas
                 data_array[index]['cantidad'] += 1
-                #~ if data_array[index]['cantidad'] >  max_cantidad :
-                    #~ max_cantidad = data_array[index]['cantidad']
-
         #ajustar las escala de valores para tener cantidades en el rango
         #de 0 a 80
         #~ for data in data_array :
@@ -338,7 +246,7 @@ class Simulador :
         stats_dic['pupa'] = 0
         stats_dic['adulto'] = 0
 
-        for individuo in self.poblacion :
+        for individuo in self.poblacion.individuos :
             if individuo.estado == Estado.HUEVO :
                 stats_dic['huevo'] += 1
             elif individuo.estado == Estado.LARVA :

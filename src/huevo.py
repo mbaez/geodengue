@@ -39,7 +39,7 @@ class Huevo(AeAegypti) :
             Estado  Tiempo promedio
             huevo   2 a 5 dias
         """
-        return self.expectativa_vida <= 0 or self.edad > 5*24
+        return self.expectativa_vida <= 0
 
     def desarrollar(self, hora) :
         """
@@ -61,39 +61,24 @@ class Huevo(AeAegypti) :
             una hora.
         """
         #~ Se inicializan las variables
-        delta_vida = 0
-        delta_madurez = 0
-        #~ Se realizan los controles para aumentar y/o disminuir la
-        #~ expectativa de vida y la madurez de la larva de acuerdo con
-        #~ la temperatura del medio.
-        if hora.temperatura >= 27 :
-            """
-            Se considera un clima cálido cuando la temperatura es superior
-            de los 27 C.
+        cantidad_dias = self.get_madurez_zona(hora)
 
-            El desarrollo embriológico generalmente se completa en 48 horas
-            si el ambiente es húmedo y cálido.
-            """
-            delta_madurez = 100/48.0
-        elif hora.temperatura <= 15 :
-            """
-            El desarrollo embriológico puede prolongarse hasta 5 días a
-            temperaturas bajas.
-            """
-            delta_madurez = 100/120.0
-            #~ Arbitrariamente se disminuye la expectativa de vida del huevo
-            delta_vida = 100/ 140.0
-        else :
-            """
-            En temperaturas no optimas se calcula con regla de 3 el delta
-            de maduración del huevo.
-            """
-            temp_med = randint(27,40)
-            delta_madurez = (hora.temperatura * 48.0 )/(temp_med * 1.0)
+        self._tiempo_madurez = cantidad_dias
 
-        #~ Se disminuye la expectativa de vida en un delta
-        self._expectativa_vida -= delta_vida
+        if cantidad_dias > 0  :
+            #~ se hace madurar a pupa
+            delta_madurez = 100/(cantidad_dias)
+
+
+        #~ se envejece la pupa
+        self._edad += 1
         #~ se incrementa la madurez del mosquito en un delta
         self._madurez += delta_madurez
-        self._edad +=1
         return self;
+
+    def mortalidad (self, temperatura) :
+        """
+        Para la etapa huevo, otero2006 la define como una constante
+        independiente de la temperatura.
+        """
+        return 0.01;

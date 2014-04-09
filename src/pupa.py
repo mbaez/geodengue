@@ -67,21 +67,25 @@ class Pupa(AeAegypti) :
              of the immature stages of Aedes aegypti
         """
         cantidad_dias = self.get_madurez_zona(hora)
-        tiempo_vida = self.get_expectativa_zona(hora)
-
-        self._tiempo_vida = tiempo_vida
         self._tiempo_madurez = cantidad_dias
 
         if cantidad_dias > 0  :
             #~ se hace madurar a pupa
-            self._madurez += 100/(cantidad_dias * 24.0)
-
-        if tiempo_vida > 0 :
-            #~ se disminuye la expectativa de vida de la pupa
-            self._expectativa_vida -= 100/(tiempo_vida * 24.0)
+            self._madurez += 100/(cantidad_dias)
 
         #~ se envejece la pupa
         self._edad += 1
 
         return self
 
+    def mortalidad (self, temperatura) :
+        """
+        En el caso de la pupa otero2006, la mortalidad intrínseca de una
+        pupa se ha considerado como una ecuación dependiente de temperatura.
+        Además de la mortalidad diaria en la fase de pupa, existe una importante
+        mortalidad adicional, solo el 83% otero2006 de las pupas alcanzan
+        la maduración y emergerán como mosquitos adultos, por lo tanto,
+        el factor de supervivencia es de 0.83.
+        """
+        k = temperatura + 273.15
+        return (0.01 + 0.9725 * math.exp( -(k - 278)/2.7035)) * 0.83

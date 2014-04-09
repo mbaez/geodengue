@@ -117,6 +117,8 @@ class Adulto(AeAegypti) :
         # se invoca al constructor de la clase padre.
         AeAegypti.__init__(self,**kargs);
         #~ print "new "+ str(self)
+        self.posicion_origen = self.posicion.clone();
+
         self._ultima_oviposicion = 1
         self._ultimo_alimento = 1
         self._distancia_recorrida = 0
@@ -156,7 +158,7 @@ class Adulto(AeAegypti) :
         La supervivencia de los mosquitos depende de la capacidad para alimentarse,
         reproducirse, protegerse y dispersarse.
 
-        adulto  si expectativa de vida <= 0, si edad >= 30 dias.
+        adulto  si expectativa de vida <= 0
 
         * Muchos mueren al momento de emerger
         * Si la población emergente original es grande, la restante es suficiente
@@ -193,7 +195,7 @@ class Adulto(AeAegypti) :
 
         if (cantidad_dias > 0 ) :
             #~ se disminuye la expectativa de vida del adulto
-            self._expectativa_vida -= 100/(cantidad_dias * 24)
+            self._expectativa_vida -= 100/(cantidad_dias)
 
         #~ se envejece el adulto
         self._edad +=1
@@ -241,7 +243,7 @@ class Adulto(AeAegypti) :
         #~ el mosquito se alimenta por primera vez de 20 a 72 horas
         p = randint(20, 72)
 
-        if rank == Zonas.MALA or rank == Zonas.PESIMA:
+        if rank == Zonas.MALA or rank == Zonas.PESIMA :
             self.volar(hora)
 
         elif (hora.get_tipo_hora() == Horario.MADUGRADA_MANHANA \
@@ -538,3 +540,10 @@ class Adulto(AeAegypti) :
         v = math.sqrt (vx**2 + vy**2 )
 
         return  v
+
+    def mortalidad (self, temperatura) :
+        """
+        Para la etapa adulto, otero2006 la define como una constante
+        independiente de la temperatura.
+        """
+        return 0.09;

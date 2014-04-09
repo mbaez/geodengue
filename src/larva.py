@@ -67,20 +67,24 @@ class Larva(AeAegypti) :
             una hora.
         """
         cantidad_dias = self.get_madurez_zona(hora)
-        tiempo_vida = self.get_expectativa_zona(hora)
-
-        self._tiempo_vida = tiempo_vida
         self._tiempo_madurez = cantidad_dias
-
         if cantidad_dias > 0  :
             #~ se hace madurar a pupa
-            self._madurez += 100/(cantidad_dias * 24.0)
-
-        if tiempo_vida > 0 :
-            #~ se disminuye la expectativa de vida de la pupa
-            self._expectativa_vida -= 100/(tiempo_vida * 24.0)
+            self._madurez += 100/(cantidad_dias)
 
         #~ se envejece la pupa
         self._edad += 1
 
         return self
+
+    def mortalidad (self, temperatura) :
+        """
+        En el caso de las larvas otero2006 define que se
+        encuentra influenciada dos métodos. La primera define como una
+        ecuación dependiente de temperatura. La segunda depende de la
+        densidad poblacional del habitad de la larva.
+        """
+        k = temperatura  + 273.15
+        c = 0.01 + 0.9725 * math.exp( -(k - 278)/2.7035)
+        #~ print "Mortalidad :" + str(c)
+        return c

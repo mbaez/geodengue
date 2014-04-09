@@ -7,7 +7,7 @@ from datatype import *
 #para convertir horas
 
 
-class Hora :
+class Dia :
 
     """
     Define los datos climáticos para una hora en especifico.
@@ -22,15 +22,25 @@ class Hora :
         self.direccion_viento = data.get("direccion_viento",0.0)
         self.nuves = data.get("nuves", 0)
 
-    def parse( self, data):
+    def parse( self, data, future):
         """
         Se encarga de parsear los datos obtenidos del openweathermap.org
         """
-        self._parse_rain_node(data)
-        self._parse_main_node(data)
-        self._parse_wind_node(data)
-        self._parse_clouds_node(data)
-        self._parse_datetime(data)
+        if future == True :
+            self.temperatura = float(data["temp"].get("day",0))
+            self.presion = float(data.get("pressure", 0))
+            self.humedad = float(data.get("humidity",0))
+            self.viento = float(data.get("speed", 0.0))
+            self.precipitacion = float(data.get("rain", 0.0))
+            self.direccion_viento = float(data.get('deg', 0))
+            self._parse_datetime(data)
+
+        else :
+            self._parse_rain_node(data)
+            self._parse_main_node(data)
+            self._parse_wind_node(data)
+            self._parse_clouds_node(data)
+            self._parse_datetime(data)
 
     def _parse_rain_node (self, data) :
         """
@@ -149,32 +159,25 @@ class Hora :
         str(self.viento ) + " " + \
         str(self.direccion_viento) + " "
 
+
 class Periodo :
     """
     Esta clase define los datos climáticos en un periodo de tiempo por
     hora.
     """
     def __init__( self):
-        self.horas = []
+        self.dias = []
 
-    def parse_json(self, data) :
+    def parse_json(self, data, future=False) :
         """
         Se encarga de procesar los datos en forma de json y los añade a
         la lista.
         """
         for day in data["list"] :
-            d = Hora()
-            d.parse(day)
-            self.horas.append(d)
+            d = Dia()
+            d.parse(day, future)
+            self.dias.append(d)
 
-    def parse_dict(self , data) :
-        """
-        Se encarga de procesar los datos en forma de diccionarios y los
-        añade a la lista.
-        """
-        for day in data :
-            for hour in day :
-                self.horas.append(Hora(hour))
 
 
 
@@ -219,7 +222,7 @@ class TuTiempo:
         return grados_dict
 
     def __init__(self,  localidad):
-        self.localidad_hora = TUTIEMPO_URL +LOCALIDADES_HORA[localidad]
+        pass
 
     def get_periodo (self) :
         """
@@ -227,8 +230,8 @@ class TuTiempo:
         localidad.
         """
         periodo = Periodo()
-        periodo.parse_json(self.history());
-        periodo.parse_dict(self.process_dom_hora());
+        #~ periodo.parse_json(self.history());
+        periodo.parse_json(self.future(), True);
         return periodo
 
     def download_page(self, domain) :
@@ -242,97 +245,6 @@ class TuTiempo:
         usock.close()
         return data
 
-    def get_dom (self, domain):
-        """
-        Procesa el html_string, y genera el dom de la pagina
-        """
-        html_page = self.download_page(domain)
-        return lxml.html.fromstring(html_page)
-
-    def process_dom_hora (self) :
-        """
-        Procesa el dom de la página de clima por hora.
-        0 Hora : "hh:mm"
-        1 Predicción : imagen
-        2 Temp : N°C
-        3 Viento : imagen N km/h
-        4 H : N%
-        5 Nubes : N%
-        6 Precip : N mm
-        """
-        root = self.get_dom(self.localidad_hora)
-
-        attributes = {
-            'hora':'hora',
-            'pp': 'precipitacion',
-            'Temp': 'temperatura',
-            'hr': 'humedad',
-            'vv': 'viento',
-            'IcoViento' : 'direccion_viento',
-            'prob': 'nuves'
-        }
-        day = -1
-        tr_els = []
-        i = 0
-        for elem in root.cssselect('div.DatosHorarios table'):
-            for tr in elem.cssselect('tr'):
-                #~ se encarga de procesar los headers para saber si los
-                #~ datos corresponden a otro día
-                for td in tr.cssselect('th') :
-                    val = td.text_content()
-                    key = td.attrib["class"]
-                    if key == "Dia" :
-                        day += 1
-                        tr_els.insert(day,[])
-                        i = 0
-
-                tr_els[day].insert(i,{})
-
-                #~  se procesan los datos
-                for td in tr.cssselect('td') :
-                    val = td.text_content()
-                    key = td.attrib["class"]
-                    if attributes.has_key(key) :
-                        attr = attributes[key]
-                        value = val.encode("utf-8").strip()
-                        #~ se procesa los datos de forma especial
-                        if attr == attributes["Temp"] :
-                            value = value.replace("°C","").strip()
-                            value = float(value)
-
-                        elif attr == attributes["IcoViento"] :
-                            value = self.__dom_direccion_viento(td)
-
-                        elif attr == attributes["vv"] :
-                            str_value = value.split(" ")[0].lower();
-                            value = 0
-                            if str_value.isdigit() :
-                                value = float(str_value);
-
-                        elif attr == attributes["hora"] :
-                            value = value.replace(":00","").strip()
-                            value = int(value)
-
-                        tr_els[day][i][attr] = value
-
-                # se verifica si se añadieron elementos al array para
-                # incrementar el array.
-                if len(tr_els[day][i]) > 0 :
-                    i += 1
-                else :
-                    tr_els[day].pop(i)
-
-        return tr_els
-
-    def __dom_direccion_viento(self, dom) :
-        """
-        Se encarga de extraer la dirección del viento del atributo
-        alt de tag img y mapear la dirección a grados.
-        """
-        img = dom.cssselect('img')[0]
-        alt = img.attrib['alt']
-        key = alt.split(" ")[0].lower();
-        return self.grados.get(key, 0)
 
     def build_url_params (self, args={}):
         """
@@ -349,7 +261,7 @@ class TuTiempo:
     def history (self) :
         """
         Obtiene el historial del clima por hora utilizando los servicios
-        de openweathermap, el servicio respondecon el siguiente JSON:
+        de openweathermap, el servicio responde con el siguiente JSON:
         <pre>
         {   "message": "",
             "cod": "200",
@@ -397,28 +309,79 @@ class TuTiempo:
         # se calcula el rango de fechas
         now = datetime.datetime.now()
         # se crea una fecha de 10 dias antes a modo de prueba
-        delta = datetime.timedelta(days=150)
-        delta2 = datetime.timedelta(days=170)
-        now2 = now - delta;
-        past = now - delta2;
+        delta = datetime.timedelta(days=10)
+        past = now - delta;
         # se  transforma a unix time
-        end = str(int(time.mktime(now2.timetuple())))
+        end = str(int(time.mktime(now.timetuple())))
         start = str(int(time.mktime(past.timetuple())))
 
         args ={
-            "start" : "1362973402", # 2013/03/11
-            "end" : "1364705002", #2013/03/31
+            "start" : start, # 2013/03/11
+            "end" : end #2013/03/31
         }
 
         #~ url = API_URL + "/history/city" + self.build_url_params(args);
-        url = API_URL;
+        url = API_URL+".json";
         json_string = self.download_page(url);
         return json.loads(json_string)
 
+    def future (self) :
+        """
+        Obtiene los datos futros del clima por hora utilizando los servicios
+        de openweathermap, el servicio responde con el siguiente JSON:
+        <pre>
+        {
+            "cod": "200",
+            "message": 0.0013,
+            "city": {
+                "id": 3439389,
+                "name": "Asuncion",
+                "coord": {
+                    "lon": -57.63591,
+                    "lat": -25.300659
+                },
+                "country": "PY",
+                "population": 1000000
+            },
+            "cnt": 15,
+            "list": [
+                {
+                    "dt": 1396710000,
+                    "temp": {
+                        "day": 306.95,
+                        "min": 300.25,
+                        "max": 306.95,
+                        "night": 300.25,
+                        "eve": 305.79,
+                        "morn": 306.95
+                    },
+                    "pressure": 1016.99,
+                    "humidity": 46,
+                    "weather": [
+                        {
+                            "id": 802,
+                            "main": "Clouds",
+                            "description": "scattered clouds",
+                            "icon": "03d"
+                        }
+                    ],
+                    "speed": 5.2,
+                    "deg": 38,
+                    "clouds": 36
+                },
+            ..]
+        }
+        </pre>
+        """
+        args = { "cnt" : "15"}
+        #~ url = API_URL + "/forecast/daily" + self.build_url_params(args);
+        url = API_URL+".forecast.json";
+        json_string = self.download_page(url);
+        return json.loads(json_string)
 
 if __name__ == "__main__":
     clima = TuTiempo("Asuncion")
     #~ clima.process_dom_hora();
     periodo = clima.get_periodo()
-    for h in periodo.horas :
+    for h in periodo.dias :
         print h

@@ -203,10 +203,10 @@ class Poblacion:
         return grupo_estado["to_kill"] > 0
 
 
-    def ovipostura (self, adulto):
+    def ovipostura (self, adulto, dia):
         """
         """
-        huevos = adulto.poner_huevos(hora)
+        huevos = adulto.poner_huevos(dia)
         self.total_huevos +=  huevos;
         sub_poblacion = self.gen_sub_poblacion(posicion=adulto.posicion,\
                 cantidad_larvas=huevos)

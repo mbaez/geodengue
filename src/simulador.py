@@ -63,7 +63,7 @@ class Simulador :
         i=0
         olimpia = False
         args = {}
-        for hora in self.periodo.dias :
+        for dia in self.periodo.dias :
             #~ se procesa cada individuo de la población
             j=0
             nueva_poblacion = []
@@ -77,9 +77,9 @@ class Simulador :
                     #~ print individuo
                     #~ print 10*"="
                 #~ Se desarrolla el inidividuo
-                individuo.desarrollar(hora)
+                individuo.desarrollar(dia)
                 #~ Se verifica el estado del individuo
-                if self.poblacion.regular(individuo, hora, i) :
+                if self.poblacion.regular(individuo, dia, i) :
                     """
                     si el individuo esta muerto se lo remueve de la poblacion
                     """
@@ -95,15 +95,14 @@ class Simulador :
                     self.poblacion.individuos[j] = individuo
 
                 elif individuo.estado == Estado.ADULTO :
-                    if(individuo.se_reproduce(hora) == True \
+                    if(individuo.se_reproduce(dia) == True \
                         and olimpia == False) :
                         #~ se genera un nueva poblacion
-                        sub_poblacion = self.poblacion.ovipostura(individuo)
+                        sub_poblacion = self.poblacion.ovipostura(individuo, dia)
                         """
                         se extiende la poblacion unicamente si se puso
                         huevos.
                         """
-                        print "Se reproduce"
                         if len(sub_poblacion) > 0 :
                             cantidad_huevos = len(sub_poblacion)
                             print "Huevos " + str(cantidad_huevos)
@@ -127,13 +126,9 @@ class Simulador :
                 self.poblacion.extend(nueva_poblacion)
             i+= 1
 
-
-        print 'Poblacion inicial'
-        for k in init_dic.keys() :
-            print( 'nro de ' + str(k) + ' = ' + str(init_dic[k]))
-
         print 'Poblacion final'
         print str(self.poblacion)
+        return self.to_grid();
 
     def to_grid (self):
         """
@@ -148,8 +143,7 @@ class Simulador :
         for individuo in self.poblacion.individuos :
             point = individuo.posicion
             key = str(point.x) + "-" + str(point.y)
-            if not key_map.has_key(key) \
-                and individuo.estado != Estado.ADULTO :
+            if not key_map.has_key(key) :
                 # se obtiene los datos
                 data = {}
                 data['x'] = point.x
@@ -161,7 +155,7 @@ class Simulador :
                 data_array.append(data)
                 # se añade el indice al array
                 key_map[key] = len(data_array) -1
-            elif individuo.estado != Estado.ADULTO :
+            else:
                 index = key_map[key]
                 # se incrementa la cantidad de larvas
                 data_array[index]['cantidad'] += 1

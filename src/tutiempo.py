@@ -28,6 +28,8 @@ class Dia :
         """
         if future == True :
             self.temperatura = float(data["temp"].get("day",0))
+            # de kelvin a centigrados
+            self.temperatura = self.temperatura - 273.15
             self.presion = float(data.get("pressure", 0))
             self.humedad = float(data.get("humidity",0))
             self.viento = float(data.get("speed", 0.0))

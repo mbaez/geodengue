@@ -182,11 +182,8 @@ class AeAegypti :
         tipo_zona = str(self.rank_zona())
         #~ se obitne el tipo de clima
         tipo_clima = str(hora.get_tipo_clima())
-        cantidad_dias = 0
         coef = COEF_SH_DE.get_by(self.estado);
-        #~ print "Madurez :" + str(cantidad_dias)
         cantidad_dias = 1/self.sharpe_demichele(hora.temperatura, coef[0])
-        #~ print "Madurez :" + str(cantidad_dias)
         return cantidad_dias
 
     def sharpe_demichele(self, temperatura, coef) :

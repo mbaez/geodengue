@@ -59,15 +59,9 @@ class Simulador :
         """
         Se encarga de iniciar el simulador.
         """
-        init_dic = self.stats()
+        print self.poblacion
         i=0
-        total_huevos = 0;
-        huevos_muertas = 0;
-        larvas_muertas = 0;
-        pupas_muertas = 0;
-        adultos_muertas = 0;
-        olimpia = True
-        OBS = -1
+        olimpia = False
         args = {}
         for hora in self.periodo.dias :
             #~ se procesa cada individuo de la población
@@ -89,15 +83,6 @@ class Simulador :
                     """
                     si el individuo esta muerto se lo remueve de la poblacion
                     """
-                    if individuo.estado == Estado.LARVA :
-                        larvas_muertas += 1
-                    elif individuo.estado == Estado.PUPA :
-                        pupas_muertas += 1
-                    elif individuo.estado == Estado.ADULTO:
-                        adultos_muertas += 1
-                    else :
-                        huevos_muertas += 1
-
                     self.poblacion.kill(individuo)
 
                 elif individuo.esta_maduro() == True:
@@ -118,6 +103,7 @@ class Simulador :
                         se extiende la poblacion unicamente si se puso
                         huevos.
                         """
+                        print "Se reproduce"
                         if len(sub_poblacion) > 0 :
                             cantidad_huevos = len(sub_poblacion)
                             print "Huevos " + str(cantidad_huevos)
@@ -147,15 +133,7 @@ class Simulador :
             print( 'nro de ' + str(k) + ' = ' + str(init_dic[k]))
 
         print 'Poblacion final'
-        out_dic = self.stats()
-        for k in out_dic.keys() :
-            print( 'nro de ' + str(k) + ' = ' + str(out_dic[k]))
-
-        print "Total de huevos generados : "+ str(total_huevos)
-        print "Total huevos muertos : "+ str(huevos_muertas)
-        print "Total larvas muertas : "+ str(larvas_muertas)
-        print "Total pupas muertas : "+ str(pupas_muertas)
-        print "Total adultos muertos : "+ str(adultos_muertas)
+        print str(self.poblacion)
 
     def to_grid (self):
         """
@@ -187,11 +165,6 @@ class Simulador :
                 index = key_map[key]
                 # se incrementa la cantidad de larvas
                 data_array[index]['cantidad'] += 1
-        #ajustar las escala de valores para tener cantidades en el rango
-        #de 0 a 80
-        #~ for data in data_array :
-            #~ data['cantidad'] = \
-                #~ float(data['cantidad'])*float(80.0/max_cantidad)
 
         print 'cantidad de puntos a interpolar: ' + str(len(data_array))
 
@@ -228,35 +201,6 @@ class Simulador :
         else :
             return float(p1[0]) - float(p2[0])
 
-    def stats( self ) :
-        """
-        Metodo para analizar el comportamiento global de la pobacion
-        Tomando en cuenta la poblacion inicial se analiza durante un periodo
-        de tiempo
-            cantidad de hembras y machos
-            cantidad de individuos en el estado huevo
-            cantidad de individuos en el estado larva
-            cantidad de individuos en el estado pupa
-            cantidad de individuos en el estado adulto
-        """
-        #~ inicializamos el diccionario con los valores que contabilizaremos
-        stats_dic = {}
-        stats_dic['huevo'] = 0
-        stats_dic['larva'] = 0
-        stats_dic['pupa'] = 0
-        stats_dic['adulto'] = 0
-
-        for individuo in self.poblacion.individuos :
-            if individuo.estado == Estado.HUEVO :
-                stats_dic['huevo'] += 1
-            elif individuo.estado == Estado.LARVA :
-                stats_dic['larva'] += 1
-            elif individuo.estado == Estado.PUPA :
-                stats_dic['pupa'] += 1
-            else :
-                stats_dic['adulto'] += 1
-
-        return stats_dic
 
 if __name__ == "__main__" :
     from db_manager import *

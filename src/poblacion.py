@@ -6,8 +6,8 @@ Este módulo contiene la definición de datos utilizados en el simulador.
 @autors Maximiliano Báez, Roberto Bañuelos
 @contact mxbg.py@gmail.com, robertobanuelos@gmail.com
 """
+import math
 #Se impotan los modulos.
-
 from ranking_table import *
 from models import *
 from huevo import *
@@ -31,12 +31,21 @@ class Poblacion:
 
     @property
     def individuos(self) :
-        """Tabla en memoria"""
+        """Array de individuos de la población"""
         return self.__individuos
 
     @individuos.setter
     def individuos(self, value):
         self.__individuos = value
+
+    @property
+    def total_huevos(self) :
+        """Total de huevos generados"""
+        return self.__total_huevos
+
+    @total_huevos.setter
+    def total_huevos(self, value):
+        self.__total_huevos = value
 
     def __init__ (self, args) :
         """
@@ -49,6 +58,7 @@ class Poblacion:
         self.__memory = {}
         self.__individuos =  [];
         self.zonas_table = RankingTable();
+        self.__total_huevos = 0;
         if args.has_key("poblacion") == True:
             self.generar_poblacion(args["poblacion"])
 
@@ -139,6 +149,7 @@ class Poblacion:
             grupo[estado]["cantidad"] = 0;
             grupo[estado]["to_kill"] = 0;
             grupo[estado]["periodo"] = -1;
+            grupo[estado]["killed"] = 0;
 
         cantidad = kargs.get('cantidad', 0);
         estado = kargs.get('estado', Estado.LARVA);
@@ -166,7 +177,7 @@ class Poblacion:
         if grupo != None :
             grupo[aedes.estado]["cantidad"] -= 1
             grupo[aedes.estado]["to_kill"] -= 1
-
+            grupo[aedes.estado]["killed"] += 1;
 
     def regular (self, aedes, dia, periodo) :
         """
@@ -187,7 +198,7 @@ class Poblacion:
             se actualiza la canitdad de inviduos que deben desaparecer
             en el periodo.
             """
-            grupo_estado["to_kill"] = cantidad * tasa_mortalidad;
+            grupo_estado["to_kill"] = math.ceil(cantidad * tasa_mortalidad);
 
         return grupo_estado["to_kill"] > 0
 
@@ -196,6 +207,7 @@ class Poblacion:
         """
         """
         huevos = adulto.poner_huevos(hora)
+        self.total_huevos +=  huevos;
         sub_poblacion = self.gen_sub_poblacion(posicion=adulto.posicion,\
                 cantidad_larvas=huevos)
 
@@ -205,3 +217,23 @@ class Poblacion:
         """
         """
         self.individuos.extend(nueva_poblacion)
+
+    def __str__ (self) :
+        resumen = {}
+        estados = [Estado.HUEVO, Estado.LARVA, Estado.PUPA, Estado.ADULTO];
+        for estado in estados :
+            resumen[estado] = {};
+            resumen[estado]["total"] = 0;
+            resumen[estado]["muertas"] = 0;
+
+        for key in self.memory :
+            for estado in self.memory[key] :
+                resumen[estado]["total"] += self.memory[key][estado]["cantidad"]
+                resumen[estado]["muertas"] += self.memory[key][estado]["killed"]
+
+        to_str = "Huevos Generados : " + str(self.total_huevos) +"\n"
+        for estado in estados :
+            to_str +=  str(estado) + " total :" + str(resumen[estado]["total"]) + "\n"
+            to_str +=  str(estado) + " muertas :" + str(resumen[estado]["muertas"]) + "\n"
+
+        return to_str

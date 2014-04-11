@@ -166,8 +166,16 @@ class Adulto(AeAegypti):
         """
         #~ se envejece el adulto
         self._edad += 1
-        # if not dia.get_tipo_clima() == Clima.FRIO:
-        self.buscar_alimento(dia)
+        self.inseminacion(dia)
+        # se ranquea la zona
+        rank = self.rank_zona()
+        fly_prob = randint(0, 100)
+        if rank == Zonas.MALA or rank == Zonas.PESIMA or fly_prob > 90:
+            self.volar(dia)
+
+        if not dia.get_tipo_clima() == Clima.FRIO:
+            self.buscar_alimento(dia)
+
         return self
 
     def buscar_alimento(self, dia):
@@ -186,37 +194,25 @@ class Adulto(AeAegypti):
         @param dia: el objeto que contiene los datos climatologicos para
             un dia.
         """
-        rank = self.rank_zona()
-        self.inseminacion(dia)
-
         self._ultimo_alimento += 1
         #~ el mosquito se alimenta por primera vez de 20 a 72 horas
-        p = randint(0, 3)
-        fly_prob = randint(0, 100)
-        if rank == Zonas.MALA or rank == Zonas.PESIMA or fly_prob > 85:
-            self.volar(dia)
-
-        elif self._se_alimenta == False and p % (self.edad) == 0:
-
-                self._se_alimenta = True
-                self._ultimo_alimento = 0
-                """
-                2-3 mg = 20-30 cg
-                """
-                self._cantidad_alimentacion += randint(0, MAX_ALIMENTACION)
+        p = randint(20, 72)
+        se_alimenta = p % (self.edad * 24) == 0
+        if self._se_alimenta == False and se_alimenta:
+            self._se_alimenta = True
+            self._ultimo_alimento = 0
+            # 2-3 mg = 20-30 cg
+            self._cantidad_alimentacion += randint(0, MAX_ALIMENTACION)
 
     def poner_huevos(self, hora):
         """
         Generalmente el apareamiento se realiza cuando la hembra busca
         alimentarse; se ha observado que el ruido que emite al volar es
-        un mecanismo por el cual el macho es atraído.
+        un mecanismo por el cual el macho es atraído. El mosquito hembra
+        necesita la sangre para obtener proteínas y  poner sus huevos.
 
-        El mosquito hembra necesita la sangre para obtener proteínas y
-        poner sus huevos.
-
-        La mayoría de las posturas ocurre cerca del crepúsculo.
         La hembra embarazada es capaz de volar hasta 3km en busca de un
-         sitio optimo para la ovipostura.
+        sitio optimo para la ovipostura.
 
         @type hora : Hora
         @param hora: el objeto que contiene los datos climatologicos para

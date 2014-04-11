@@ -136,7 +136,7 @@ class Simulador:
         for individuo in self.poblacion.individuos:
             point = individuo.posicion
             key = str(point.x) + "-" + str(point.y)
-            if not key_map.has_key(key):
+            if not key_map.has_key(key) and individuo.estado != Estado.ADULTO:
                 # se obtiene los datos
                 data = {}
                 data['x'] = point.x
@@ -148,7 +148,7 @@ class Simulador:
                 data_array.append(data)
                 # se añade el indice al array
                 key_map[key] = len(data_array) - 1
-            else:
+            elif individuo.estado != Estado.ADULTO:
                 index = key_map[key]
                 # se incrementa la cantidad de larvas
                 data_array[index]['cantidad'] += 1

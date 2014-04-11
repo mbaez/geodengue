@@ -10,7 +10,8 @@ Este módulo contiene la definición del estado Adulto
 from aaegypti import *
 
 
-class Adulto(AeAegypti) :
+class Adulto(AeAegypti):
+
     """
     ECOLOGÍA DEL ADULTO
     Emergencia
@@ -57,55 +58,55 @@ class Adulto(AeAegypti) :
     """
 
     @property
-    def ultima_oviposicion (self):
+    def ultima_oviposicion(self):
         """
         Cantidad de horas desde la última oviposición.
         """
-        return self._ultima_oviposicion;
+        return self._ultima_oviposicion
 
     @property
-    def cantidad_oviposicion (self):
+    def cantidad_oviposicion(self):
         """
         Cantidad de veces que el mosquito hembra ovipuso.
         """
         return self._cantidad_oviposicion
 
     @property
-    def ultimo_alimento (self):
+    def ultimo_alimento(self):
         """
         Tiempo transcurrido desde la ultima alimentación.
         """
-        return self._ultimo_alimento;
+        return self._ultimo_alimento
 
     @property
-    def cantidad_alimentacion (self):
+    def cantidad_alimentacion(self):
         """
         Porcentaje no digerido de la última alimentación.
         """
-        return self._cantidad_alimentacion;
+        return self._cantidad_alimentacion
 
     @property
-    def se_alimenta( self ):
+    def se_alimenta(self):
         """
         Boolean que determina si se alimento o no
         """
         return self._se_alimenta
 
     @property
-    def distancia_recorrida (self):
+    def distancia_recorrida(self):
         """
         La distancia en metros recorrida por el mosquito adulto.
         """
-        return self._distancia_recorrida;
+        return self._distancia_recorrida
 
     @property
-    def is_inseminada (self):
+    def is_inseminada(self):
         """
         True si la hembra fue inseminada, False en caso contrario.
         """
-        return self._is_inseminada;
+        return self._is_inseminada
 
-    def __init__(self, **kargs) :
+    def __init__(self, **kargs):
         """
         @param kargs: Parametros de inicialización de la clase
 
@@ -115,10 +116,9 @@ class Adulto(AeAegypti) :
         # se invoca al constructor de la clase padre.
         kargs['estado'] = Estado.ADULTO
         # se invoca al constructor de la clase padre.
-        AeAegypti.__init__(self,**kargs);
+        AeAegypti.__init__(self, **kargs)
         #~ print "new "+ str(self)
-        self.posicion_origen = self.posicion.clone();
-
+        self.posicion_origen = self.posicion.clone()
         self._ultima_oviposicion = 1
         self._ultimo_alimento = 1
         self._distancia_recorrida = 0
@@ -128,7 +128,7 @@ class Adulto(AeAegypti) :
         self._se_alimenta = False
         self._se_reproduce = False
 
-    def se_reproduce (self, hora):
+    def se_reproduce(self, dia):
         """
         El apareamiento ocurre dentro de las 24 horas siguientes a la
         emergencia. Éste se realiza durante el vuelo, pero en algunas
@@ -141,32 +141,18 @@ class Adulto(AeAegypti) :
         * Un día cualquiera es día de oviposición, si T>18o C en algún
         lapso del día, pero si T<18o todo el día, no pone huevos.
 
-        @type hora : Hora
-        @param hora: el objeto que contiene los datos climatologicos para
-            una hora.
+        @type dia : Dia
+        @param dia: el objeto que contiene los datos climatologicos para
+            un dia.
         """
 
         self._se_reproduce = self.is_inseminada == True \
-            and self.esta_muerto() == False \
             and self.sexo == Sexo.HEMBRA \
-            and hora.get_tipo_clima() != Clima.FRIO
+            and dia.get_tipo_clima() != Clima.FRIO
 
         return self._se_reproduce
 
-    def esta_muerto (self):
-        """
-        La supervivencia de los mosquitos depende de la capacidad para alimentarse,
-        reproducirse, protegerse y dispersarse.
-
-        adulto  si expectativa de vida <= 0
-
-        * Muchos mueren al momento de emerger
-        * Si la población emergente original es grande, la restante es suficiente
-          para transmitir la enfermedad y mantener o provocar una epidemia (Nelson,1986).
-        """
-        return self.expectativa_vida <= 0
-
-    def desarrollar(self, hora) :
+    def desarrollar(self, dia):
         """
         Este método se encarga de desarrollar el individuo que se encuentra
         en el estado adulto
@@ -174,82 +160,43 @@ class Adulto(AeAegypti) :
         El tiempo de vida restante de un mosquito adulto depende de la
         calidad de su zona, el clima y su capacidad de alimentarse
 
-        Cómo le afecta la temperatura : Limitantes para el desarrollo poblacional.
-        Entre ellos, dentro del ambiente abiótico el potencial del vector
-
-        Variable atmosférica    Valor umbral letal  Duración letal (días)
-        Déficit de saturación       >30 mb              2
-        Déficit de saturación       entre 25 y 30 mb    3
-        Déficit de saturación       entre 20 y 25 mb    5
-        Déficit de saturación       entre 15 y 20 mb    10
-        Temperatura máxima          > 40 oC             1
-        Temperatura mínima          < 0 oC              1
-
-        @type hora : Hora
-        @param hora: el objeto que contiene los datos climatologicos para
-            una hora.
+        @type dia : Dia
+        @param dia: el objeto que contiene los datos climatologicos para
+            un dia.
         """
-        cantidad_dias = self.get_expectativa_zona(hora)
-        #~ se calcula el promedio de días que puede vivir el adulto
-        self._tiempo_vida += cantidad_dias
-
-        if (cantidad_dias > 0 ) :
-            #~ se disminuye la expectativa de vida del adulto
-            self._expectativa_vida -= 100/(cantidad_dias)
-
         #~ se envejece el adulto
-        self._edad +=1
+        self._edad += 1
+        # if not dia.get_tipo_clima() == Clima.FRIO:
+        self.buscar_alimento(dia)
+        return self
 
-        if not hora.get_tipo_clima() == Clima.FRIO :
-            self.buscar_alimento(hora)
-
-        return self;
-
-    def buscar_alimento(self, hora):
+    def buscar_alimento(self, dia):
         """
         Se tiene en cuenta la ubicacion del mosquito adulto y la densidad
         poblacional en dicha ubicación.
 
-        * Día adverso, si T máxima <15oC no vuela (por debajo de este umbral
+        Día adverso, si T máxima <15oC no vuela (por debajo de este umbral
         de vuelo, no vuela, no pica, ni ovipone). En definitiva, el potencial
         climático del vector es función de la temperatura y de la no-ocurrencia
         de valores por encima o por debajo de umbrales críticos, tanto térmicos
         como de humedad. Es de notar que para el caso de deficiencias de
         humedad, lo letal es función de la duración del período.
 
-        * La alimentación y la postura ocurren principalmente durante el día
-        * Existe una mayor actividad en las primeras horas de haber amanecido,
-         a media mañana, a media tarde o al anochecer.
-        *  La hembra embarazada es capaz de volar hasta 3km en busca de un
-         sitio optimo para la ovipostura.
-        * Los machos suelen dispersarse en menor magnitud que las hembras.
-
-        @type hora : Hora
-        @param hora: el objeto que contiene los datos climatologicos para
-            una hora.
+        @type dia : Dia
+        @param dia: el objeto que contiene los datos climatologicos para
+            un dia.
         """
         rank = self.rank_zona()
-        self.inseminacion(hora)
-        """
-        Permanece físicamente en donde emergió, siempre y cuando no
-        halla algún factor que la perturbe o no disponga de huéspedes,
-        sitios de reposo y de postura. El alcance noral es de 100 metros.
+        self.inseminacion(dia)
 
-        En caso de no haber recipientes adecuados, la hembra grávida
-        es capaz de volar hasta tres kilómetros en busca de este sitio.
-        Los machos suelen dispersarse en menor magnitud que las hembras
-        """
         self._ultimo_alimento += 1
         #~ el mosquito se alimenta por primera vez de 20 a 72 horas
-        p = randint(20, 72)
+        p = randint(0, 3)
+        fly_prob = randint(0, 100)
+        if rank == Zonas.MALA or rank == Zonas.PESIMA or fly_prob > 85:
+            self.volar(dia)
 
-        if rank == Zonas.MALA or rank == Zonas.PESIMA :
-            self.volar(hora)
-
-        elif (hora.get_tipo_hora() == Horario.MADUGRADA_MANHANA \
-            or hora.get_tipo_hora() == Horario.TARDE_NOCHE) \
-            and self._se_alimenta == False \
-            and p % (self.edad + 1 ) == 0:
+        elif self._se_alimenta == False and p % (self.edad) == 0:
 
                 self._se_alimenta = True
                 self._ultimo_alimento = 0
@@ -258,31 +205,18 @@ class Adulto(AeAegypti) :
                 """
                 self._cantidad_alimentacion += randint(0, MAX_ALIMENTACION)
 
-    def poner_huevos(self, hora) :
+    def poner_huevos(self, hora):
         """
         Generalmente el apareamiento se realiza cuando la hembra busca
         alimentarse; se ha observado que el ruido que emite al volar es
         un mecanismo por el cual el macho es atraído.
 
-        Una vez copulada e inseminada la hembra, el esperma que lleva es
-        suficiente para fecundar todos los huevitos que produce durante su
-        existencia, no aceptando otra inseminación adicional.
-
-        Su ciclo para poner huevos es de aproximadamente cada tres días.
-        Su alimentación puede hacerla en cualquier momento (puede picar
-        varias veces a las personas de una casa). Las proteínas contenidas
-        en la sangre le son indispensables para la maduración de los huevos.
-        La variación de temperatura y humedad, así como la latitud pueden
-        hacer variar estos rangos del ciclo de vida de los mosquitos.
-
-        La hembra deposita sus huevos en las paredes de recipientes con
-        agua estancada, limpia y a la sombra. Un solo mosquito puede poner
-        80 a 150 huevos, cuatro veces al día.
-
         El mosquito hembra necesita la sangre para obtener proteínas y
         poner sus huevos.
 
         La mayoría de las posturas ocurre cerca del crepúsculo.
+        La hembra embarazada es capaz de volar hasta 3km en busca de un
+         sitio optimo para la ovipostura.
 
         @type hora : Hora
         @param hora: el objeto que contiene los datos climatologicos para
@@ -301,11 +235,11 @@ class Adulto(AeAegypti) :
             huevos = self.generar_huevos()
             self._se_alimenta = False
             self._cantidad_alimentacion = 0
-            self._cantidad_oviposicion +=1
+            self._cantidad_oviposicion += 1
 
         return huevos
 
-    def inseminacion (self, hora):
+    def inseminacion(self, hora):
         """
         Inseminación :
         *  Antes de 24 horas ambos sexos están listos para el apareamiento
@@ -315,24 +249,19 @@ class Adulto(AeAegypti) :
         * La inseminación,generalmente, se efectúa durante el vuelo.
         * Una vez alimentada de sangre ocurren pocos apareamientos.
         """
-        p = randint(1, 24)
-        if (hora.get_tipo_hora() == Horario.MADUGRADA_MANHANA \
-            or hora.get_tipo_hora() == Horario.TARDE_NOCHE) \
-            and p <= self.edad:
+        if self.sexo == Sexo.MACHO:
+            #~ buscar a hembras para inseminarse
+            self.inseminar_macho(hora)
+        else:
+            self.inseminar_hembra(hora)
 
-            if self.sexo == Sexo.MACHO :
-                #~ buscar a hembras para inseminarse
-                self.inseminar_macho(hora)
-            else :
-                self.inseminar_hembra(hora)
-
-    def inseminar_macho (self, hora) :
+    def inseminar_macho(self, hora):
         """
         Buscar hembras para inseminar
         """
         pass
 
-    def inseminar_hembra (self, hora) :
+    def inseminar_hembra(self, hora):
         """
         Se encarga de verificar el estado de las hembras y verificar si
         estas pueden ser insemindadas.
@@ -340,9 +269,6 @@ class Adulto(AeAegypti) :
         Sólo las hembras nulíperas son insemindandas debido a que una
         inseminación es suficiente para que la hembra pueda poner huevos
         toda su vida.
-
-        TODO : Se debe verificar si existe algun macho cerca para poder
-        realizar la inseminación.
 
         @type hora : Hora
         @param hora: el objeto que contiene los datos climatologicos para
@@ -352,13 +278,10 @@ class Adulto(AeAegypti) :
             contrario.
         @rtype Boolean
         """
-
-        porcentaje =  randint(1, 100)
+        porcentaje = randint(1, 100)
         #~ Para las hembras nulíperas (no ha puesto ningún huevo)
-        if self.cantidad_oviposicion == 0  \
-            and self._cantidad_alimentacion == 0\
-            and porcentaje <= 58 \
-            and self.is_inseminada == False :
+        if self.cantidad_oviposicion == 0 and self._cantidad_alimentacion == 0\
+            and porcentaje <= 58 and self.is_inseminada == False:
                 """
                 El 58% son inseminadas antes de su primera alimentación
                 sanguínea.
@@ -366,25 +289,22 @@ class Adulto(AeAegypti) :
                 self._is_inseminada = True
                 return True
 
-        elif  self.cantidad_oviposicion == 0 \
-            and porcentaje <= 17 \
-            and self.se_alimenta == True  \
-            and self.is_inseminada == False :
+        elif  self.cantidad_oviposicion == 0 and porcentaje <= 17 \
+            and self.se_alimenta == True and self.is_inseminada == False:
                 """
                 El 17% durante durante la alimentación
                 """
                 self._is_inseminada = True
                 return True
 
-        elif  self.cantidad_oviposicion <= 1 \
-            and self.se_alimenta == True  \
-            and porcentaje <= 25 :
+        elif  self.cantidad_oviposicion <= 1 and self.se_alimenta == True  \
+            and porcentaje <= 25:
                 """
                 El 25% es inseminada entre la segunda alimentación y la
                 primera oviposición.
                 """
                 self._is_inseminada = True
-                return True;
+                return True
         """
         Una inseminación es suficiente para fecundar todos los huevos que
         la hembra produzca en toda su vida. Por lo que no es es relevante
@@ -393,7 +313,7 @@ class Adulto(AeAegypti) :
         """
         return False
 
-    def get_ciclo_gonotrofico (self, hora) :
+    def get_ciclo_gonotrofico(self, hora):
         """
         El ciclo gonotrófrico de los mosquitos es el nombre que se le
         adjudico al período que existe desde que el mosquito chupa la
@@ -407,12 +327,16 @@ class Adulto(AeAegypti) :
         de los ovarios, ya que cuando las temperaturas son bajas la digestión
         tarda más tiempo.
         """
-        tipo_clima = hora.get_tipo_clima()
-        rango = CICLO_GONOTROFICO.get(tipo_clima)
-        #~ se retorna el ciclo
-        return randint(rango[0], rango[1])
+        if self.cantidad_alimentacion == 0:
+            coef = COEF_SH_DE.get_by("NULIPERA")
+        else:
+            coef = COEF_SH_DE.get_by(self.estado)
 
-    def generar_huevos (self) :
+        cantidad_dias = 1 / self.sharpe_demichele(hora.temperatura, coef[0])
+
+        return cantidad_dias
+
+    def generar_huevos(self):
         """
         Su ciclo para poner huevos es de aproximadamente cada tres días a
         cuatro días.
@@ -426,11 +350,11 @@ class Adulto(AeAegypti) :
         """
         huevos = self.cantidad_alimentacion * MAX_HUEVOS / MAX_ALIMENTACION
         # se reinicia el contador
-        self._ultima_oviposicion = 0;
+        self._ultima_oviposicion = 0
 
         return huevos
 
-    def volar(self, hora) :
+    def volar(self, hora):
         """
         Los machos rondan como voladores solitarios aunque es más común
         que lo hagan en grupos pequeños (Bates, 1970; Kettle, 1993) atraídos
@@ -460,11 +384,11 @@ class Adulto(AeAegypti) :
         """
        #~ se genera un angulo 'delta', para simular las corrientes de aire
         #~ que sigue el mosquito.
-        delta = randint(-45, 45)
+        delta = randint(-180, 180)
         #~ Vuelan en sentido contrario al viento
         angulo_vuelo = hora.direccion_viento + 180 + delta
         #~ se calcula la velocidad de vuelo
-        velocidad = self.velocidad_vuelo(hora, angulo_vuelo);
+        velocidad = self.velocidad_vuelo(hora, angulo_vuelo)
         """
         Como la velocidad de vuelo esta en m/h y el tiempo de estudio
         es 1 hora, se utiliza la velocidad como distancia a recorrer
@@ -474,7 +398,7 @@ class Adulto(AeAegypti) :
         """
         self.posicion.move(velocidad, angulo_vuelo)
 
-    def move_to_neighbors (self, hora) :
+    def move_to_neighbors(self):
         """
         Este método se encarga de evaluar el vecino inmediato y comparalo
         con el valor de la posicion actual, si el vecino posee un puntaje
@@ -496,10 +420,6 @@ class Adulto(AeAegypti) :
         8. estado del mosquito: recién emergido, hembras grávidas, edad,
             nivel de alimentación, etc.
 
-        @type hora : Hora
-        @param hora: el objeto que contiene los datos climatologicos para
-            una hora.
-
         @return True si el vecino posee una mayor puntación, False en caso
             contrario.
         @rtype Boolean
@@ -507,12 +427,12 @@ class Adulto(AeAegypti) :
         #~ se evalua la zona
         rank = self.rank_zona()
         #~ se verifica el estado de la zona
-        if rank == Zonas.MALA or rank == Zonas.PESIMA :
+        if rank == Zonas.MALA or rank == Zonas.PESIMA:
             return True
 
         return False
 
-    def velocidad_vuelo(self, hora, angulo_vuelo) :
+    def velocidad_vuelo(self, hora, angulo_vuelo):
         """
         Al volar en busca de sangre, la hembra bate sus alas de 250 a 600
         veces/segundo, ello depende de la especie y en menor grado de su
@@ -537,13 +457,13 @@ class Adulto(AeAegypti) :
         """
         vx = math.sin(180 - angulo_vuelo) * speed - wind_speed
         vy = math.cos(180 - angulo_vuelo) * speed
-        v = math.sqrt (vx**2 + vy**2 )
+        v = math.sqrt(vx ** 2 + vy ** 2)
 
-        return  v
+        return v
 
-    def mortalidad (self, temperatura) :
+    def mortalidad(self, temperatura):
         """
         Para la etapa adulto, otero2006 la define como una constante
         independiente de la temperatura.
         """
-        return 0.09;
+        return 0.09

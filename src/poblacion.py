@@ -61,6 +61,7 @@ class Poblacion:
         self.__memory = {}
         self.__individuos = []
         self.zonas_table = RankingTable()
+        self.zonas_table.poblacion = self
         self.__total_huevos = 0
         if args.has_key("poblacion") == True:
             self.generar_poblacion(args["poblacion"])

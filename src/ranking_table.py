@@ -11,13 +11,15 @@ from db_manager import *
 
 DAO = PuntosControlModel()
 
+
 class RankingTable:
+
     """
     Se encarga de guardar en memoria  el valor de todas las zonas que ya
     fueron rankeadas en algún momento para evitar calculos incecesarios.
     """
     @property
-    def memory(self) :
+    def memory(self):
         """Tabla en memoria"""
         return self.__memory
 
@@ -25,10 +27,10 @@ class RankingTable:
     def memory(self, value):
         self.__memory = value
 
-    def __init__(self) :
+    def __init__(self):
         self.__memory = {}
 
-    def get_tipo_zona(self, pts) :
+    def get_tipo_zona(self, pts):
         """
         60 < Pts  Optima
         60 > Pts  Buena
@@ -36,29 +38,28 @@ class RankingTable:
         20 > Pts  Mala
         8 > Pts   Pésima
         """
-        if pts  < 8 :
+        if pts < 8:
             return Zonas.PESIMA
 
-        elif pts  >= 8 and pts  < 20 :
+        elif pts >= 8 and pts < 20:
             return Zonas.MALA
 
-        elif pts  >= 20 and pts  < 30 :
+        elif pts >= 20 and pts < 30:
             return Zonas.MALA
 
-        elif pts  >= 30 and pts  < 60 :
+        elif pts >= 30 and pts < 60:
             return Zonas.BUENA
 
-        elif pts  >= 60 :
+        elif pts >= 60:
             return Zonas.OPTIMA
 
-    def gen_key (self, punto, distancia):
+    def gen_key(self, punto, distancia):
         """
         Genera una clave única para el punto y la distancia.
         """
-        return str(punto.x) + "-" + str(punto.y) + "-"  + str(distancia)
+        return str(punto.x) + "-" + str(punto.y) + "-" + str(distancia)
 
-
-    def raking_zona(self, point, distancia) :
+    def raking_zona(self, point, distancia):
         """
         Este método se encarga de analizar los puntos criticos y dar un
         puntaje a la zona. Una zona se califica teniendo en cuenta :
@@ -72,24 +73,28 @@ class RankingTable:
         #~ para analizar si el mosquito debe volar en busca de mejores
         #~ condiciones
         zona_muestras = DAO.get_within(point, distancia)
-        if len(zona_muestras) == 0 :
-            return 0
+        if len(zona_muestras) == 0:
+            grupo = self.poblacion.get(point)
+            total = 0
+            for estado in grupo:
+                total += grupo[estado]["cantidad"]
+            return total
 
-        sum_wi= 0
+        sum_wi = 0
         _sum = 0
         p = 1.7
         #~ se evaluan los puntos de riesgo
-        for i in range(len(zona_muestras)) :
+        for i in range(len(zona_muestras)):
             dx = point.distance_to(zona_muestras[i])
-            if dx > 0 :
-                sum_wi += 1/( dx ** p)
+            if dx > 0:
+                sum_wi += 1 / (dx ** p)
 
-        for i in range(len(zona_muestras)) :
+        for i in range(len(zona_muestras)):
             dx = point.distance_to(zona_muestras[i])
-            if dx > 0 :
-                wi = 1/( dx ** p)
+            if dx > 0:
+                wi = 1 / (dx ** p)
                 ui = zona_muestras[i]['cantidad']
-                rank_value += (wi * ui )/sum_wi
+                rank_value += (wi * ui) / sum_wi
                 _sum += ui
 
         #~ print str(_sum/ len(zona_muestras)) + " \t "+ str(rank_value)
@@ -98,15 +103,14 @@ class RankingTable:
 
         return rank_value
 
-
-    def get_ranking (self, punto, distancia) :
+    def get_ranking(self, punto, distancia):
         """
         Se ecarga de verificar si la zona ya fue rankeada, de ser así
         se retorna el valor de la tabla de zonas rankeadas. Si no fue
         rankeada se rankea la zona y se guarda en la tabla de ranking.
         """
         key = self.gen_key(punto, distancia)
-        if not self.memory.has_key(key) :
+        if not self.memory.has_key(key):
             rank_value = self.raking_zona(punto, distancia)
             self.memory[key] = rank_value
 

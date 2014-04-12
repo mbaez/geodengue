@@ -4,12 +4,8 @@
  * @author <a href="mailto:mxbg.py@gmail.com">Maximiliano Báez</a>
  * @name views.common.SideBarView
  */
-define(["libs/jquery",
-        "libs/underscore",
-        "libs/backbone",
-        //se incluye el template
-        "text!templates/common/SidebarTmpl.html"],
-    function($,_,Backbone,tmpl) {
+define(["text!templates/common/SidebarTmpl.html"],
+    function (tmpl) {
         return Backbone.View.extend({
             /**
              * Constructor de la clase
@@ -17,14 +13,14 @@ define(["libs/jquery",
              *
              * @name #inicialize
              */
-            initialize: function() {
+            initialize: function () {
                 this.render();
             },
 
-            events : {
-                "click #instalar" : "onInstalar",
-                "click #recolectar" : "onRecolectar",
-                "click #guardar" : "onGuardar"
+            events: {
+                "click #instalar": "onInstalar",
+                "click #recolectar": "onRecolectar",
+                "click #guardar": "onGuardar"
             },
 
             /**
@@ -36,20 +32,20 @@ define(["libs/jquery",
              * @name #render
              */
             render: function () {
-                var compTmpl = _.template(tmpl,{});
+                var compTmpl = _.template(tmpl, {});
                 this.$el.html(compTmpl);
                 return this;
             },
 
-            onInstalar : function(){
+            onInstalar: function () {
                 this.trigger("on-instalar");
             },
 
-            onRecolectar : function(){
+            onRecolectar: function () {
                 this.trigger("on-recolectar");
             },
 
-            onGuardar : function(){
+            onGuardar: function () {
                 this.trigger("on-guardar");
             }
         });

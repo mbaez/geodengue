@@ -1,10 +1,27 @@
+@import url("bootstrap.css");
+@import url("selectize.css");
+@import url("jquery-impromptu.css");
+@import url("../libs/OpenLayers/theme/default/style.css");
+
 #map{
     border: 1px solid #CCC;
 }
-
 .olMapViewport, #map {
     width: 100%;
     min-height: 550px;
     max-height:1042px;
     height:100%;
+}
+
+.list-group.scroll {
+    height: 162px;
+    overflow-y: scroll;
+}
+
+.panel-heading .centrar {
+    float: right;
+    margin-top: -5px;
+}
+.panel-heading .centrar .glyphicon{
+    padding-bottom: 2px;
 }

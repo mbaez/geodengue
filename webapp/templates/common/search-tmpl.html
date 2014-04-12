@@ -1,0 +1,34 @@
+<!-- ./common/search-tmpl.html -->    
+<div id="item-template" style='display:none'>
+    <div data-value="" class="item">
+        <%if(typeof data.prefijo!="undefined" && data.prefijo.length > 0){%>
+            <span class="add-on"><%=data.prefijo%></span>
+        <%}%>
+    </div>
+</div>
+    
+<div id="create-template" style='display:none'>
+    <div data-selectable="" class="create active"><small>Utilizar</small> <strong></strong>…</div>
+</div>
+    
+<div class="form alpha grid_6">
+    <label for="<%=data.scope%>searchInput<%=data.attr%>" ><%=data.placeholder%></label>
+<%if(typeof data.loading == "undefined"){%>
+      <select id="<%=data.scope%>searchInput<%=data.attr%>" 
+              data-placeholder="<%=data.placeholder%>">
+          <option value=""><%=data.placeholder%></option>
+          <%for(var i=0;i<data.items.length; i++){%>
+                <%if(typeof data.prefijo!="undefined" && data.prefijo.length > 0){%>
+                <option value="<%=data.items[i][data.attr]%>"><%=data.prefijo%><%=data.items[i][data.attr]%></option>
+                <%}else{%>
+                    <option value="<%=data.items[i][data.attr]%>"><%=data.items[i][data.attr]%></option>
+                <%}%>
+          <%}%>
+      </select>
+<%}else{%>
+    <input id="<%=data.scope%>searchInput<%=data.attr%>" 
+        class="edit-label alpha grid_4" type="text"
+        placeholder="Cargando los datos..." disabled>
+<%}%>
+</div>
+<!--fin de ./common/search-tmpl.html -->    

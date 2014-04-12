@@ -25,3 +25,7 @@
 .panel-heading .centrar .glyphicon{
     padding-bottom: 2px;
 }
+.badge.badge-danger {
+    background-color: #d9534f;
+    color : white;
+}

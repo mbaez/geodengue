@@ -1,8 +1,42 @@
 <!-- ./procesos/procesos-form-tmpl -->
-<div id="procesosForm"  class="form-horizontal">
+<div id="procesosForm" class="form-horizontal">
     <div class="control-group">
-        <button class="btn" id="evolucionar">Evolucionar</button>
-        <button class="btn" id="instantanea">Instantanea</button>
+        <button class="btn btn-default" id="evolucionar">Evolucionar</button>
+        <button class="btn btn-default" id="instantanea">Instantanea</button>
     </div>
 </div>
+<br/>
+<section id="process-info" class="panel panel-default">
+    <div class="panel-heading">Individuos de la poblaci&oacute;n</div>
+    <ul class="list-group">
+
+        <li class="list-group-item">
+            <span data-attr="total_huevos" class="badge">?</span>
+            total de huevos generados
+        </li>
+
+        <li class="list-group-item">
+            <span data-attr="HUEVO.total" class="badge">?</span>
+            <span data-attr="HUEVO.muertas" class="badge badge-danger">?</span>
+            huevos
+        </li>
+        <li class="list-group-item">
+            <span data-attr="LARVA.total" class="badge">?</span>
+            <span data-attr="LARVA.muertas" class="badge badge-danger">?</span>
+            larvas
+        </li>
+
+        <li class="list-group-item">
+            <span data-attr="PUPA.total" class="badge">?</span>
+            <span data-attr="PUPA.muertas" class="badge badge-danger">?</span>
+            pupas
+        </li>
+
+        <li class="list-group-item">
+            <span data-attr="ADULTO.total" class="badge">?</span>
+            <span data-attr="ADULTO.muertas" class="badge badge-danger">?</span>
+            adultos
+        </li>
+    </ul>
+</section>
 <!-- fin de ./procesos/procesos-form-tmpl -->

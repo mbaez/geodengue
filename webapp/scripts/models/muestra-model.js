@@ -23,6 +23,24 @@ define(["backbone"], function (Backbone) {
         url: function () {
             return GeoDengue.RESTBaseUrl + "/muestras/" +
                 this.get("idMuestra");
+        },
+        /**
+         * Se encarga de realizar un post a /muestras/{id_muestra}/{proceso}
+         * @function
+         * @name models.MuestraModel#executeProcess
+         * @retruns {String} Un cadena que representa la url del recurso
+         */
+        executeProcess: function (data) {
+            this.set({
+                idMuestra: 1
+            });
+            // se obtiene la url base del model
+            var urlBase = this.url();
+            //se sobreescribe la url para invocar al proceso correspondiente
+            this.url = function () {
+                return urlBase + "/" + data.proceso;
+            }
+            this.save(null, GeoDengue.callback);
         }
     });
 });

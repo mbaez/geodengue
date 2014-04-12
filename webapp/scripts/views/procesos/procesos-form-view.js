@@ -62,10 +62,12 @@ define(["text!templates/procesos/procesos-form-tmpl.html"],
             render: function () {
                 var compTmpl = _.template(tmpl, {});
                 this.$el.html(compTmpl);
+                $("#process-info").hide();
                 return this;
             },
 
             /**
+             * Dispara el evento   'on-execute' cuando se hace click en uno de los botones
              * @function
              *
              * @author <a href="mailto:mxbg.py@gmail.com">Maximiliano Báez</a>
@@ -78,6 +80,21 @@ define(["text!templates/procesos/procesos-form-tmpl.html"],
                 this.trigger("on-execute", {
                     proceso: process
                 });
+            },
+
+            /**
+             * Este metodo se encarga de contruir el panel adicional con el resumen del proceso
+             * @function
+             *
+             * @public
+             * @name #showProcessInfo
+             */
+            showProcessInfo: function (resumen) {
+                $("#process-info").show();
+                this.putAttributes(resumen);
+                for (var estado in resumen) {
+                    this.putAttributes(resumen[estado], estado);
+                }
             }
         });
     }

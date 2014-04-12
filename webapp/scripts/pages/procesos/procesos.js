@@ -57,16 +57,18 @@ define(['text!pages/procesos/procesos.html',
                 this.mapPanel = new MapView({
                     el: $("#incioContent")
                 });
-                var form = new ProcesosFormView({
-                    el: $("#form")
-                });
 
                 var view = new MuestrasBoxView({
                     el: $("#muestras-box"),
                     map: this.mapPanel.map
                 });
+
+                this.form = new ProcesosFormView({
+                    el: $("#form")
+                });
+
                 //se añade el handler del view
-                form.on("on-execute", this.onEjecutarProceso, this);
+                this.form.on("on-execute", this.onEjecutarProceso, this);
                 //se retorna la referencia al view.
                 return this;
             },
@@ -82,20 +84,11 @@ define(['text!pages/procesos/procesos.html',
              */
             onEjecutarProceso: function (data) {
                 this.model = new MuestraModel();
-                this.model.set({
-                    idMuestra: 1
-                });
-                // se obtiene la url base del model
-                var urlBase = this.model.url();
-                //se sobreescribe la url para invocar al proceso correspondiente
-                this.model.url = function () {
-                    return urlBase + "/" + data.proceso;
-                }
                 // se añade el handler del model
                 this.model.on('ready', this.onProcesoReady, this);
                 this.model.on('error', this.error, this);
                 // se hace el post
-                this.model.save(null, GeoDengue.callback);
+                this.model.executeProcess(data);
             },
 
             /**
@@ -110,15 +103,21 @@ define(['text!pages/procesos/procesos.html',
             onProcesoReady: function () {
                 //se reinicia los botones
                 $(".btn").button("reset");
+                //se procesa el layer reaster
                 var conf = $.extend({}, DataSource.rasterLayerConf);
                 conf.name = this.model.get("layer");
                 var geojsonFormat = new OpenLayers.Format.GeoJSON();
                 var vectorLayer = new OpenLayers.Layer.Vector();
                 vectorLayer.styleMap = this.style.styleMap;
-                this.mapPanel.map.addLayer(vectorLayer);
+                //se procesa el vector layer
                 var data = this.model.get("mosquitos");
                 if (typeof data != 'undefined') {
                     vectorLayer.addFeatures(geojsonFormat.read(data));
+                    this.mapPanel.map.addLayer(vectorLayer);
+                }
+                var resumen = this.model.get("resumen");
+                if (typeof resumen != "undefined") {
+                    this.form.showProcessInfo(resumen);
                 }
                 //se construye el raster layer
                 var raster = new Layer.WMS([conf]);

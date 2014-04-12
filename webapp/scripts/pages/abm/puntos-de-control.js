@@ -192,7 +192,7 @@ define(['text!pages/abm/puntos-de-control.html',
                             placeholder: "",
                             type: "date"
                         }
-                ]
+                    ]
                 });
                 return popup;
             },

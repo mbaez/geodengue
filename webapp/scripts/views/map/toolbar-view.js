@@ -1,16 +1,11 @@
-
 /**
  * Descripción del view
  * @class
  * @author <a href="mailto:mxbg.py@gmail.com">Maximiliano Báez</a>
  * @name nombre del view
  */
-define(["libs/jquery",
-        "libs/underscore",
-        "libs/backbone",
-        //se incluye el template
-        "text!templates/map/ToolbarTmpl.html"],
-    function($,_,Backbone,tmpl) {
+define(["text!templates/map/toolbar-tmpl.html"],
+    function (tmpl) {
         return Backbone.View.extend({
             /**
              * Constructor de la clase
@@ -18,17 +13,17 @@ define(["libs/jquery",
              *
              * @name #inicialize
              */
-            initialize: function() {
+            initialize: function () {
                 this.render();
             },
             /**
              * Conjunto de eventos y handlers asociados.
              */
-            events : {
-                'click #guardar' : 'onGuardar',
-                'click #anadir' : 'onAnadir',
-                'click #mover' : 'onMover',
-                'click #eliminar' : 'onEliminar'
+            events: {
+                'click #guardar': 'onGuardar',
+                'click #anadir': 'onAnadir',
+                'click #mover': 'onMover',
+                'click #eliminar': 'onEliminar'
             },
             /**
              * Este metodo se encarga de contruir el view a partir del
@@ -39,7 +34,7 @@ define(["libs/jquery",
              * @name #render
              */
             render: function () {
-                var compTmpl = _.template(tmpl,{});
+                var compTmpl = _.template(tmpl, {});
                 this.$el.html(compTmpl);
                 return this;
             },
@@ -51,7 +46,7 @@ define(["libs/jquery",
              * @public
              * @name #onGuardar
              */
-            onGuardar : function(){
+            onGuardar: function () {
                 this.trigger('on-guardar');
             },
             /**
@@ -62,7 +57,7 @@ define(["libs/jquery",
              * @public
              * @name #onAnadir
              */
-            onAnadir : function(){
+            onAnadir: function () {
                 this.trigger('on-anadir');
             },
             /**
@@ -73,7 +68,7 @@ define(["libs/jquery",
              * @public
              * @name #onMover
              */
-            onMover : function(){
+            onMover: function () {
                 this.trigger('on-mover');
             },
             /**
@@ -84,7 +79,7 @@ define(["libs/jquery",
              * @public
              * @name #onEliminar
              */
-            onEliminar : function(){
+            onEliminar: function () {
                 this.trigger('on-eliminar');
             },
         });

@@ -4,7 +4,7 @@
  * @author <a href="mailto:mxbg.py@gmail.com">Maximiliano Báez</a>
  * @name views.common.SideBarView
  */
-define(["text!templates/common/SidebarTmpl.html"],
+define(["text!templates/common/sidebar-tmpl.html"],
     function (tmpl) {
         return Backbone.View.extend({
             /**

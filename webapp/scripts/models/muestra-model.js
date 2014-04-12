@@ -6,7 +6,7 @@
  * @author <a href="mailto:mxbg.py@gmail.com">Maximiliano Báez</a>
  * @name models.MuestraModel
  */
-define(["libs/underscore","libs/backbone"], function (_,Backbone) {
+define(["backbone"], function (Backbone) {
     /**
      * Constructor de la clase
      * @function
@@ -20,9 +20,9 @@ define(["libs/underscore","libs/backbone"], function (_,Backbone) {
          * @name models.MuestraModel#url
          * @retruns {String} Un cadena que representa la url del recurso
          */
-        url : function () {
+        url: function () {
             return GeoDengue.RESTBaseUrl + "/muestras/" +
-                this.get("idMuestra") ;
+                this.get("idMuestra");
         }
     });
 });

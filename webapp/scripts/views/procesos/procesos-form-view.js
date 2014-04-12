@@ -1,11 +1,10 @@
 /**
- * Descripción del view
- * @class
- * @author <a href="mailto:correo@autor">Nombre del autor</a>
- * @name nombre del view
+ * Sidebar de la pagina puntos de control
+ * @clss
+ * @author <a href="mailto:mxbg.py@gmail.com">Maximiliano Báez</a>
  */
-define(["text!templates/Tmpl.html"],
-    function ($, _, Backbone, tmpl) {
+define(["text!templates/procesos/procesos-form-tmpl.html"],
+    function (tmpl) {
         return Backbone.View.extend({
             /**
              * Constructor de la clase
@@ -38,20 +37,18 @@ define(["text!templates/Tmpl.html"],
              *          el view.
              */
             allowed: function (options) {
-                this.data = options;
-                /**
-                this.collection.on('ready', this.render, this);
-                this.collection.on('error', this.error, this);
-                this.collection.on('fetch', this.loading, this);
-                this.collection.fetch(BaseCallback.fetch);
-                */
-                //si son models
-                /**
-                this.model.on('ready', this.render, this);
-                this.model.on('error', this.error, this);
-                this.model.on('fetch', this.loading, this);
-                this.model.fetch(BaseCallback.fetch);
-                */
+                this.render();
+            },
+
+
+            /**
+             * Json que mapea los eventos a los handlers
+             * @field
+             * @type Object
+             * @name #events
+             */
+            events: {
+                "click #procesosForm .btn": "onClick",
             },
 
             /**
@@ -66,6 +63,21 @@ define(["text!templates/Tmpl.html"],
                 var compTmpl = _.template(tmpl, {});
                 this.$el.html(compTmpl);
                 return this;
+            },
+
+            /**
+             * @function
+             *
+             * @author <a href="mailto:mxbg.py@gmail.com">Maximiliano Báez</a>
+             * @name #onClick
+             */
+            onClick: function (event) {
+                var process = $(event.target).attr("id");
+                $(".btn").button("loading");
+                // se dispara el evento
+                this.trigger("on-execute", {
+                    proceso: process
+                });
             }
         });
     }

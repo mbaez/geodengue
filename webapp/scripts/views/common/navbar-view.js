@@ -1,11 +1,14 @@
 /**
- * Descripción del view
+ * Navbar principal de la aplicación, el navbar que se inicializa
+ * corresponde al de <a href="http://twitter.github.io/bootstrap/components.html#navbar">
+ * Bootstrap</a>.
+ *
  * @class
- * @author <a href="mailto:correo@autor">Nombre del autor</a>
- * @name nombre del view
+ * @author <a href="mailto:mxbg.py@gmail.com">Maximiliano Báez</a>
+ * @name views.common.NavbarView
  */
-define(["text!templates/Tmpl.html"],
-    function ($, _, Backbone, tmpl) {
+define(["text!templates/common/navbar-tmpl.html"],
+    function (tmpl) {
         return Backbone.View.extend({
             /**
              * Constructor de la clase
@@ -38,20 +41,7 @@ define(["text!templates/Tmpl.html"],
              *          el view.
              */
             allowed: function (options) {
-                this.data = options;
-                /**
-                this.collection.on('ready', this.render, this);
-                this.collection.on('error', this.error, this);
-                this.collection.on('fetch', this.loading, this);
-                this.collection.fetch(BaseCallback.fetch);
-                */
-                //si son models
-                /**
-                this.model.on('ready', this.render, this);
-                this.model.on('error', this.error, this);
-                this.model.on('fetch', this.loading, this);
-                this.model.fetch(BaseCallback.fetch);
-                */
+                this.render();
             },
 
             /**

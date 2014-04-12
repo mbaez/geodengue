@@ -1,4 +1,3 @@
-
 /**
  * Este workspace abarca las clases que manejan las capas pertenecientes
  * al mapa.
@@ -17,13 +16,13 @@ Layer = {
      * @author <a href="mailto:mxbg.py@gmail.com">Maximiliano Báez</a>
      * @return {OpenLayers.Strategy.Save}
      */
-    StrategySave : function(){
-        return  new OpenLayers.Strategy.Save({
-            onCommit: function(response) {
-                if(!response.success() && this.failure){
+    StrategySave: function () {
+        return new OpenLayers.Strategy.Save({
+            onCommit: function (response) {
+                if (!response.success() && this.failure) {
                     this.failure();
                     return;
-                }else if(this.success){
+                } else if (this.success) {
                     this.success(response);
                 }
 
@@ -49,17 +48,17 @@ Layer = {
      *              encuentra el layer.
      * @return {OpenLayers.Protocol.WFS}
      */
-    Protocol : function(options){
+    Protocol: function (options) {
         var params = {
-            url:  DataSource.host + options.service,
+            url: DataSource.host + options.service,
             featureType: options.name,
             version: "1.1.0",
-            featureNS : options.featureNS,
+            featureNS: options.featureNS,
             geometryName: options.geometryName,
             srsName: DataSource.projectionCode
         };
 
-        if(typeof options.filter != "undefined"){
+        if (typeof options.filter != "undefined") {
             params['filter'] = options.filter;
         }
         return new OpenLayers.Protocol.WFS(params);
@@ -84,9 +83,9 @@ Layer = {
      *               obtiene los datos del layer.
      * @return {OpenLayers.Layer.Vector} La capa del tipo vector construida.
      */
-    Vector : function(options){
-        if(!options["geometryName"] && !options["featureNS"]){
-            return new OpenLayers.Layer.Vector(options.name,{
+    Vector: function (options) {
+        if (!options["geometryName"] && !options["featureNS"]) {
+            return new OpenLayers.Layer.Vector(options.name, {
                 displayInLayerSwitcher: false
             });
         }
@@ -94,45 +93,49 @@ Layer = {
         var params = {};
         //se copian los atributos
         $.extend(params, options);
+        params.callback = function (data) {
+            //se dispara el evento para notificar que el view fue
+            //renderizado
+            $("body").trigger({
+                type: 'on-layer-ready',
+                layer: data
+            });
+        }
         //se establece el servicio
         params.service = "ows";
         var fixed = new OpenLayers.Strategy.Fixed();
-        var strategySave =  new Layer.StrategySave();
+        var strategySave = new Layer.StrategySave();
         //se construye el protocolo
         var protocol = new Layer.Protocol(params);
+        protocol.read({
+            callback: params['callback']
+        });
 
-        if(params['callback']){
-            protocol.read({
-                callback: params['callback']
-            });
-        }
 
         //Se construye la capa del tipo vector
-        return new OpenLayers.Layer.Vector(options.name,
-            {
-                strategies : [fixed, strategySave],
-                protocol: protocol,
-                /**
-                 * Se encarga de confirmar los cambios realizados en las capas.
-                 * @function
-                 * @name common.Layer.Vector#commit
-                 * @author <a href="mailto:mxbg.py@gmail.com">Maximiliano Báez</a>
-                 * @param options {Object}
-                 * @config {Function} [success] Función que se invoca cuando
-                 *              la operacion se realizó correctamente
-                 * @config {Function} [failure] Función que es invocada
-                 *              cuando ocurrio un error al realizar la operación.
-                 */
-                commit : function(options){
-                    if(options){
-                        this.strategies[1]["success"] = options.success;
-                        this.strategies[1]["failure"] = options.failure;
-                    }
-                    this.strategies[1].save();
-                },
-                displayInLayerSwitcher: true
-            }
-        );
+        return new OpenLayers.Layer.Vector(options.name, {
+            strategies: [fixed, strategySave],
+            protocol: protocol,
+            /**
+             * Se encarga de confirmar los cambios realizados en las capas.
+             * @function
+             * @name common.Layer.Vector#commit
+             * @author <a href="mailto:mxbg.py@gmail.com">Maximiliano Báez</a>
+             * @param options {Object}
+             * @config {Function} [success] Función que se invoca cuando
+             *              la operacion se realizó correctamente
+             * @config {Function} [failure] Función que es invocada
+             *              cuando ocurrio un error al realizar la operación.
+             */
+            commit: function (options) {
+                if (options) {
+                    this.strategies[1]["success"] = options.success;
+                    this.strategies[1]["failure"] = options.failure;
+                }
+                this.strategies[1].save();
+            },
+            displayInLayerSwitcher: true
+        });
     },
 
     /**
@@ -148,10 +151,10 @@ Layer = {
      *
      * @return {Array} La lista de capas WMS obtenidas.
      */
-    WMS : function(options){
+    WMS: function (options) {
         //direccion del servidor al cual se le realizan las peticiones de las
         //capas via WMS
-        var server = DataSource.host ;
+        var server = DataSource.host;
         //var server = DataSource.host + "gwc/service/wms";
         //formato en el que el servidor retorna el mapa
         var format = 'image/png';
@@ -159,24 +162,27 @@ Layer = {
         var layers = [];
         var names = []
         //se validan los parametros del constructor
-        if(typeof options.base == "undefined"){
+        if (typeof options.base == "undefined") {
             options.base = false;
         }
-        if(typeof options.length != "undefined"){
+        if (typeof options.length != "undefined") {
             names = options;
-        }else if (typeof options.name != "undefined"){
+        } else if (typeof options.name != "undefined") {
             names = [options];
         }
         //se preparan los parametros
-        var config = {format : "image/png",transparent : true};
+        var config = {
+            format: "image/png",
+            transparent: true
+        };
         // se construyen las capas
-        for(var i=0; i<names.length; i++){
+        for (var i = 0; i < names.length; i++) {
             //se establece el nombre del layer
-            config.LAYERS =  names[i].name;
+            config.LAYERS = names[i].name;
             //se construye el layer wms
             layers[i] = new OpenLayers.Layer.WMS(
                 config.LAYERS,
-                server + names[i].workspace+ "/wms",
+                server + names[i].workspace + "/wms",
                 config
             );
             layers[i].transitionEffect = 'resize';

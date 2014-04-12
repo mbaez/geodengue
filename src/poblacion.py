@@ -190,12 +190,17 @@ class Poblacion:
         Se encarga de eliminar un idividuo de la población y actualizar la información
         de la población.
         """
-        self.individuos.remove(aedes)
-        grupo = self.get(aedes.posicion)
+        if aedes.estado == Estado.ADULTO:
+            grupo = self.get(aedes.posicion_origen)
+        else:
+            grupo = self.get(aedes.posicion)
+
         if grupo != None:
             grupo[aedes.estado]["cantidad"] -= 1
             grupo[aedes.estado]["to_kill"] -= 1
             grupo[aedes.estado]["killed"] += 1
+
+        self.individuos.remove(aedes)
 
     def regular(self, aedes, dia, periodo):
         """
@@ -239,7 +244,10 @@ class Poblacion:
         """
         self.individuos.extend(nueva_poblacion)
 
-    def __str__(self):
+    def get_resumen(self):
+        """
+        Se encarga de generar un resumen de la poblacion
+        """
         resumen = {}
         estados = [Estado.HUEVO, Estado.LARVA, Estado.PUPA, Estado.ADULTO]
         for estado in estados:
@@ -254,6 +262,13 @@ class Poblacion:
                 resumen[estado]["muertas"] += self.memory[
                     key][estado]["killed"]
 
+        resumen["total_huevos"] = self.total_huevos
+        return resumen
+
+    def __str__(self):
+        resumen = self.get_resumen()
+        estados = [Estado.HUEVO, Estado.LARVA, Estado.PUPA, Estado.ADULTO]
+        resumen = self.get_resumen()
         to_str = "Huevos Generados : " + str(self.total_huevos) + "\n"
         for estado in estados:
             to_str += str(estado) + " total :" + str(

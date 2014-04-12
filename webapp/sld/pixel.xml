@@ -1,119 +1,267 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<StyledLayerDescriptor version="1.0.0" xmlns="http://www.opengis.net/sld" xmlns:ogc="http://www.opengis.net/ogc"
-  xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  xsi:schemaLocation="http://www.opengis.net/sld http://schemas.opengis.net/sld/1.0.0/StyledLayerDescriptor.xsd">
-  <NamedLayer>
-    <Name>pixel</Name>
-    <UserStyle>
-     <Name>default</Name>
-      <FeatureTypeStyle>
-          <!-- Muy Bajo-->
-        <Rule>
-            <ogc:Filter>
-                <ogc:PropertyIsGreaterThanOrEqualTo>
-                    <ogc:PropertyName>cantidad</ogc:PropertyName>
-                    <ogc:Literal>0</ogc:Literal>
-                </ogc:PropertyIsGreaterThanOrEqualTo>
-            </ogc:Filter>
-            <PointSymbolizer>
-              <Graphic>
-               <Mark>
-                 <WellKnownName>circle</WellKnownName>
-                 <Fill>
-                   <CssParameter name="fill">#FAF183</CssParameter>
-                  <CssParameter name="fill-opacity"><ogc:Literal>0.7</ogc:Literal></CssParameter>
-                 </Fill>
-               </Mark>
-               <Size>10</Size>
-             </Graphic>
-            </PointSymbolizer>
-        </Rule>
-        <!-- Bajo-->
-        <Rule>
-            <ogc:Filter>
-                <ogc:PropertyIsGreaterThanOrEqualTo>
-                    <ogc:PropertyName>cantidad</ogc:PropertyName>
-                    <ogc:Literal>8</ogc:Literal>
-                </ogc:PropertyIsGreaterThanOrEqualTo>
-            </ogc:Filter>
-            <PointSymbolizer>
-              <Graphic>
-               <Mark>
-                 <WellKnownName>circle</WellKnownName>
-                 <Fill>
-                   <CssParameter name="fill">#FAD151</CssParameter>
-                  <CssParameter name="fill-opacity"><ogc:Literal>0.7</ogc:Literal></CssParameter>
-                 </Fill>
-               </Mark>
-               <Size>10</Size>
-             </Graphic>
-            </PointSymbolizer>
-        </Rule>
-        <!-- Medio-->
-        <Rule>
-            <ogc:Filter>
-                <ogc:PropertyIsGreaterThanOrEqualTo>
-                    <ogc:PropertyName>cantidad</ogc:PropertyName>
-                    <ogc:Literal>20</ogc:Literal>
-                </ogc:PropertyIsGreaterThanOrEqualTo>
-            </ogc:Filter>
-            <PointSymbolizer>
-              <Graphic>
-               <Mark>
-                 <WellKnownName>circle</WellKnownName>
-                 <Fill>
-                   <CssParameter name="fill">#F2A82E</CssParameter>
-                  <CssParameter name="fill-opacity"><ogc:Literal>0.7</ogc:Literal></CssParameter>
-                 </Fill>
-               </Mark>
-               <Size>10</Size>
-             </Graphic>
-            </PointSymbolizer>
-        </Rule>
-        <!-- Alto-->
-        <Rule>
-            <ogc:Filter>
-                <ogc:PropertyIsGreaterThanOrEqualTo>
-                    <ogc:PropertyName>cantidad</ogc:PropertyName>
-                    <ogc:Literal>30</ogc:Literal>
-                </ogc:PropertyIsGreaterThanOrEqualTo>
-            </ogc:Filter>
-            <PointSymbolizer>
-              <Graphic>
-               <Mark>
-                 <WellKnownName>circle</WellKnownName>
-                 <Fill>
-                   <CssParameter name="fill">#A95124</CssParameter>
-                  <CssParameter name="fill-opacity"><ogc:Literal>0.7</ogc:Literal></CssParameter>
-                 </Fill>
-               </Mark>
-               <Size>10</Size>
-             </Graphic>
-            </PointSymbolizer>
-        </Rule>
-        <!-- Muy alto-->
-        <Rule>
-            <ogc:Filter>
-                <ogc:PropertyIsGreaterThanOrEqualTo>
-                    <ogc:PropertyName>cantidad</ogc:PropertyName>
-                    <ogc:Literal>60</ogc:Literal>
-                </ogc:PropertyIsGreaterThanOrEqualTo>
-            </ogc:Filter>
-            <PointSymbolizer>
-              <Graphic>
-               <Mark>
-                 <WellKnownName>circle</WellKnownName>
-                 <Fill>
-                   <CssParameter name="fill">#630C0E</CssParameter>
-                 <CssParameter name="fill-opacity"><ogc:Literal>0.7</ogc:Literal></CssParameter>
-                 </Fill>
-               </Mark>
-               <Size>10</Size>
-             </Graphic>
-            </PointSymbolizer>
-        </Rule>
+<?xml version="1.0" encoding="UTF-8" ?>
+<StyledLayerDescriptor version="1.0.0" xmlns="http://www.opengis.net/sld" xmlns:ogc="http://www.opengis.net/ogc" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.opengis.net/sld http://schemas.opengis.net/sld/1.0.0/StyledLayerDescriptor.xsd">
+    <NamedLayer>
+        <Name>pixel</Name>
+        <UserStyle>
+            <Name>default</Name>
+            <FeatureTypeStyle>
+                <!-- Muy Bajo-->
+                <Rule>
+                    <ogc:Filter>
+                        <ogc:PropertyIsGreaterThanOrEqualTo>
+                            <ogc:PropertyName>cantidad</ogc:PropertyName>
+                            <ogc:Literal>0</ogc:Literal>
+                        </ogc:PropertyIsGreaterThanOrEqualTo>
+                    </ogc:Filter>
+                    <PointSymbolizer>
+                        <Graphic>
+                            <Mark>
+                                <WellKnownName>circle</WellKnownName>
+                                <Fill>
+                                    <CssParameter name="fill">#fff8a6</CssParameter>
+                                    <CssParameter name="fill-opacity">
+                                        <ogc:Literal>0.7</ogc:Literal>
+                                    </CssParameter>
+                                </Fill>
+                            </Mark>
+                            <Size>10</Size>
+                        </Graphic>
+                        <Label>
+                            <ogc:PropertyName>cantidad</ogc:PropertyName>
+                        </Label>
+                        <Font>
+                            <CssParameter name="font-family">Lucida Sans</CssParameter>
+                            <CssParameter name="font-size">12</CssParameter>
+                            <CssParameter name="font-style">normal</CssParameter>
+                        </Font>
+                        <LabelPlacement>
+                            <PointPlacement>
+                                <AnchorPoint>
+                                    <AnchorPointX>0.5</AnchorPointX>
+                                    <AnchorPointY>0.5</AnchorPointY>
+                                </AnchorPoint>
+                                <Displacement>
+                                    <DisplacementX>0</DisplacementX>
+                                    <DisplacementY>10</DisplacementY>
+                                </Displacement>
+                            </PointPlacement>
+                        </LabelPlacement>
+                        <Halo>
+                            <Fill>
+                                <CssParameter name="fill">#FF0000</CssParameter>
+                            </Fill>
+                        </Halo>
+                        <Fill>
+                            <CssParameter name="fill">#000000</CssParameter>
+                        </Fill>
+                    </PointSymbolizer>
+                </Rule>
+                <!-- Bajo-->
+                <Rule>
+                    <ogc:Filter>
+                        <ogc:PropertyIsGreaterThanOrEqualTo>
+                            <ogc:PropertyName>cantidad</ogc:PropertyName>
+                            <ogc:Literal>8</ogc:Literal>
+                        </ogc:PropertyIsGreaterThanOrEqualTo>
+                    </ogc:Filter>
+                    <PointSymbolizer>
+                        <Graphic>
+                            <Mark>
+                                <WellKnownName>circle</WellKnownName>
+                                <Fill>
+                                    <CssParameter name="fill">#FAD151</CssParameter>
+                                    <CssParameter name="fill-opacity">
+                                        <ogc:Literal>0.7</ogc:Literal>
+                                    </CssParameter>
+                                </Fill>
+                            </Mark>
+                            <Size>10</Size>
+                        </Graphic>
+                        <Label>
+                            <ogc:PropertyName>cantidad</ogc:PropertyName>
+                        </Label>
+                        <Font>
+                            <CssParameter name="font-family">Lucida Sans</CssParameter>
+                            <CssParameter name="font-size">12</CssParameter>
+                            <CssParameter name="font-style">normal</CssParameter>
+                        </Font>
+                        <LabelPlacement>
+                            <PointPlacement>
+                                <AnchorPoint>
+                                    <AnchorPointX>0.5</AnchorPointX>
+                                    <AnchorPointY>0.5</AnchorPointY>
+                                </AnchorPoint>
+                                <Displacement>
+                                    <DisplacementX>0</DisplacementX>
+                                    <DisplacementY>10</DisplacementY>
+                                </Displacement>
+                            </PointPlacement>
+                        </LabelPlacement>
+                        <Halo>
+                            <Fill>
+                                <CssParameter name="fill">#FF0000</CssParameter>
+                            </Fill>
+                        </Halo>
+                        <Fill>
+                            <CssParameter name="fill">#000000</CssParameter>
+                        </Fill>
+                    </PointSymbolizer>
+                </Rule>
+                <!-- Medio-->
+                <Rule>
+                    <ogc:Filter>
+                        <ogc:PropertyIsGreaterThanOrEqualTo>
+                            <ogc:PropertyName>cantidad</ogc:PropertyName>
+                            <ogc:Literal>20</ogc:Literal>
+                        </ogc:PropertyIsGreaterThanOrEqualTo>
+                    </ogc:Filter>
+                    <PointSymbolizer>
+                        <Graphic>
+                            <Mark>
+                                <WellKnownName>circle</WellKnownName>
+                                <Fill>
+                                    <CssParameter name="fill">#F2A82E</CssParameter>
+                                    <CssParameter name="fill-opacity">
+                                        <ogc:Literal>0.7</ogc:Literal>
+                                    </CssParameter>
+                                </Fill>
+                            </Mark>
+                            <Size>10</Size>
+                        </Graphic>
+                        <Label>
+                            <ogc:PropertyName>cantidad</ogc:PropertyName>
+                        </Label>
+                        <Font>
+                            <CssParameter name="font-family">Lucida Sans</CssParameter>
+                            <CssParameter name="font-size">12</CssParameter>
+                            <CssParameter name="font-style">normal</CssParameter>
+                        </Font>
+                        <LabelPlacement>
+                            <PointPlacement>
+                                <AnchorPoint>
+                                    <AnchorPointX>0.5</AnchorPointX>
+                                    <AnchorPointY>0.5</AnchorPointY>
+                                </AnchorPoint>
+                                <Displacement>
+                                    <DisplacementX>0</DisplacementX>
+                                    <DisplacementY>10</DisplacementY>
+                                </Displacement>
+                            </PointPlacement>
+                        </LabelPlacement>
+                        <Halo>
+                            <Fill>
+                                <CssParameter name="fill">#FF0000</CssParameter>
+                            </Fill>
+                        </Halo>
+                        <Fill>
+                            <CssParameter name="fill">#000000</CssParameter>
+                        </Fill>
+                    </PointSymbolizer>
+                </Rule>
+                <!-- Alto-->
+                <Rule>
+                    <ogc:Filter>
+                        <ogc:PropertyIsGreaterThanOrEqualTo>
+                            <ogc:PropertyName>cantidad</ogc:PropertyName>
+                            <ogc:Literal>30</ogc:Literal>
+                        </ogc:PropertyIsGreaterThanOrEqualTo>
+                    </ogc:Filter>
+                    <PointSymbolizer>
+                        <Graphic>
+                            <Mark>
+                                <WellKnownName>circle</WellKnownName>
+                                <Fill>
+                                    <CssParameter name="fill">#A95124</CssParameter>
+                                    <CssParameter name="fill-opacity">
+                                        <ogc:Literal>0.7</ogc:Literal>
+                                    </CssParameter>
+                                </Fill>
+                            </Mark>
+                            <Size>10</Size>
+                        </Graphic>
+                        <Label>
+                            <ogc:PropertyName>cantidad</ogc:PropertyName>
+                        </Label>
+                        <Font>
+                            <CssParameter name="font-family">Lucida Sans</CssParameter>
+                            <CssParameter name="font-size">12</CssParameter>
+                            <CssParameter name="font-style">normal</CssParameter>
+                        </Font>
+                        <LabelPlacement>
+                            <PointPlacement>
+                                <AnchorPoint>
+                                    <AnchorPointX>0.5</AnchorPointX>
+                                    <AnchorPointY>0.5</AnchorPointY>
+                                </AnchorPoint>
+                                <Displacement>
+                                    <DisplacementX>0</DisplacementX>
+                                    <DisplacementY>10</DisplacementY>
+                                </Displacement>
+                            </PointPlacement>
+                        </LabelPlacement>
+                        <Halo>
+                            <Fill>
+                                <CssParameter name="fill">#FF0000</CssParameter>
+                            </Fill>
+                        </Halo>
+                        <Fill>
+                            <CssParameter name="fill">#000000</CssParameter>
+                        </Fill>
+                    </PointSymbolizer>
+                </Rule>
+                <!-- Muy alto-->
+                <Rule>
+                    <ogc:Filter>
+                        <ogc:PropertyIsGreaterThanOrEqualTo>
+                            <ogc:PropertyName>cantidad</ogc:PropertyName>
+                            <ogc:Literal>60</ogc:Literal>
+                        </ogc:PropertyIsGreaterThanOrEqualTo>
+                    </ogc:Filter>
+                    <PointSymbolizer>
+                        <Graphic>
+                            <Mark>
+                                <WellKnownName>circle</WellKnownName>
+                                <Fill>
+                                    <CssParameter name="fill">#630C0E</CssParameter>
+                                    <CssParameter name="fill-opacity">
+                                        <ogc:Literal>0.7</ogc:Literal>
+                                    </CssParameter>
+                                </Fill>
+                            </Mark>
+                            <Size>10</Size>
+                        </Graphic>
+                        <Label>
+                            <ogc:PropertyName>cantidad</ogc:PropertyName>
+                        </Label>
+                        <Font>
+                            <CssParameter name="font-family">Lucida Sans</CssParameter>
+                            <CssParameter name="font-size">12</CssParameter>
+                            <CssParameter name="font-style">normal</CssParameter>
+                        </Font>
+                        <LabelPlacement>
+                            <PointPlacement>
+                                <AnchorPoint>
+                                    <AnchorPointX>0.5</AnchorPointX>
+                                    <AnchorPointY>0.5</AnchorPointY>
+                                </AnchorPoint>
+                                <Displacement>
+                                    <DisplacementX>0</DisplacementX>
+                                    <DisplacementY>10</DisplacementY>
+                                </Displacement>
+                            </PointPlacement>
+                        </LabelPlacement>
+                        <Halo>
+                            <Fill>
+                                <CssParameter name="fill">#FF0000</CssParameter>
+                            </Fill>
+                        </Halo>
+                        <Fill>
+                            <CssParameter name="fill">#000000</CssParameter>
+                        </Fill>
+                    </PointSymbolizer>
+                </Rule>
 
-       </FeatureTypeStyle>
-    </UserStyle>
-  </NamedLayer>
+            </FeatureTypeStyle>
+        </UserStyle>
+    </NamedLayer>
 </StyledLayerDescriptor>

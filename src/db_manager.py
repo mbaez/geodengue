@@ -9,23 +9,25 @@ import psycopg2.extras
 @contact mxbg.py@gmail.com, robertobanuelos@gmail.com
 """
 
-class DBManager :
+
+class DBManager:
+
     def __init__(self):
         self.connection = connect(
-        """ dbname=geodenguedb
+            """ dbname=geodenguedb
             host=localhost
             user=postgres
             password=postgres
         """)
-        self.connection.autocommit = True;
+        self.connection.autocommit = True
 
-    def close (self) :
+    def close(self):
         """
         Este método se encarga de cerrar la conexión
         """
-        self.connection.close();
+        self.connection.close()
 
-    def query (self, query_string, args={}, is_many=False):
+    def query(self, query_string, args={}, is_many=False):
         """
         Este método se encarga de construir la consulta sql definida en
         `query_string`, establce la conexión en la base de datos y
@@ -50,10 +52,10 @@ class DBManager :
 
         cursor = self.connection.cursor()
         #~ print args
-        if not is_many :
-            cursor.execute(query_string,args)
-        else :
-            cursor.executemany(query_string,args)
+        if not is_many:
+            cursor.execute(query_string, args)
+        else:
+            cursor.executemany(query_string, args)
         return cursor
 
     def to_dict(self, dbcursor):
@@ -83,15 +85,18 @@ class DBManager :
                 dictnum += 1
             results[rownum] = dictrow
             rownum += 1
-        dbcursor.close();
-        #se retorna la lista de resultados
+        dbcursor.close()
+        # se retorna la lista de resultados
         return results
 
-class PuntosControlModel :
+
+class PuntosControlModel:
+
     """
     Esta clase define la capa de acceso y comunicación para la tabla
     `puntos_control`.
     """
+
     def __init__(self):
         self.db = DBManager()
 
@@ -120,7 +125,7 @@ class PuntosControlModel :
                 AND fecha_recoleccion is not null
         """
         # se construye el diccionario que contiene los parametros del query.
-        args = {'id_muestras' : id_muestras};
+        args = {'id_muestras': id_muestras}
         cursor = self.db.query(sql_string, args)
         return self.db.to_dict(cursor)
 
@@ -145,14 +150,16 @@ class PuntosControlModel :
                 4326)
             ), %(distance)s)
         """
-        args = {"distance" : distance}
+        args = {"distance": distance}
         args["x"] = point.x
         args["y"] = point.y
         # se construye el diccionario que contiene los parametros del query.
         cursor = self.db.query(sql_string, args)
         return self.db.to_dict(cursor)
 
-class CoefSarpeDemicheleModel :
+
+class CoefSarpeDemicheleModel:
+
     """
     Esta clase define la capa de acceso y comunicación para la tabla
     `coef_sharpe_demichele`.
@@ -164,6 +171,7 @@ class CoefSarpeDemicheleModel :
     th double precision,
     codigo character varying(15),
     """
+
     def __init__(self):
         self.db = DBManager()
 
@@ -206,18 +214,21 @@ class CoefSarpeDemicheleModel :
             WHERE codigo = %(codigo)s
         """
         # se construye el diccionario que contiene los parametros del query.
-        cursor = self.db.query(sql_string, {"codigo" : codigo})
+        cursor = self.db.query(sql_string, {"codigo": codigo})
         return self.db.to_dict(cursor)
 
-class InterpolacionModel :
+
+class InterpolacionModel:
+
     """
     Esta clase define la capa de acceso y comunicación para la tabla
     `interpolacion`.
     """
+
     def __init__(self):
         self.db = DBManager()
 
-    def persist(self,args={}):
+    def persist(self, args={}):
         """
         Se encarga de persitir la cabecera en la tabla `interpolacion`.
 
@@ -237,11 +248,14 @@ class InterpolacionModel :
         cursor = self.db.query(sql_string, args)
         return cursor
 
-class PuntosRiesgoDao :
+
+class PuntosRiesgoDao:
+
     """
     Esta clase define la capa de acceso y comunicación para la tabla
     `puntos_control`.
     """
+
     def __init__(self):
         self.db = DBManager()
 
@@ -288,7 +302,7 @@ class PuntosRiesgoDao :
                 4326)
             ), %(distance)s)
         """
-        args = {"distance" : distance}
+        args = {"distance": distance}
         args["x"] = point.x
         args["y"] = point.y
         # se construye el diccionario que contiene los parametros del query.
@@ -296,12 +310,67 @@ class PuntosRiesgoDao :
         return self.db.to_dict(cursor)
 
 
-if __name__ == "__main__" :
+class MuestraModel:
+
+    """
+    Esta clase define la capa de acceso y comunicación para la tabla
+    `muestras`.
+    id integer NOT NULL DEFAULT nextval('muestras_id_seq'::regclass),
+    id_tipo_dispositivo integer,
+    codigo integer,
+    descripcion character varying(100),
+    fecha timestamp without time zone
+    """
+
+    def __init__(self):
+        self.db = DBManager()
+
+    def get_all(self):
+        """
+        Se encarga de obtener los datos de la tabla de muestras
+
+            SELECT id, id_tipo_dispositivo, codigo, descripcion, fecha
+            FROM muestras
+
+        @rtype  Dictionaries
+        @return Un diccionario con el resultado de la consulta
+        """
+        # se definie el query de la consulta.
+        sql_string = """
+        SELECT id, id_tipo_dispositivo, codigo, descripcion, fecha
+            FROM muestras
+        """
+        # se construye el diccionario que contiene los parametros del query.
+        cursor = self.db.query(sql_string)
+        return self.db.to_dict(cursor)
+
+    def get_by(self, id_muestra):
+        """
+        Se encarga de obtener los datos de la tabla de muestras filtrado
+        por el id de la muestra.
+
+        SELECT id, id_tipo_dispositivo, codigo, descripcion, fecha
+            FROM muestras
+            where id= :id_muestra
+
+        @rtype  Dictionaries
+        @return Un diccionario con el resultado de la consulta
+        """
+        # se definie el query de la consulta.
+        sql_string = """
+        SELECT id, id_tipo_dispositivo, codigo, descripcion, fecha
+            FROM muestras
+            WHERE id = %(id_muestra)s
+        """
+        # se construye el diccionario que contiene los parametros del query.
+        cursor = self.db.query(sql_string, {"id_muestra": id_muestra})
+        return self.db.to_dict(cursor)
+
+if __name__ == "__main__":
     #~ dic = da.get_by(1)
     #a = PuntosRiesgoDao()
     #dic = a.get_all();
-    dao = CoefSarpeDemicheleModel()
-    dic = dao.get_by("HUEVO")
-    print dic[0]["codigo"];
+    dao = MuestraModel()
+    print dao.get_all()
     #~ cursor = a.persist({'id_muestra': 1, 'descripcion': 'test'})
     #~ print cursor.fetchone()[0]

@@ -168,10 +168,7 @@ class Adulto(AeAegypti):
         self._edad += 1
         self.inseminacion(dia)
         # se ranquea la zona
-        rank = self.rank_zona()
-        fly_prob = randint(0, 100)
-        if rank == Zonas.MALA or rank == Zonas.PESIMA or fly_prob > 90:
-            self.volar(dia)
+        self.volar(dia)
 
         if not dia.get_tipo_clima() == Clima.FRIO:
             self.buscar_alimento(dia)
@@ -204,7 +201,7 @@ class Adulto(AeAegypti):
             # 2-3 mg = 20-30 cg
             self._cantidad_alimentacion += randint(0, MAX_ALIMENTACION)
 
-    def poner_huevos(self, hora):
+    def poner_huevos(self, dia):
         """
         Generalmente el apareamiento se realiza cuando la hembra busca
         alimentarse; se ha observado que el ruido que emite al volar es
@@ -214,13 +211,13 @@ class Adulto(AeAegypti):
         La hembra embarazada es capaz de volar hasta 3km en busca de un
         sitio optimo para la ovipostura.
 
-        @type hora : Hora
-        @param hora: el objeto que contiene los datos climatologicos para
-            una hora.
+        @type dia : Dia
+        @param dia: el objeto que contiene los datos climatologicos para
+            un dia.
         """
         huevos = 0
         #~ se obtiene el ciclo gonotrofico
-        ciclo_gonotrofico = self.get_ciclo_gonotrofico(hora)
+        ciclo_gonotrofico = self.get_ciclo_gonotrofico(dia)
         # se aumenta el contador de ultima oviposición
         self._ultima_oviposicion += 1
 
@@ -323,7 +320,7 @@ class Adulto(AeAegypti):
         de los ovarios, ya que cuando las temperaturas son bajas la digestión
         tarda más tiempo.
         """
-        if self.cantidad_alimentacion == 0:
+        if self.cantidad_oviposicion == 0:
             coef = COEF_SH_DE.get_by("NULIPERA")
         else:
             coef = COEF_SH_DE.get_by(self.estado)
@@ -350,7 +347,7 @@ class Adulto(AeAegypti):
 
         return huevos
 
-    def volar(self, hora):
+    def volar(self, dia):
         """
         Los machos rondan como voladores solitarios aunque es más común
         que lo hagan en grupos pequeños (Bates, 1970; Kettle, 1993) atraídos
@@ -378,20 +375,28 @@ class Adulto(AeAegypti):
         viento de mayor velocidad le representa un mayor esfuerzo y suelen
         hacerlo (Kettle, 1993).
         """
-       #~ se genera un angulo 'delta', para simular las corrientes de aire
-        #~ que sigue el mosquito.
-        delta = randint(-180, 180)
-        #~ Vuelan en sentido contrario al viento
-        angulo_vuelo = hora.direccion_viento + 180 + delta
-        #~ se calcula la velocidad de vuelo
-        velocidad = self.velocidad_vuelo(hora, angulo_vuelo)
+        # Se calcula la distancia desde la posición actual a la origen
+        distancia_origen = self.posicion.distance_to(self.posicion_origen)
+        if distancia_origen >= MIN_VUELO:
+            angulo = self.posicion_origen.angle_to(self.posicion)
+            # se modifica el sentido del angulo de vuelo
+            angulo_vuelo = angulo + 180
+            velocidad = uniform(1, distancia_origen)
+        else:
+            #~ se genera un angulo 'delta', para simular las corrientes de aire
+            #~ que sigue el mosquito.
+            delta = randint(-45, 45)
+            #~ Vuelan en sentido contrario al viento
+            angulo_vuelo = dia.direccion_viento + 180 + delta
+            #~ se calcula la velocidad de vuelo
+            velocidad = self.velocidad_vuelo(dia, angulo_vuelo)
         """
         Como la velocidad de vuelo esta en m/h y el tiempo de estudio
         es 1 hora, se utiliza la velocidad como distancia a recorrer
 
         distancia = Xo + Velocidad * Tiempo = Velocidad * 1h
-
         """
+        distancia = velocidad
         self.posicion.move(velocidad, angulo_vuelo)
 
     def move_to_neighbors(self):
@@ -441,7 +446,7 @@ class Adulto(AeAegypti):
         at 1–2 km/h ,traveling up to 12 km (7.5 mi) in a night.
         """
 
-        speed = randint(1000, 2000)
+        speed = randint(0, MIN_VUELO)
         wind_speed = hora.viento
 
         """

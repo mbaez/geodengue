@@ -6,7 +6,7 @@ Este módulo contiene la definición del AeAegypti
 @autors Maximiliano Báez, Roberto Bañuelos
 @contact mxbg.py@gmail.com, robertobanuelos@gmail.com
 """
-from random import randint
+from random import randint, uniform
 from datatype import *
 from models import *
 from config import *

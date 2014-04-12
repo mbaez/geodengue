@@ -111,8 +111,9 @@ class GisController:
         #~ print data
         evol = Simulador(periodo=periodo, poblacion=self.data)
         print "iniciando simulación"
-        evol.start()
-        muestras_evol = evol.to_grid()
+        muestras_evol = evol.start()
+        resumen = evol.poblacion.get_resumen()
+        # muestras_evol = evol.to_grid()
         print "generando los puntos a interpolar"
         grid = muestras_evol.extend(cols, rows)
         alg = Interpotalion()
@@ -120,7 +121,7 @@ class GisController:
         print "Interpolando idw"
         interpolated_grid = alg.simple_idw(muestras_evol, grid)
         grid.z = interpolated_grid
-        return grid, muestras_evol
+        return grid, muestras_evol, resumen
 
     def to_geoserver(self, grid, cols=300, rows=300, suffix=""):
         """
@@ -180,12 +181,14 @@ if __name__ == "__main__":
     col = row = 300
     print "starting..."
     #~ resp = gis.method_voronoi(col,row);
-    #~ resp = gis.method_idw(col,row)
-    resp = gis.method_evolutive()
+    resp = gis.method_idw(col, row)
+    print resp.get_bounds()
+    print "{x_min: -57.602724725986, ymin: -25.318104903934, x_max: -57.580130758362, y_max: -25.299749132232}"
+    # resp = gis.method_evolutive()
     print "parsing"
     #~ print resp
     #~ gis.plot(resp, col,row)
     #~ gis.to_file(resp,col,row)
-    layer = gis.to_geoserver(resp, col, row, "evol")
-    print layer
+    # layer = gis.to_geoserver(resp, col, row, "evol")
+    # print layer
     print "end.."

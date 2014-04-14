@@ -381,20 +381,21 @@ class Point:
         deltaY = point.y - self.y
         deltaX = point.x - self.x
         # Then calculate the angle.
-        angleInDegrees = math.atan2(deltaY, deltaX) * 180 / math.pi
-        return angleInDegrees
+        angle = math.atan2(deltaY, deltaX) * 180 / math.pi
+        if angle >= 90:
+            angle = 360 - abs(angle - 90)
+        else:
+            angle = abs(angle - 90)
+        return angle
 
     def __str__(self):
         return "(" + str(self.x) + ", " + str(self.y) + ")"
 
 
 if __name__ == "__main__":
-    p1 = {"x": -57.6581, "y": -25.2928}
-    p2 = {"x": -57.343086004255, "y": -25.387185928441}
-    p3 = {"x": -57.343086, "y": -25.387186}
-    src = Point(p2)
-    des = Point(p3)
-    #~ des = src.project(100,90);
-    print str(des.x) + " " + str(des.y)
-
-    print src.distance_to(des)
+    p = {"x": -57.343086004255, "y": -25.387185928441}
+    src = Point(p)
+    for angle in [0, 30, 60, 90, 120, 160, 180, 200, 245, 270, 330, 360]:
+        des = src.project(100, angle)
+        a = src.angle_to(des)
+        print str(angle) + " ==? " + str(a)

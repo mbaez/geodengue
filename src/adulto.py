@@ -224,7 +224,7 @@ class Adulto(AeAegypti):
         #~ se realizan los controles de las condiciones
         if self.ultima_oviposicion >= ciclo_gonotrofico \
             and self.cantidad_alimentacion >= 10:
-
+            self.volar(dia)
             huevos = self.generar_huevos()
             self._se_alimenta = False
             self._cantidad_alimentacion = 0
@@ -381,7 +381,7 @@ class Adulto(AeAegypti):
             angulo = self.posicion_origen.angle_to(self.posicion)
             # se modifica el sentido del angulo de vuelo
             angulo_vuelo = angulo + 180
-            velocidad = uniform(1, distancia_origen)
+            velocidad = uniform(0, distancia_origen)
         else:
             #~ se genera un angulo 'delta', para simular las corrientes de aire
             #~ que sigue el mosquito.

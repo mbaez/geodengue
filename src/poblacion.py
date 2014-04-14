@@ -72,6 +72,7 @@ class Poblacion:
         definidos.
         """
         cantidad_larvas = kargs.get('cantidad_larvas', 0)
+        madurez = kargs.get("madurez", 0)
         # se determina el estado
         state = Estado.HUEVO
         if kargs.has_key('clazz') == True:
@@ -85,7 +86,8 @@ class Poblacion:
             posicion=posicion, cantidad=cantidad_larvas, estado=state)
 
         for cantidad in range(cantidad_larvas):
-            indv = clazz(posicion=posicion, zonas=self.zonas_table)
+            indv = clazz(posicion=posicion, zonas=self.zonas_table,
+                         madurez=madurez)
             # id del mosquito
             indv._id_mosquito = Poblacion.ID
             Poblacion.ID += 1
@@ -108,6 +110,7 @@ class Poblacion:
             sub_poblacion = self.gen_sub_poblacion(
                 cantidad_larvas=cantidad_larvas,
                 clazz=Larva,
+                madurez=randint(0, 90),
                 x=grid.x[i], y=grid.y[i])
             self.individuos.extend(sub_poblacion)
 

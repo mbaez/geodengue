@@ -127,7 +127,7 @@ class AeAegypti:
             self._posicion = Point(kargs)
         self._posicion = self.posicion.clone()
         self._edad = 0
-        self._madurez = 0
+        self._madurez = kargs.get('madurez', 0)
         self._expectativa_vida = kargs.get('expectativa_vida', 100)
         self.delta_vuelo = 0
         self._tiempo_vida = 0

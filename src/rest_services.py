@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 from flask import Flask, request, Response, jsonify
 from controller import *
-from pdi import *
+import pdi
 import traceback
 
 """
@@ -61,14 +61,15 @@ def evolutive(muestra):
     layer_name = gis.to_geoserver(resp, col, row, "evol")
     return jsonify(layer=layer_name, mosquitos=str(muestras_evol), resumen=resumen)
 
-@app.route('/pdi_img', methods=['POST'])
+
+@app.route('/pdi-img', methods=['POST'])
 def pdi_img():
 
     print "Metodo"
     print request.method
     print "el file!"
     f = request.files['file']
-    print "6- " +str(f)
+    print "6- " + str(f)
     f.save("data/file.jpeg")
     cantidad = pdi.cantidad_contornos()
     return jsonify(json=cantidad)

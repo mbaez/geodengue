@@ -110,7 +110,7 @@ define(['text!pages/procesos/procesos.html',
                 var vectorLayer = new OpenLayers.Layer.Vector();
                 vectorLayer.styleMap = this.style.styleMap;
                 //se procesa el vector layer
-                var data = this.model.get("mosquitos");
+                var data = this.model.get("poblacion");
                 if (typeof data != 'undefined') {
                     vectorLayer.addFeatures(geojsonFormat.read(data));
                     this.mapPanel.map.addLayer(vectorLayer);

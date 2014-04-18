@@ -151,7 +151,7 @@ class GisController:
         store = args.get('layer_name')
         geo = Geoserver()
         #~ se crea el sotre para el layer
-        store = geo.create_coverage_store(store)
+        geo.create_coverage_store(store)
         layer_name = "{0}.asc".format(store)
         print "tmp file.."
         #~ se mueve genera el layer en la carpeta temporal
@@ -193,8 +193,9 @@ class GisController:
             self.layerDao.persist(layer)
             print "starting..."
             data = self.method_evolutive()
+            data['layer_name'] = layer_name
             print "parsing"
-            self.to_geoserver(resp)
+            self.to_geoserver(data)
             resp = {}
             resp['poblacion'] = data["poblacion"]
             resp['resumen'] = data["resumen"]

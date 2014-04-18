@@ -7,120 +7,168 @@ Content : Clase encargada de recibir strings de eventos y almacenarlos
 en un archivo de salida en formato csv
 
 """
-
+# import threading
 import os
 import sys
 import time
 from datatype import *
+from db_manager import DBManager
 
-class EventLogger( ):
 
-    def __init__( self, log_name ):
-        self.indice = 1
-        self.log_file_name = log_name + str(int(time.time()))
-        self.path = 'log/'
+class EventLogger():
 
-    def save_event( self, event ) :
+    """
+    """
+    @property
+    def id_muestra(self):
         """
-
-        Metodo para almacenar un string en formato csv que representa
-        un evento en un archivo
-
         """
-        target = open (self.path + self.log_file_name + '.log', 'a')
-        target.write(str(self.indice) + ',')
-        target.write(event)
-        target.write('\n')
-        target.close()
+        return self.__id_muestra
 
-        self.indice += 1
+    def __init__(self, id_muestra):
+        self.db = DBManager()
+        self.__id_muestra = id_muestra
 
-    def to_csv( self, args ) :
+    def save(self, kargs):
+        aedes = kargs['aedes']
+        dia = kargs['dia']
+        periodo = kargs['periodo']
+        args = {}
+        args['id_mosquito'] = aedes.id_mosquito
+        args['id_mosquito_padre'] = aedes.id_padre
+        args['id_muestra'] = self.id_muestra
+        args['sexo'] = aedes.sexo
+        args['expectativa_de_vida'] = aedes.expectativa_vida
+        args['tiempo_madurez'] = aedes.tiempo_madurez
+        args['tiempo_de_vida'] = aedes.tiempo_vida
+        args['madurez'] = aedes.madurez
+        args['tipo_zona'] = dia.get_tipo_clima()
+        args['temperatura'] = dia.temperatura
+        args['estado'] = aedes.estado
+        args['edad'] = aedes.edad
+        args['x'] = aedes.posicion.x
+        args['y'] = aedes.posicion.y
+        # args['fecha'] =
+        args['dia'] = periodo
+        target_method = None
+        if aedes.estado == Estado.ADULTO:
+            args['ultima_oviposicion'] = aedes.ultima_oviposicion
+            args['ultimo_alimento'] = aedes.ultimo_alimento
+            args['distancia_recorrida'] = aedes.distancia_recorrida
+            args['cantidad_oviposicion'] = aedes.cantidad_oviposicion
+            args['cantidad_alimentacion'] = aedes.cantidad_alimentacion
+            args['is_inseminada'] = aedes.is_inseminada
+            args['se_alimenta'] = aedes.se_alimenta
+            args['se_reproduce'] = aedes.se_reproduce(dia)
+            args['cantidad_huevos'] = kargs.get('huevos', 0)
+            target_method = self.persist_adulto
+        else:
+            target_method = self.persist
+        # se lanza un thread
+        #t = threading.Thread(target=target_method, args=(args,))
+        # t.start()
+        target_method(args)
+
+    def persist_adulto(self, args):
         """
-
-        La definicion de columnas dentro del archivo csv es :
-
-        id_mosquito int
-        dia int
-        hora int
-        temperatura int
-        sexo string
-        expectativa_de_vida float
-        tiempo_de_vida float
-        tiempo_madurez float
-        madurez float
-        tipo_zona string
-        esta_muerto boolean
-        ultima_oviposicion int
-        ultimo_alimento int
-        distancia_recorrida int
-        cantidad_oviposicion int
-        cantidad_alimentacion int
-        is_inseminada boolean
-        se_alimenta boolean
-        se_reproduce boolean
-        pone_huevos boolean
-        cantidad_huevos int
-        estado string
-        posicion_x float
-        posicion_y float
-
-
         """
+        # se definie el query de la consulta.
+        sql_string = """
+        INSERT INTO public.evolucion_log(
+            id_mosquito,
+            id_mosquito_padre,
+            id_muestra,
+            temperatura,
+            sexo,
+            expectativa_de_vida,
+            tiempo_de_vida,
+            tiempo_madurez,
+            madurez,
+            tipo_zona,
+            ultima_oviposicion,
+            ultimo_alimento,
+            distancia_recorrida,
+            cantidad_oviposicion,
+            cantidad_alimentacion,
+            is_inseminada,
+            se_alimenta,
+            se_reproduce,
+            cantidad_huevos,
+            estado,
+            the_geom,
+            fecha,
+            dia,
+            edad)
+            VALUES (
+                %(id_mosquito)s,
+                %(id_mosquito_padre)s,
+                %(id_muestra)s,
+                %(temperatura)s,
+                %(sexo)s,
+                %(expectativa_de_vida)s,
+                %(tiempo_de_vida)s,
+                %(tiempo_madurez)s,
+                %(madurez)s,
+                %(tipo_zona)s,
+                %(ultima_oviposicion)s,
+                %(ultimo_alimento)s,
+                %(distancia_recorrida)s,
+                %(cantidad_oviposicion)s,
+                %(cantidad_alimentacion)s,
+                %(is_inseminada)s,
+                %(se_alimenta)s,
+                %(se_reproduce)s,
+                %(cantidad_huevos)s,
+                %(estado)s,
+                ST_GeomFromText('POINT(%(x)s %(y)s)', 4326),
+                now(),
+                %(dia)s,
+                %(edad)s
+            );
+        """
+        # se construye el diccionario que contiene los parametros del query.
+        cursor = self.db.query(sql_string, args)
+        return cursor
 
-        data_individuo = args['individuo']
-        data_hora = args['hora']
-        data_dia = args['dia']
-        data_temperatura = args['temperatura']
-        data_pone_huevos = args['pone_huevos']
-        data_cantidad_huevos = args['cantidad_huevos']
-        data_temperatura = args['temperatura']
-
-        if data_individuo.estado == Estado.ADULTO :
-            data_ultima_oviposicion = data_individuo.ultima_oviposicion
-            data_ultimo_alimento = data_individuo.ultimo_alimento
-            data_distancia_recorrida = data_individuo.distancia_recorrida
-            data_cantidad_oviposicion = data_individuo.cantidad_oviposicion
-            data_cantidad_alimentacion = data_individuo.cantidad_alimentacion
-            data_is_inseminada = data_individuo.is_inseminada
-            data_se_alimenta = data_individuo.se_alimenta
-            data_se_reproduce = data_individuo._se_reproduce
-        else :
-            data_ultima_oviposicion = -1
-            data_ultimo_alimento = -1
-            data_distancia_recorrida = -1
-            data_cantidad_oviposicion = -1
-            data_cantidad_alimentacion = -1
-            data_is_inseminada = False
-            data_se_alimenta = False
-            data_se_reproduce = False
-
-        event = str(data_individuo.id_mosquito) + ',' + \
-                str(data_hora) + ',' + \
-                str(data_dia) + ',' + \
-                str(data_temperatura) + ',' + \
-                str(data_individuo.sexo) + ',' + \
-                str(data_individuo.expectativa_vida) + ',' + \
-                str(data_individuo.tiempo_vida) + ',' + \
-                str(data_individuo.tiempo_madurez) + ',' + \
-                str(data_individuo.madurez) + ',' + \
-                str(data_individuo.rank_zona()) + ',' + \
-                str(data_individuo.esta_muerto()) + ',' + \
-                str(data_ultima_oviposicion) + ',' + \
-                str(data_ultimo_alimento) + ',' + \
-                str(data_distancia_recorrida) + ',' + \
-                str(data_cantidad_oviposicion) + ',' + \
-                str(data_cantidad_alimentacion) + ',' + \
-                str(data_is_inseminada) + ',' + \
-                str(data_se_alimenta) + ',' + \
-                str(data_se_reproduce) + ',' + \
-                str(data_pone_huevos) + ',' + \
-                str(data_cantidad_huevos) + ',' + \
-                str(data_individuo.estado) + ',' + \
-                str(data_individuo.posicion.x) + ',' + \
-                str(data_individuo.posicion.y)
-
-        self.save_event( event )
-
-
-
+    def persist(self, args):
+        """
+        """
+        # se definie el query de la consulta.
+        sql_string = """
+        INSERT INTO public.evolucion_log(
+            id_mosquito,
+            id_mosquito_padre,
+            id_muestra,
+            temperatura,
+            sexo,
+            expectativa_de_vida,
+            tiempo_de_vida,
+            tiempo_madurez,
+            madurez,
+            tipo_zona,
+            estado,
+            the_geom,
+            fecha,
+            dia,
+            edad
+        ) VALUES (
+            %(id_mosquito)s,
+            %(id_mosquito_padre)s,
+            %(id_muestra)s,
+            %(temperatura)s,
+            %(sexo)s,
+            %(expectativa_de_vida)s,
+            %(tiempo_de_vida)s,
+            %(tiempo_madurez)s,
+            %(madurez)s,
+            %(tipo_zona)s,
+            %(estado)s,
+            ST_GeomFromText('POINT(%(x)s %(y)s)', 4326),
+            now(),
+            %(dia)s,
+            %(edad)s
+            );
+        """
+        # se construye el diccionario que contiene los parametros del query.
+        cursor = self.db.query(sql_string, args)
+        return cursor

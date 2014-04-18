@@ -7,7 +7,7 @@ Content : Clase encargada de recibir strings de eventos y almacenarlos
 en un archivo de salida en formato csv
 
 """
-# import threading
+import threading
 import os
 import sys
 import time
@@ -28,8 +28,9 @@ class EventLogger():
     def __init__(self, id_muestra):
         self.db = DBManager()
         self.__id_muestra = id_muestra
+        self.query = ""
 
-    def save(self, kargs):
+    def add(self, kargs):
         aedes = kargs['aedes']
         dia = kargs['dia']
         periodo = kargs['periodo']
@@ -65,9 +66,7 @@ class EventLogger():
         else:
             target_method = self.persist
         # se lanza un thread
-        #t = threading.Thread(target=target_method, args=(args,))
-        # t.start()
-        target_method(args)
+        self.query += target_method(args)
 
     def persist_adulto(self, args):
         """
@@ -100,35 +99,34 @@ class EventLogger():
             dia,
             edad)
             VALUES (
-                %(id_mosquito)s,
-                %(id_mosquito_padre)s,
-                %(id_muestra)s,
-                %(temperatura)s,
-                %(sexo)s,
-                %(expectativa_de_vida)s,
-                %(tiempo_de_vida)s,
-                %(tiempo_madurez)s,
-                %(madurez)s,
-                %(tipo_zona)s,
-                %(ultima_oviposicion)s,
-                %(ultimo_alimento)s,
-                %(distancia_recorrida)s,
-                %(cantidad_oviposicion)s,
-                %(cantidad_alimentacion)s,
-                %(is_inseminada)s,
-                %(se_alimenta)s,
-                %(se_reproduce)s,
-                %(cantidad_huevos)s,
-                %(estado)s,
-                ST_GeomFromText('POINT(%(x)s %(y)s)', 4326),
+                {id_mosquito},
+                {id_mosquito_padre},
+                {id_muestra},
+                {temperatura},
+                '{sexo}',
+                {expectativa_de_vida},
+                {tiempo_de_vida},
+                {tiempo_madurez},
+                {madurez},
+                '{tipo_zona}',
+                {ultima_oviposicion},
+                {ultimo_alimento},
+                {distancia_recorrida},
+                {cantidad_oviposicion},
+                {cantidad_alimentacion},
+                {is_inseminada},
+                {se_alimenta},
+                {se_reproduce},
+                {cantidad_huevos},
+                '{estado}',
+                ST_GeomFromText('POINT({x} {y})', 4326),
                 now(),
-                %(dia)s,
-                %(edad)s
+                {dia},
+                {edad}
             );
         """
         # se construye el diccionario que contiene los parametros del query.
-        cursor = self.db.query(sql_string, args)
-        return cursor
+        return sql_string.format(**args)
 
     def persist(self, args):
         """
@@ -152,23 +150,28 @@ class EventLogger():
             dia,
             edad
         ) VALUES (
-            %(id_mosquito)s,
-            %(id_mosquito_padre)s,
-            %(id_muestra)s,
-            %(temperatura)s,
-            %(sexo)s,
-            %(expectativa_de_vida)s,
-            %(tiempo_de_vida)s,
-            %(tiempo_madurez)s,
-            %(madurez)s,
-            %(tipo_zona)s,
-            %(estado)s,
-            ST_GeomFromText('POINT(%(x)s %(y)s)', 4326),
+            {id_mosquito},
+            {id_mosquito_padre},
+            {id_muestra},
+            {temperatura},
+            '{sexo}',
+            {expectativa_de_vida},
+            {tiempo_de_vida},
+            {tiempo_madurez},
+            {madurez},
+            '{tipo_zona}',
+            '{estado}',
+            ST_GeomFromText('POINT({x} {y})', 4326),
             now(),
-            %(dia)s,
-            %(edad)s
+            {dia},
+            {edad}
             );
         """
         # se construye el diccionario que contiene los parametros del query.
-        cursor = self.db.query(sql_string, args)
-        return cursor
+        return sql_string.format(**args)
+
+    def save(self):
+        sql_string = str(self.query)
+        self.query = ""
+        t = threading.Thread(target=self.db.query, args=(sql_string,))
+        t.start()

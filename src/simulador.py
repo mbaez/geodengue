@@ -105,7 +105,7 @@ class Simulador:
                 args['dia'] = dia
                 args['periodo'] = i
                 args['huevos'] = cantidad_huevos
-                self.logger.save(args)
+                self.logger.add(args)
 
                 j += 1
             #~ fin del preriodo
@@ -113,6 +113,8 @@ class Simulador:
                 # print "Pone " + str(len(nueva_poblacion)) + " huevos"
                 total_huevos += len(nueva_poblacion)
                 self.poblacion.extend(nueva_poblacion)
+
+            self.logger.save()
             i += 1
 
         print 'Poblacion final'

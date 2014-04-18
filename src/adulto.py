@@ -397,6 +397,7 @@ class Adulto(AeAegypti):
         distancia = Xo + Velocidad * Tiempo = Velocidad * 1h
         """
         distancia = velocidad
+        self._distancia_recorrida += distancia
         self.posicion.move(velocidad, angulo_vuelo)
 
     def move_to_neighbors(self):

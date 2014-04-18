@@ -46,9 +46,8 @@ class Simulador:
         self.historial_clima = []
         #~ se inicializa el atributo periodo
         self.periodo = kargs.get('periodo', [])
-
         # se inicializa la clase que hace log de los eventos
-        self.logger = EventLogger('event_log_')
+        self.logger = EventLogger(1)
 
     def start(self):
         """
@@ -101,16 +100,13 @@ class Simulador:
                             cantidad_huevos = len(sub_poblacion)
                             nueva_poblacion.extend(sub_poblacion)
 
-                #~ args['individuo'] = individuo
-                #~ args['hora'] = hora.hora
-                #~ args['dia'] = str(i)
-                #~ args['temperatura'] = hora.temperatura
-                #~ args['pone_huevos'] = poner_huevos
-                #~ args['cantidad_huevos'] = cantidad_huevos
+                args = {}
+                args['aedes'] = individuo
+                args['dia'] = dia
+                args['periodo'] = i
+                args['huevos'] = cantidad_huevos
+                self.logger.save(args)
 
-                # log de eventos
-                #~ self.logger.to_csv( args )
-                #~ fin del preiodo
                 j += 1
             #~ fin del preriodo
             if len(nueva_poblacion) > 0:

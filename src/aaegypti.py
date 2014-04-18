@@ -104,6 +104,14 @@ class AeAegypti:
         """
         return self._id_mosquito
 
+    @property
+    def id_padre(self):
+        """
+        Campo para validar individualmente el proceso evolutivo de un
+        mosquito
+        """
+        return self._id_padre
+
     def __init__(self, **kargs):
         """
         Inicializa la clase setenado la expectativa de vida y la edad a
@@ -133,6 +141,7 @@ class AeAegypti:
         self._tiempo_vida = 0
         self._tiempo_madurez = 0
         self._id_mosquito = kargs.get('id', 0)
+        self._id_padre = kargs.get('id_padre', 0)
 
     def se_reproduce(self, hora):
         """

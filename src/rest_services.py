@@ -18,7 +18,6 @@ app = Flask(__name__)
 @app.route('/', methods=['GET'])
 def api_root():
     """Path por defecto de los servicios"""
-    print "rest"
     return ""
 
 
@@ -51,15 +50,12 @@ def interpolate_idw(muestra):
     return jsonify(layer=layer_name)
 
 
-@app.route('/muestras/<muestra>/evolucionar', methods=['POST'])
-def evolutive(muestra):
+@app.route('/muestras/<id_muestra>/evolucionar', methods=['POST'])
+def evolutive(id_muestra):
     col = row = 300
-    gis = GisController(muestra)
-    print "starting..."
-    resp, muestras_evol, resumen = gis.method_evolutive()
-    print "parsing"
-    layer_name = gis.to_geoserver(resp, col, row, "evol")
-    return jsonify(layer=layer_name, mosquitos=str(muestras_evol), resumen=resumen)
+    gis = GisController(id_muestra)
+    resp = gis.evolucionar()
+    return jsonify(resp)
 
 
 @app.route('/pdi-img', methods=['POST'])

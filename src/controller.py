@@ -1,8 +1,5 @@
 #! /usr/bin/env python
 # -*- coding: utf-8 -*-
-#~ import matplotlib
-#~ import matplotlib.pyplot as plt
-#~ import matplotlib.cm as cm
 import numpy as np
 # Se impotan los modulos.
 from models import *
@@ -28,7 +25,9 @@ class GisController:
         """
         print "obteniendo los datos"
         dao = PuntosControlModel()
+        self.__id_muestra = id_muestras
         self.data = dao.get_by(id_muestras)
+        self.layerDao = LayersDao()
 
     def method_idw(self, cols=300, rows=300):
         """
@@ -106,24 +105,26 @@ class GisController:
                 control.
         """
         print "obteniendo los datos climaticos"
+        resp = {}
         clima = TuTiempo("Asuncion")
         periodo = clima.get_periodo()
         #~ print data
         evol = Simulador(periodo=periodo, poblacion=self.data)
         print "iniciando simulación"
-        muestras_evol = evol.start()
-        resumen = evol.poblacion.get_resumen()
-        # muestras_evol = evol.to_grid()
+        resp['poblacion'] = evol.start()
+        resp['resumen'] = evol.poblacion.get_resumen()
         print "generando los puntos a interpolar"
-        grid = muestras_evol.extend(cols, rows)
+        grid = resp['poblacion'].extend(cols, rows)
         alg = Interpotalion()
         # Calculate IDW
         print "Interpolando idw"
-        interpolated_grid = alg.simple_idw(muestras_evol, grid)
+        interpolated_grid = alg.simple_idw(resp['poblacion'], grid)
         grid.z = interpolated_grid
-        return grid, muestras_evol, resumen
+        resp['grid'] = grid
+        resp['poblacion'] = str(resp['poblacion'])
+        return resp
 
-    def to_geoserver(self, grid, cols=300, rows=300, suffix=""):
+    def to_geoserver(self, args):
         """
         Este método se encarga de traducir el grid a una capa raster que
         es publicada en el geoserver.
@@ -144,9 +145,13 @@ class GisController:
         @rtype  String
         @return El nombre del layer publicado en el geoserver.
         """
+        grid = args.get('grid')
+        cols = args.get('cols', 300)
+        rows = args.get('rows', 300)
+        store = args.get('layer_name')
         geo = Geoserver()
         #~ se crea el sotre para el layer
-        store = geo.create_coverage_store(suffix)
+        store = geo.create_coverage_store(store)
         layer_name = "{0}.asc".format(store)
         print "tmp file.."
         #~ se mueve genera el layer en la carpeta temporal
@@ -159,6 +164,42 @@ class GisController:
         geo.publish_coverage(store)
         #~ se retorna el nombre del layer
         return store
+
+    def gen_layer_name(self, args):
+        """
+        Se encarga de genear el nombre del layer
+        @param args: Parametros utilizados para la generación de layers
+
+        @keyword tipo: El tipo de layer a genear (inst|evol)
+        """
+        geo = Geoserver()
+        args["id_muestra"] = self.__id_muestra
+        return geo.gen_layer_name(args)
+
+    def evolucionar(self):
+        """
+        """
+        print "verificando"
+        layer_name = self.gen_layer_name({"tipo": "evol"})
+        layer = self.layerDao.get_by(layer_name)
+        if len(layer) == 1:
+            return layer[0]
+        else:
+            layer = {
+                "layer_name": layer_name,
+                "id_muestra": self.__id_muestra,
+                "fecha": "now()"
+            }
+            self.layerDao.persist(layer)
+            print "starting..."
+            data = self.method_evolutive()
+            print "parsing"
+            self.to_geoserver(resp)
+            resp = {}
+            resp['poblacion'] = data["poblacion"]
+            resp['resumen'] = data["resumen"]
+            resp['layer_name'] = layer_name
+        return resp
 
 
 class MuestrasController:
@@ -177,18 +218,19 @@ class MuestrasController:
 
 
 if __name__ == "__main__":
-    gis = GisController()
+    gis = GisController(1)
     col = row = 300
     print "starting..."
     #~ resp = gis.method_voronoi(col,row);
-    resp = gis.method_idw(col, row)
-    print resp.get_bounds()
-    print "{x_min: -57.602724725986, ymin: -25.318104903934, x_max: -57.580130758362, y_max: -25.299749132232}"
+    resp = gis.evolucionar()
+    print resp
+    # print "{x_min: -57.602724725986, ymin: -25.318104903934, x_max: -57.580130758362, y_max: -25.299749132232}"
     # resp = gis.method_evolutive()
-    print "parsing"
+    # print "parsing"
     #~ print resp
     #~ gis.plot(resp, col,row)
     #~ gis.to_file(resp,col,row)
     # layer = gis.to_geoserver(resp, col, row, "evol")
     # print layer
+    #
     print "end.."

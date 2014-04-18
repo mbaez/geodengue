@@ -358,7 +358,8 @@ class MuestraModel:
         """
         # se definie el query de la consulta.
         sql_string = """
-        SELECT id, id_tipo_dispositivo, codigo, descripcion, fecha
+        SELECT id, id_tipo_dispositivo, codigo, descripcion,
+            cast(fecha as date)
             FROM muestras
             WHERE id = %(id_muestra)s
         """
@@ -366,6 +367,50 @@ class MuestraModel:
         cursor = self.db.query(sql_string, {"id_muestra": id_muestra})
         return self.db.to_dict(cursor)
 
+
+class LayersDao:
+
+    """
+    """
+
+    def __init__(self):
+        self.db = DBManager()
+
+    def get_by(self, layer_name):
+        """
+
+        SELECT id_muestra, layer_name,  fecha
+            FROM layers
+            WHERE layer_name = :layer_name
+
+        @rtype  Dictionaries
+        @return Un diccionario con el resultado de la consulta
+        """
+        # se definie el query de la consulta.
+        sql_string = """
+        SELECT id_muestra, layer_name,  fecha
+            FROM layers
+            WHERE layer_name = %(layer_name)s
+        """
+        print layer_name
+        # se construye el diccionario que contiene los parametros del query.
+        cursor = self.db.query(sql_string, {"layer_name": layer_name})
+        return self.db.to_dict(cursor)
+
+    def persist(self, layer):
+        """
+
+        INSERT INTO layers (id_muestra, layer_name, fecha)
+            VALUES (:id_muestra, :layer_name, :fecha)
+        """
+        # se definie el query de la consulta.
+        sql_string = """
+        INSERT INTO layers (id_muestra, layer_name, fecha)
+            VALUES (%(id_muestra)s, %(layer_name)s, %(fecha)s)
+        """
+        # se construye el diccionario que contiene los parametros del query.
+        cursor = self.db.query(sql_string, layer)
+        return cursor
 if __name__ == "__main__":
     #~ dic = da.get_by(1)
     #a = PuntosRiesgoDao()

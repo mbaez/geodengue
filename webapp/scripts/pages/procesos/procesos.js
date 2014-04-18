@@ -105,7 +105,7 @@ define(['text!pages/procesos/procesos.html',
                 $(".btn").button("reset");
                 //se procesa el layer reaster
                 var conf = $.extend({}, DataSource.rasterLayerConf);
-                conf.name = this.model.get("layer");
+                conf.name = this.model.get("layer_name");
                 var geojsonFormat = new OpenLayers.Format.GeoJSON();
                 var vectorLayer = new OpenLayers.Layer.Vector();
                 vectorLayer.styleMap = this.style.styleMap;

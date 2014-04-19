@@ -176,6 +176,29 @@ class GisController:
         args["id_muestra"] = self.__id_muestra
         return geo.gen_layer_name(args)
 
+    def instantanea(self):
+        """
+        """
+        print "verificando"
+        layer_name = self.gen_layer_name({"tipo": "inst"})
+        layer = self.layerDao.get_by(layer_name)
+        if len(layer) == 1:
+            return layer[0]
+        else:
+            layer = {
+                "layer_name": layer_name,
+                "id_muestra": self.__id_muestra,
+                "fecha": "now()"
+            }
+            self.layerDao.persist(layer)
+            print "starting..."
+            data = {}
+            data["grid"] = self.method_idw()
+            data['layer_name'] = layer_name
+            print "parsing"
+            self.to_geoserver(data)
+        return layer
+
     def evolucionar(self):
         """
         """

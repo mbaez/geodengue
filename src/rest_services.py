@@ -40,19 +40,15 @@ def get_lista_muestras():
     return jsonify(lista=resp)
 
 
-@app.route('/muestras/<muestra>/instantanea', methods=['POST'])
-def interpolate_idw(muestra):
-    gis = GisController(muestra)
-    col = row = 300
-    resp = gis.method_idw(col, row)
-    print "parsing"
-    layer_name = gis.to_geoserver(resp, col, row, "inst")
-    return jsonify(layer=layer_name)
+@app.route('/muestras/<id_muestra>/instantanea', methods=['POST'])
+def interpolate_idw(id_muestra):
+    gis = GisController(id_muestra)
+    resp = gis.instantanea()
+    return jsonify(resp)
 
 
 @app.route('/muestras/<id_muestra>/evolucionar', methods=['POST'])
 def evolutive(id_muestra):
-    col = row = 300
     gis = GisController(id_muestra)
     resp = gis.evolucionar()
     return jsonify(resp)

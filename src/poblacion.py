@@ -146,7 +146,7 @@ class Poblacion:
         Genera una clave única para el punto, la clave se genera de la siguiente
         forma : punto.x + "-" +  punto.y
         """
-        return str(punto.x) + "-" + str(punto.y)
+        return str(punto.x) + "_" + str(punto.y)
 
     def new_grupo(self, **kargs):
         """
@@ -268,6 +268,69 @@ class Poblacion:
 
         resumen["total_huevos"] = self.total_huevos
         return resumen
+
+    def to_grid(self):
+        """
+        Este método se encarga de traducir la población de inidviduos
+        a un grid interpolable.
+
+        Los adultos no son incluidos en el conteo de individuos.
+        """
+        key_map = {}
+        data_array = []
+        max_cantidad = 0
+        all = True
+        for key in self.memory:
+            muertas = 0
+            cantidad = 0
+            for estado in self.memory[key]:
+                muertas += self.memory[key][estado]["killed"]
+
+            cantidad = self.memory[key][Estado.HUEVO]["cantidad"]
+            cantidad += self.memory[key][Estado.LARVA]["cantidad"]
+            cantidad += self.memory[key][Estado.PUPA]["cantidad"]
+            if muertas > 0 or cantidad > 0:
+                points = key.split("_")
+                data = {}
+                data['x'] = points[0]
+                data['y'] = points[1]
+                data['cantidad'] = cantidad
+                data['id'] = 0
+                data_array.append(data)
+        print 'cantidad de puntos a interpolar: ' + str(len(data_array))
+
+        # orden por coordenada
+        print "sort por coordenada..."
+        swapped = True
+        while swapped:
+            swapped = False
+            for i in range(1, len(data_array)):
+                comp1 = (data_array[i - 1]['x'], data_array[i - 1]['y'])
+                comp2 = (data_array[i]['x'], data_array[i]['y'])
+                if self.compare_coordinates(comp1, comp2) > 0:
+                    aux = data_array[i - 1]
+                    data_array[i - 1] = data_array[i]
+                    data_array[i] = aux
+                    swapped = True
+
+        # se realiza el parse a grid
+        grid = Grid()
+        grid.parse(data_array)
+
+        # se retorna la referencia al grid
+        return grid
+
+    def compare_coordinates(self, p1, p2):
+        """
+        Metodo para comparar 2 puntos
+        @param p1, p2
+        array puntos
+            ej> p1 = (x1, y1)
+        """
+        if float(p1[0]) == float(p2[0]):
+            return float(p1[1]) - float(p2[1])
+        else:
+            return float(p1[0]) - float(p2[0])
 
     def __str__(self):
         resumen = self.get_resumen()

@@ -82,14 +82,13 @@ class Simulador:
                     si el individuo esta maduro, se realiza el cambio de
                     estado.
                     """
-                    #~ print  "\tCamibar de estado "+  str(individuo)
                     individuo = self.poblacion.cambiar_estado(individuo)
                     self.poblacion.individuos[j] = individuo
 
                 elif individuo.estado == Estado.ADULTO:
                     if(individuo.se_reproduce(dia) == True
                        and olimpia == False):
-                        #~ se genera un nueva poblacion
+                        # se genera un nueva poblacion
                         sub_poblacion = self.poblacion.ovipostura(
                             individuo, dia)
                         """
@@ -106,11 +105,8 @@ class Simulador:
                 args['periodo'] = i
                 args['huevos'] = cantidad_huevos
                 self.logger.add(args)
-
                 j += 1
-            #~ fin del preriodo
             if len(nueva_poblacion) > 0:
-                # print "Pone " + str(len(nueva_poblacion)) + " huevos"
                 total_huevos += len(nueva_poblacion)
                 self.poblacion.extend(nueva_poblacion)
 
@@ -119,74 +115,7 @@ class Simulador:
 
         print 'Poblacion final'
         print str(self.poblacion)
-        return self.to_grid()
-
-    def to_grid(self):
-        """
-        Este método se encarga de traducir la población de inidviduos
-        a un grid interpolable.
-
-        Los adultos no son incluidos en el conteo de individuos.
-        """
-        key_map = {}
-        data_array = []
-        max_cantidad = 0
-        all = True
-        for individuo in self.poblacion.individuos:
-            point = individuo.posicion
-            key = str(point.x) + "-" + str(point.y)
-            if not key_map.has_key(key) and \
-                (individuo.estado != Estado.ADULTO or all == True):
-                # se obtiene los datos
-                data = {}
-                data['x'] = point.x
-                data['y'] = point.y
-                data['id'] = 0
-                #~ data['index'] = individuo.index
-                data['cantidad'] = 1
-                # se añade el elemento al array
-                data_array.append(data)
-                # se añade el indice al array
-                key_map[key] = len(data_array) - 1
-            elif individuo.estado != Estado.ADULTO or all == True:
-                index = key_map[key]
-                # se incrementa la cantidad de larvas
-                data_array[index]['cantidad'] += 1
-
-        print 'cantidad de puntos a interpolar: ' + str(len(data_array))
-
-        # orden por coordenada
-        print "sort por coordenada..."
-        swapped = True
-        while swapped:
-            swapped = False
-            for i in range(1, len(data_array)):
-                comp1 = (data_array[i - 1]['x'], data_array[i - 1]['y'])
-                comp2 = (data_array[i]['x'], data_array[i]['y'])
-                if self.compare_coordinates(comp1, comp2) > 0:
-                    aux = data_array[i - 1]
-                    data_array[i - 1] = data_array[i]
-                    data_array[i] = aux
-                    swapped = True
-
-        # se realiza el parse a grid
-        grid = Grid()
-        grid.parse(data_array)
-
-        # se retorna la referencia al grid
-        return grid
-
-    def compare_coordinates(self, p1, p2):
-        """
-        Metodo para comparar 2 puntos
-        @param p1, p2
-        array puntos
-            ej> p1 = (x1, y1)
-        """
-        if float(p1[0]) == float(p2[0]):
-            return float(p1[1]) - float(p2[1])
-        else:
-            return float(p1[0]) - float(p2[0])
+        return self.poblacion.to_grid()
 
 
 if __name__ == "__main__":
@@ -214,4 +143,3 @@ if __name__ == "__main__":
     for ind in evol.poblacion :
         print str(ind)
     """
-    evol.to_grid()

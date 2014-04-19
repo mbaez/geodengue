@@ -171,10 +171,11 @@ class Grid:
         # se obtiene la extensión del grid
         bounds = self.get_bounds()
         # Se calcula el size de la celda
-        size = float(abs((bounds.y_max - bounds.y_min) / (cols)))
-        print size
-        size = abs((bounds.y_max - bounds.y_min) / (cols))
-        print size
+        size_y = float(abs((bounds.y_max - bounds.y_min) / (cols)))
+        size_x = abs((bounds.y_max - bounds.y_min) / (cols))
+        size = size_y
+        if size_x > size_y:
+            size = size_x
         # Se construye la cabecera del raster
         out = "ncols\t" + str(cols)
         out += "\nnrows\t" + str(rows)

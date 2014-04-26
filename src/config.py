@@ -48,7 +48,7 @@ API_DATA = {
 }
 # URLs de las fuentes de información de datos climaticos
 #~ API_URL = "http://api.openweathermap.org/data/2.5";
-API_URL = "http://localhost/geodengue/api.openweathermap"
+API_URL = "http://localhost/geodengue/api.openweathermap.30-dias"
 #~ TUTIEMPO_URL = "http://localhost/geodengue/tutiempo.dom";
 #~ TUTIEMPO_URL = 'http://www.tutiempo.net/'
 

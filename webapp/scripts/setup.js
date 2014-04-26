@@ -50,6 +50,10 @@ requirejs.config({
             deps: ['jquery'],
             exports: 'Impromptu'
         },
+        'highcharts': {
+            deps: ['jquery'],
+            exports: 'Highcharts'
+        },     
         'selectize': {
             deps: ['jquery'],
             exports: 'Selectize'

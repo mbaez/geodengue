@@ -21,7 +21,7 @@ class Poblacion:
     """
     Clase que define el comportamiento goblal de la población.
     """
-    ID = 0
+    ID = 1
 
     @property
     def memory(self):
@@ -139,7 +139,7 @@ class Poblacion:
         grupo[next_state[aedes.estado]]["cantidad"] += 1
 
         return clazz[aedes.estado](sexo=aedes.sexo, posicion=aedes.posicion,
-                                   zonas=self.zonas_table, id=aedes.id_mosquito)
+                                   zonas=self.zonas_table, id=aedes.id_mosquito, id_padre=aedes.id_padre)
 
     def gen_key(self, punto):
         """
@@ -203,6 +203,8 @@ class Poblacion:
             grupo[aedes.estado]["cantidad"] -= 1
             grupo[aedes.estado]["to_kill"] -= 1
             grupo[aedes.estado]["killed"] += 1
+
+        aedes._expectativa_vida = 0
 
         self.individuos.remove(aedes)
 

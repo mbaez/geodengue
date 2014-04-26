@@ -4,47 +4,48 @@ import json
 from config import *
 from datatype import *
 
-#para convertir horas
+# para convertir horas
 
 
-class Dia :
+class Dia:
 
     """
     Define los datos climáticos para una hora en especifico.
     """
-    def __init__( self, data={}):
+
+    def __init__(self, data={}):
         self.hora = data.get("hora", 0)
         self.presion = data.get("presion", 0)
-        self.precipitacion = data.get("precipitacion", 0 )
-        self.temperatura = data.get("temperatura",0)
-        self.humedad = data.get("humedad",0)
+        self.precipitacion = data.get("precipitacion", 0)
+        self.temperatura = data.get("temperatura", 0)
+        self.humedad = data.get("humedad", 0)
         self.viento = data.get("viento", 0.0)
-        self.direccion_viento = data.get("direccion_viento",0.0)
+        self.direccion_viento = data.get("direccion_viento", 0.0)
         self.nuves = data.get("nuves", 0)
 
-    def parse( self, data, future):
+    def parse(self, data, future):
         """
         Se encarga de parsear los datos obtenidos del openweathermap.org
         """
-        if future == True :
-            self.temperatura = float(data["temp"].get("day",0))
+        if future == True:
+            self.temperatura = float(data["temp"].get("day", 0))
             # de kelvin a centigrados
             self.temperatura = self.temperatura - 273.15
             self.presion = float(data.get("pressure", 0))
-            self.humedad = float(data.get("humidity",0))
+            self.humedad = float(data.get("humidity", 0))
             self.viento = float(data.get("speed", 0.0))
             self.precipitacion = float(data.get("rain", 0.0))
             self.direccion_viento = float(data.get('deg', 0))
             self._parse_datetime(data)
 
-        else :
+        else:
             self._parse_rain_node(data)
             self._parse_main_node(data)
             self._parse_wind_node(data)
             self._parse_clouds_node(data)
             self._parse_datetime(data)
 
-    def _parse_rain_node (self, data) :
+    def _parse_rain_node(self, data):
         """
         rain         Precipitation volume for period
             1h   rain in recent hour
@@ -55,15 +56,15 @@ class Dia :
             day  rain in recent day
         """
         attrs = ["1h", "3h", "6h", "12h", "24h", "day"]
-        if data.has_key("rain") :
-            for attr in attrs :
-                if data["rain"].has_key(attr) :
-                   self.precipitacion = data["rain"][attr]
-                   return
+        if data.has_key("rain"):
+            for attr in attrs:
+                if data["rain"].has_key(attr):
+                    self.precipitacion = data["rain"][attr]
+                    return
 
         self.precipitacion = 0
 
-    def _parse_main_node (self, data) :
+    def _parse_main_node(self, data):
         """
         main     temp    Temperature in Kelvin. Subtracted 273.15 from
                          this figure to convert to Celsius.
@@ -71,14 +72,14 @@ class Dia :
         main     temp_min temp_max   Minimum and maximum temperature
         main     pressure    Atmospheric pressure in kPa
         """
-        if data.has_key("main") :
+        if data.has_key("main"):
             # se transforma los grados Kelvin a celcius.
             temp = data["main"].get('temp', 0)
             self.temperatura = float(temp) - 273.15
             self.presion = float(data["main"].get('pressure', 0))
             self.humedad = float(data["main"].get('humidity', 0))
 
-    def _parse_wind_node (self, data) :
+    def _parse_wind_node(self, data):
         """
         wind         Wind
             speed    Wind speed in mps ( m/s )
@@ -87,100 +88,100 @@ class Dia :
             var_beg  Wind direction
             var_end  Wind direction
         """
-        if data.has_key("wind") :
+        if data.has_key("wind"):
             self.viento = float(data["wind"].get('speed', 0))
             self.direccion_viento = float(data["wind"].get('deg', 0))
-        else :
+        else:
             self.viento = 0.0
             self.direccion_viento = 0.0
 
-    def _parse_clouds_node (self, data) :
-        if data.has_key("clouds") :
+    def _parse_clouds_node(self, data):
+        if data.has_key("clouds"):
             self.nuves = float(data["clouds"].get('all', 0))
-        else :
+        else:
             self.nuves = 0.0
             self.direccion_viento = 0.0
 
-    def get_tipo_clima (self):
+    def get_tipo_clima(self):
         """
         Se encarga de clasificar el clima en alguna de las siguientes
         categorias :
         T < 15  15 < T <20   20 < T < 25    25 < T < 36  T > 36
         Frio    Fresco       Normal          Cálido      Caluroso
         """
-        if self.temperatura  < 15 :
+        if self.temperatura < 15:
             return Clima.FRIO
 
-        elif self.temperatura  >= 15 and self.temperatura  < 20 :
+        elif self.temperatura >= 15 and self.temperatura < 20:
             return Clima.FRESCO
 
-        elif self.temperatura  >= 20 and self.temperatura  < 25 :
+        elif self.temperatura >= 20 and self.temperatura < 25:
             return Clima.NORMAL
 
-        elif self.temperatura  >= 25 and self.temperatura  < 36 :
+        elif self.temperatura >= 25 and self.temperatura < 36:
             return Clima.CALIDO
 
-        elif self.temperatura  >= 36 :
+        elif self.temperatura >= 36:
             return Clima.CALUROSO
 
-    def get_tipo_hora (self):
+    def get_tipo_hora(self):
         """
         """
-        if self.hora  >= 20 :
+        if self.hora >= 20:
             return Horario.NOCHE
 
-        elif self.hora  >= 18 and self.hora  < 20 :
+        elif self.hora >= 18 and self.hora < 20:
             return Horario.TARDE_NOCHE
 
-        elif self.hora  >= 14 and self.hora  < 18 :
+        elif self.hora >= 14 and self.hora < 18:
             return Horario.TARDE
 
-        elif self.hora  >= 9 and self.hora  < 14 :
+        elif self.hora >= 9 and self.hora < 14:
             return Horario.MANHANA
 
-        elif self.hora  >= 5 and self.hora  < 9 :
+        elif self.hora >= 5 and self.hora < 9:
             return Horario.MADUGRADA_MANHANA
 
-        elif self.hora  >= 0 and self.hora  < 5 :
+        elif self.hora >= 0 and self.hora < 5:
             return Horario.MADUGRADA
 
-    def _parse_datetime( self, data ) :
+    def _parse_datetime(self, data):
         """
         Convierte el timestamp obtenido del json a formato hh (hora)
         """
         from datetime import datetime
 
-        dt = datetime.fromtimestamp(float(data.get('dt',0)))
+        dt = datetime.fromtimestamp(float(data.get('dt', 0)))
         self.hora = int(dt.strftime('%H'))
 
-    def __str__(self) :
+    def __str__(self):
         return str(self.hora) + "hs " + \
-        str(self.precipitacion) + " " + \
-        str(self.temperatura) + "*C " + \
-        str(self.humedad) + "% " + \
-        str(self.viento ) + " " + \
-        str(self.direccion_viento) + " "
+            str(self.precipitacion) + " " + \
+            str(self.temperatura) + "*C " + \
+            str(self.humedad) + "% " + \
+            str(self.viento ) + " " + \
+            str(self.direccion_viento) + " "
 
 
-class Periodo :
+class Periodo:
+
     """
     Esta clase define los datos climáticos en un periodo de tiempo por
     hora.
     """
-    def __init__( self):
+
+    def __init__(self):
         self.dias = []
 
-    def parse_json(self, data, future=False) :
+    def parse_json(self, data, future=False):
         """
         Se encarga de procesar los datos en forma de json y los añade a
         la lista.
         """
-        for day in data["list"] :
+        for day in data["list"]:
             d = Dia()
             d.parse(day, future)
             self.dias.append(d)
-
-
 
 
 import lxml.html
@@ -188,7 +189,9 @@ import urllib2
 import time
 import datetime
 
+
 class TuTiempo:
+
     """
     Se encarga de obtner los datos climaticos, por hora, de 2 fuentes
     teniendo en cuenta al tiempo al cual el periodo del cual se necesitan
@@ -199,7 +202,7 @@ class TuTiempo:
     TuTiempo.
     """
     @property
-    def grados(self) :
+    def grados(self):
         """
         Se encarga de inicializar el diccionario que mapea los strings a
         grados según la tabla definida en http://www.windfinder.com/wind/windspeed.htm
@@ -226,41 +229,40 @@ class TuTiempo:
     def __init__(self,  localidad):
         pass
 
-    def get_periodo (self) :
+    def get_periodo(self):
         """
         Se ecarga de obtener los datos historicos y predictos de la
         localidad.
         """
         periodo = Periodo()
         #~ periodo.parse_json(self.history());
-        periodo.parse_json(self.future(), True);
+        periodo.parse_json(self.future(), True)
         return periodo
 
-    def download_page(self, domain) :
+    def download_page(self, domain):
         """
         Descarga el hmtl de la página en forma de string.
         """
-        url =  domain
+        url = domain
         print domain
         usock = urllib2.urlopen(url)
         data = usock.read()
         usock.close()
         return data
 
-
-    def build_url_params (self, args={}):
+    def build_url_params(self, args={}):
         """
         Se encarga de construir el query string para la url.
         """
         params = "?"
-        for key in API_DATA :
-            params += key + "="+ API_DATA[key] + "&"
+        for key in API_DATA:
+            params += key + "=" + API_DATA[key] + "&"
 
         for key in args:
-            params += key + "="+ args[key] + "&"
+            params += key + "=" + args[key] + "&"
         return params
 
-    def history (self) :
+    def history(self):
         """
         Obtiene el historial del clima por hora utilizando los servicios
         de openweathermap, el servicio responde con el siguiente JSON:
@@ -312,22 +314,22 @@ class TuTiempo:
         now = datetime.datetime.now()
         # se crea una fecha de 10 dias antes a modo de prueba
         delta = datetime.timedelta(days=10)
-        past = now - delta;
+        past = now - delta
         # se  transforma a unix time
         end = str(int(time.mktime(now.timetuple())))
         start = str(int(time.mktime(past.timetuple())))
 
-        args ={
-            "start" : start, # 2013/03/11
-            "end" : end #2013/03/31
+        args = {
+            "start": start,  # 2013/03/11
+            "end": end  # 2013/03/31
         }
 
         #~ url = API_URL + "/history/city" + self.build_url_params(args);
-        url = API_URL+".json";
-        json_string = self.download_page(url);
+        url = API_URL + ".json"
+        json_string = self.download_page(url)
         return json.loads(json_string)
 
-    def future (self) :
+    def future(self):
         """
         Obtiene los datos futros del clima por hora utilizando los servicios
         de openweathermap, el servicio responde con el siguiente JSON:
@@ -375,15 +377,15 @@ class TuTiempo:
         }
         </pre>
         """
-        args = { "cnt" : "15"}
+        args = {"cnt": "15"}
         #~ url = API_URL + "/forecast/daily" + self.build_url_params(args);
-        url = API_URL+".forecast.json";
-        json_string = self.download_page(url);
+        url = API_URL + ".forecast.json"
+        json_string = self.download_page(url)
         return json.loads(json_string)
 
 if __name__ == "__main__":
     clima = TuTiempo("Asuncion")
     #~ clima.process_dom_hora();
     periodo = clima.get_periodo()
-    for h in periodo.dias :
+    for h in periodo.dias:
         print h

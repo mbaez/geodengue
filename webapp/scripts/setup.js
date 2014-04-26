@@ -7,6 +7,7 @@ requirejs.config({
         "text": "libs/text",
         "underscore": "libs/underscore",
         "backbone": "libs/backbone",
+        "highcharts": "libs/highcharts-custom",
         /*bootstrap*/
         "bootstrap": "libs/bootstrap",
         /*Jquery y plugins*/

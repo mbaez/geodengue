@@ -11,7 +11,7 @@ define(["backbone", "scripts/models/muestra-model"],
     function (Backbone, Model) {
         return Backbone.Collection.extend({
             model: Model,
-            parse : GeoDengue.responseParser,
+            parse: GeoDengue.responseParser,
             /**
              * Url de la cual se obtiene el recurso.
              * @function
@@ -34,8 +34,24 @@ define(["backbone", "scripts/models/muestra-model"],
                 //~ se hace un clean de los atributos
                 //se realiza el get
                 if (fetch === true || typeof fetch == "undefined") {
-                    this.fetch(BaseCallback.fetch);
+                    this.fetch(GeoDengue.callback);
                 }
+            },
+
+            /**
+             * Realiza un GET a /muestras/1/resumen-poblacion
+             * @function
+             *
+             * @name models.MuestraCollection#getReportePoblacion
+             */
+            getReportePoblacion: function () {
+                //~ se sobrescribe la url
+                var baseUrl = this.url();
+                this.url = function () {
+                    return baseUrl + "/1/resumen-poblacion";
+                }
+                this.fetch(GeoDengue.callback );
             }
+
         });
     });

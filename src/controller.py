@@ -241,12 +241,45 @@ class MuestrasController:
         return self.dao.get_all()
 
 
+class ReportesContoller:
+
+    def __init__(self):
+        """
+        Inicializa la clase...
+        """
+        self.dao = ReporteDao()
+
+    def get_evolucion_poblacion_diaria(self):
+        """
+        """
+        all_diario = self.dao.get_poblacion_por_dia()
+        new_diario = self.dao.get_poblacion_nueva_por_dia()
+        init_diario = self.dao.get_poblacion_inicial_por_dia()
+        i_new, i_init = 0, 0
+        for i in range(len(all_diario)):
+            all_diario[i]['nueva'] = 0
+            all_diario[i]['inicial'] = 0
+            item = all_diario[i]
+            new_item = new_diario[i_new]
+            init_item = init_diario[i_init]
+
+            if new_item['dia'] == item['dia']:
+                item['nueva'] = new_item['count']
+                i_new += 1
+
+            if init_item['dia'] == item['dia']:
+                item['inicial'] = init_item['count']
+                i_init += 1
+
+        return all_diario
+
+
 if __name__ == "__main__":
-    gis = GisController(1)
+    gis = ReportesContoller()
     col = row = 300
     print "starting..."
     #~ resp = gis.method_voronoi(col,row);
-    resp = gis.evolucionar()
+    resp = gis.get_evolucion_poblacion_diaria()
     print resp
     # print "{x_min: -57.602724725986, ymin: -25.318104903934, x_max: -57.580130758362, y_max: -25.299749132232}"
     # resp = gis.method_evolutive()

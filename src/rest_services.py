@@ -54,6 +54,13 @@ def evolutive(id_muestra):
     return jsonify(resp)
 
 
+@app.route('/muestras/<id_muestra>/resumen-poblacion', methods=['GET'])
+def resumen_poblacion(id_muestra):
+    controller = ReportesContoller()
+    resp = controller.get_evolucion_poblacion_diaria()
+    return jsonify(lista=resp)
+
+
 @app.route('/pdi-img', methods=['POST'])
 def pdi_img():
 

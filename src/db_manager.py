@@ -411,11 +411,121 @@ class LayersDao:
         # se construye el diccionario que contiene los parametros del query.
         cursor = self.db.query(sql_string, layer)
         return cursor
+
+class ReporteDao:
+
+    """
+    Esta clase define la capa de acceso y comunicación para la tabla
+    'evolucionar_log'.
+    En esta clase se encapsulan los metodos para el acceso a la
+    informacion utilizada en los reportes
+    * cantidad de muertes, por dia, por sexo, por estado
+    * indices de infestacion
+    * cantidad de huevos
+    * otros
+    """
+
+    def __init__(self):
+        self.db = DBManager()
+
+    def get_poblacion_inicial_por_dia(self):
+        """
+        Se encarga de obtener los datos sobre la cantidad de individuos
+        vivos de la poblacion inicial por dia de la tabla de
+        evolucion_log
+
+            select dia, count(*)
+            from evolucion_log
+            where expectativa_de_vida != 0
+            and id_mosquito_padre = 0
+            group by dia
+            order by dia
+
+        @rtype  Dictionaries
+        @return Un diccionario con el resultado de la consulta
+        """
+        # se definie el query de la consulta.
+        sql_string = """
+            select dia, count(*)
+            from evolucion_log
+            where expectativa_de_vida != 0
+            and id_mosquito_padre = 0
+            group by dia
+            order by dia
+        """
+        # se construye el diccionario que contiene los parametros del query.
+        cursor = self.db.query(sql_string)
+        return self.db.to_dict(cursor)
+
+    def get_poblacion_nueva_por_dia(self):
+        """
+        Se encarga de obtener los datos sobre la cantidad de individuos
+        vivos de la nueva por dia de la tabla de evolucion_log
+
+            select dia, count(*)
+            from evolucion_log
+            where expectativa_de_vida != 0
+            and id_mosquito_padre != 0
+            group by dia
+            order by dia
+
+        @rtype  Dictionaries
+        @return Un diccionario con el resultado de la consulta
+        """
+        # se definie el query de la consulta.
+        sql_string = """
+            select dia, count(*)
+            from evolucion_log
+            where expectativa_de_vida != 0
+            and id_mosquito_padre != 0
+            group by dia
+            order by dia
+        """
+        # se construye el diccionario que contiene los parametros del query.
+        cursor = self.db.query(sql_string)
+        return self.db.to_dict(cursor)
+
+    def get_poblacion_por_dia(self):
+        """
+        Se encarga de obtener los datos sobre la cantidad de individuos
+        vivos por dia de la tabla de evolucion_log
+
+            select dia, count(*)
+            from evolucion_log
+            where expectativa_de_vida != 0
+
+            group by dia
+            order by dia
+
+        @rtype  Dictionaries
+        @return Un diccionario con el resultado de la consulta
+        """
+        # se definie el query de la consulta.
+        sql_string = """
+            select dia, count(*)
+            from evolucion_log
+            where expectativa_de_vida != 0
+
+            group by dia
+            order by dia
+        """
+        # se construye el diccionario que contiene los parametros del query.
+        cursor = self.db.query(sql_string)
+        return self.db.to_dict(cursor)
+
+
 if __name__ == "__main__":
     #~ dic = da.get_by(1)
     #a = PuntosRiesgoDao()
     #dic = a.get_all();
-    dao = MuestraModel()
-    print dao.get_all()
+    #~ dao = MuestraModel()
+    #~ print dao.get_all()
     #~ cursor = a.persist({'id_muestra': 1, 'descripcion': 'test'})
     #~ print cursor.fetchone()[0]
+
+    dao = ReporteDao()
+    print dao.get_poblacion_por_dia()
+    print '--------------------------'
+    print dao.get_poblacion_nueva_por_dia()
+    print '--------------------------'
+    print dao.get_poblacion_inicial_por_dia()

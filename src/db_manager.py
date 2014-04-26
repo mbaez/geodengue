@@ -513,6 +513,88 @@ class ReporteDao:
         cursor = self.db.query(sql_string)
         return self.db.to_dict(cursor)
 
+    def get_distribucion_de_estados(self, dia):
+        """
+        Se encarga de obtener la cantidad de huevos, larvas, pupas y
+        adultos en un dia especifico
+
+        select count(*) , estado
+        from evolucion_log
+        where dia = <dia>
+        group by estado
+
+        """
+
+        # se definie el query de la consulta.
+        sql_string = """
+            select count(*) , estado
+            from evolucion_log
+            where dia = %(dia)s
+            group by estado
+        """
+         # se construye el diccionario que contiene los parametros del query.
+        cursor = self.db.query(sql_string, {"dia" : dia})
+        return self.db.to_dict(cursor)
+
+    def get_tiempo_promedio_de_vida(self, estado):
+        """
+        Se encarga de obtener los datos sobre el tiempo promedio de los
+        diferentes estados.
+        si :estado = ADULTO se tiene un valor x que representa el tiempo
+        promedio de vida de toda la poblacion que llego al estado ADULTO
+
+        select cast(sum(x.c) as float)/max(y.c)
+        from(select max(edad) as c
+            from evolucion_log
+            where estado = :estado
+            and id_mosquito_padre != 0
+            group by id_mosquito
+            order by id_mosquito) x,
+            (select count(distinct(id_mosquito)) as c
+            from evolucion_log
+            where estado = :estado
+            and id_mosquito_padre != 0) y;
+        """
+
+        # se definie el query de la consulta.
+        sql_string = """
+            select cast(sum(x.c) as float)/max(y.c) as tiempo_promedio
+            from(select max(edad) as c
+            from evolucion_log
+            where estado = %(estado)s
+            and id_mosquito_padre != 0
+            group by id_mosquito
+            order by id_mosquito) x,
+            (select count(distinct(id_mosquito)) as c
+            from evolucion_log
+            where estado = %(estado)s
+            and id_mosquito_padre != 0) y;
+        """
+         # se construye el diccionario que contiene los parametros del query.
+        cursor = self.db.query(sql_string, {"estado" : estado})
+        return self.db.to_dict(cursor)
+
+    def get_cantidad_promedio_de_huevo(self):
+        """
+        Obtiene la cantidad promedio de huevos depositados
+        Si se realicen en total x oviposturas, el metodo
+        halla la cantidad promedio de huevos generados sobre el total
+        de oviposturas x dentro del periodo de estudio.
+
+        select sum(cantidad_huevos)/count(*)
+        from evolucion_log
+        where cantidad_huevos > 0
+
+        """
+        # se definie el query de la consulta.
+        sql_string = """
+            select sum(cantidad_huevos)/count(*)
+            from evolucion_log
+            where cantidad_huevos > 0
+        """
+         # se construye el diccionario que contiene los parametros del query.
+        cursor = self.db.query(sql_string)
+        return self.db.to_dict(cursor)
 
 if __name__ == "__main__":
     #~ dic = da.get_by(1)
@@ -524,8 +606,9 @@ if __name__ == "__main__":
     #~ print cursor.fetchone()[0]
 
     dao = ReporteDao()
-    print dao.get_poblacion_por_dia()
-    print '--------------------------'
-    print dao.get_poblacion_nueva_por_dia()
-    print '--------------------------'
-    print dao.get_poblacion_inicial_por_dia()
+    #~ print dao.get_poblacion_por_dia()
+    #~ print '--------------------------'
+    #~ print dao.get_poblacion_nueva_por_dia()
+    #~ print '--------------------------'
+    #~ print dao.get_poblacion_inicial_por_dia()
+    print dao.get_cantidad_promedio_de_huevo()

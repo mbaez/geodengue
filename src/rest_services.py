@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 from flask import Flask, request, Response, jsonify
 from controller import *
-import pdi
+#import pdi
 import traceback
 
 """

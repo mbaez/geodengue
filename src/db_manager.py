@@ -596,6 +596,24 @@ class ReporteDao:
         cursor = self.db.query(sql_string)
         return self.db.to_dict(cursor)
 
+    def get_distribucion_de_sexo(self):
+        """
+        Obtiene la cantidad de individuos MACHO y la cantidad de
+        individuos HEMBRA dentro de la poblacion total.
+
+        Permite determinar la distribucion de sexos
+        """
+        # se definie el query de la consulta.
+        sql_string = """
+            select sexo, count(distinct (id_mosquito))
+            from evolucion_log
+            group by sexo
+        """
+         # se construye el diccionario que contiene los parametros del query.
+        cursor = self.db.query(sql_string)
+        return self.db.to_dict(cursor)
+
+
 if __name__ == "__main__":
     #~ dic = da.get_by(1)
     #a = PuntosRiesgoDao()
@@ -611,4 +629,4 @@ if __name__ == "__main__":
     #~ print dao.get_poblacion_nueva_por_dia()
     #~ print '--------------------------'
     #~ print dao.get_poblacion_inicial_por_dia()
-    print dao.get_cantidad_promedio_de_huevo()
+    print dao.get_distribucion_de_sexo()

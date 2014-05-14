@@ -230,8 +230,32 @@ class Poblacion:
             en el periodo.
             """
             grupo_estado["to_kill"] = math.ceil(cantidad * tasa_mortalidad)
+            self.gen_candidatos(grupo_estado)
+        else:
+            grupo_estado["index"] += 1
 
-        return grupo_estado["to_kill"] > 0
+        # se verifica si el elemento actual es un candidato a eliminar
+        is_candidato = False
+        if grupo_estado["to_kill"] > 0:
+            is_candidato = grupo_estado["index"] in grupo_estado["candidatos"]
+
+        return grupo_estado["to_kill"] > 0 and is_candidato
+
+    def gen_candidatos(self, colonia):
+        """
+        Se encarga de generar una lista aleatoria de candidatos de la
+        población a ser eliminados.
+        """
+        candidatos = []
+        for index in range(int(colonia["to_kill"])):
+            candidato = randint(1, colonia["cantidad"])
+            while candidato in candidatos:
+                candidato = randint(1, colonia["cantidad"])
+            # se añaden los candidatos
+            candidatos.append(candidato)
+
+        colonia["candidatos"] = candidatos
+        colonia["index"] = 1
 
     def ovipostura(self, adulto, dia):
         """

@@ -25,9 +25,10 @@ class EventLogger():
         """
         return self.__id_muestra
 
-    def __init__(self, id_muestra):
+    def __init__(self, id_muestra, codigo=''):
         self.db = DBManager()
         self.__id_muestra = id_muestra
+        self.__codigo = codigo
         self.query = ""
 
     def add(self, kargs):
@@ -35,9 +36,11 @@ class EventLogger():
         dia = kargs['dia']
         periodo = kargs['periodo']
         args = {}
+        args['codigo'] = self.__codigo
+        args['id_muestra'] = self.id_muestra
+
         args['id_mosquito'] = aedes.id_mosquito
         args['id_mosquito_padre'] = aedes.id_padre
-        args['id_muestra'] = self.id_muestra
         args['sexo'] = aedes.sexo
         args['expectativa_de_vida'] = aedes.expectativa_vida
         args['tiempo_madurez'] = aedes.tiempo_madurez
@@ -77,6 +80,7 @@ class EventLogger():
             id_mosquito,
             id_mosquito_padre,
             id_muestra,
+            codigo,
             temperatura,
             sexo,
             expectativa_de_vida,
@@ -102,6 +106,7 @@ class EventLogger():
                 {id_mosquito},
                 {id_mosquito_padre},
                 {id_muestra},
+                '{codigo}',
                 {temperatura},
                 '{sexo}',
                 {expectativa_de_vida},
@@ -137,6 +142,7 @@ class EventLogger():
             id_mosquito,
             id_mosquito_padre,
             id_muestra,
+            codigo,
             temperatura,
             sexo,
             expectativa_de_vida,
@@ -153,6 +159,7 @@ class EventLogger():
             {id_mosquito},
             {id_mosquito_padre},
             {id_muestra},
+            '{codigo}',
             {temperatura},
             '{sexo}',
             {expectativa_de_vida},

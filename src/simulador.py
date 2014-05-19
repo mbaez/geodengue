@@ -47,7 +47,8 @@ class Simulador:
         #~ se inicializa el atributo periodo
         self.periodo = kargs.get('periodo', [])
         # se inicializa la clase que hace log de los eventos
-        self.logger = EventLogger(1)
+        codigo = kargs.get('codigo', '')
+        self.logger = EventLogger(1, codigo)
 
     def start(self):
         """
@@ -67,6 +68,7 @@ class Simulador:
 
             for individuo in self.poblacion.individuos:
                 poner_huevos = False
+                cambio_estado = False
                 cantidad_huevos = 0
                 individuo.desarrollar(dia)
 
@@ -82,8 +84,17 @@ class Simulador:
                     si el individuo esta maduro, se realiza el cambio de
                     estado.
                     """
+                    # se logea el individuo antes de su cambio de estado
+                    args = {}
+                    args['aedes'] = individuo
+                    args['dia'] = dia
+                    args['periodo'] = i
+                    args['huevos'] = cantidad_huevos
+                    self.logger.add(args)
+
                     individuo = self.poblacion.cambiar_estado(individuo)
                     self.poblacion.individuos[j] = individuo
+                    cambio_estado = True
 
                 elif individuo.estado == Estado.ADULTO:
                     if(individuo.se_reproduce(dia) == True
@@ -99,12 +110,14 @@ class Simulador:
                             cantidad_huevos = len(sub_poblacion)
                             nueva_poblacion.extend(sub_poblacion)
 
-                args = {}
-                args['aedes'] = individuo
-                args['dia'] = dia
-                args['periodo'] = i
-                args['huevos'] = cantidad_huevos
-                self.logger.add(args)
+                if cambio_estado == False:
+                    args = {}
+                    args['aedes'] = individuo
+                    args['dia'] = dia
+                    args['periodo'] = i
+                    args['huevos'] = cantidad_huevos
+                    self.logger.add(args)
+
                 j += 1
             if len(nueva_poblacion) > 0:
                 total_huevos += len(nueva_poblacion)
@@ -124,21 +137,24 @@ if __name__ == "__main__":
     from tutiempo import *
 
     id_muestras = 1
-    # se obtiene el historial climatico
-    print "obteniendo los datos climaticos"
-    clima = TuTiempo("Asuncion")
-    periodo = clima.get_periodo()
 
-    print "obteniendo los datos de la bd"
-    dao = PuntosControlModel()
-    data = dao.get_by(id_muestras)
-    print "construyendo la grilla"
-    #~ print data
+    for temperatura in [15, 18, 20, 22, 24, 25, 26, 27, 30, 34]:
+        print "=" * 10 + str(temperatura) + "=" * 10
+        # se obtiene el historial climatico
+        print "obteniendo los datos climaticos"
+        clima = TuTiempo("Asuncion")
+        periodo = clima.get_periodo(temperatura)
 
-    evol = Simulador(periodo=periodo, poblacion=data)
+        print "obteniendo los datos de la bd"
+        dao = PuntosControlModel()
+        data = dao.get_by(id_muestras)
+        print "construyendo la grilla"
+        #~ print data
+        codigo = 'temp=' + str(temperatura)
+        evol = Simulador(periodo=periodo, poblacion=data, codigo=codigo)
 
-    print "iniciando simulación"
-    evol.start()
+        print "iniciando simulación"
+        evol.start()
     """
     for ind in evol.poblacion :
         print str(ind)

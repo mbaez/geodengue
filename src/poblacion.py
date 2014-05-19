@@ -108,10 +108,10 @@ class Poblacion:
             # se obtine la cantidad de individuos
             cantidad_larvas = int(grid.z[i])
             #~ se genera la sub población de larvas
+            #madurez=randint(0, 90),
             sub_poblacion = self.gen_sub_poblacion(
                 cantidad_larvas=cantidad_larvas,
                 clazz=Larva,
-                madurez=randint(0, 90),
                 x=grid.x[i], y=grid.y[i])
             self.individuos.extend(sub_poblacion)
 

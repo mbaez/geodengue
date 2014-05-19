@@ -23,14 +23,18 @@ class Dia:
         self.direccion_viento = data.get("direccion_viento", 0.0)
         self.nuves = data.get("nuves", 0)
 
-    def parse(self, data, future):
+    def parse(self, data, temperatura, future):
         """
         Se encarga de parsear los datos obtenidos del openweathermap.org
         """
         if future == True:
-            self.temperatura = float(data["temp"].get("day", 0))
-            # de kelvin a centigrados
-            self.temperatura = self.temperatura - 273.15
+            if temperatura == None:
+                self.temperatura = float(data["temp"].get("day", 0))
+                # de kelvin a centigrados
+                self.temperatura = self.temperatura - 273.15
+            else:
+                self.temperatura = float(temperatura)
+
             self.presion = float(data.get("pressure", 0))
             self.humedad = float(data.get("humidity", 0))
             self.viento = float(data.get("speed", 0.0))
@@ -173,14 +177,14 @@ class Periodo:
     def __init__(self):
         self.dias = []
 
-    def parse_json(self, data, future=False):
+    def parse_json(self, data, temperatura, future=False):
         """
         Se encarga de procesar los datos en forma de json y los añade a
         la lista.
         """
         for day in data["list"]:
             d = Dia()
-            d.parse(day, future)
+            d.parse(day, temperatura, future)
             self.dias.append(d)
 
 
@@ -229,14 +233,14 @@ class TuTiempo:
     def __init__(self,  localidad):
         pass
 
-    def get_periodo(self):
+    def get_periodo(self, temperatura=None):
         """
         Se ecarga de obtener los datos historicos y predictos de la
         localidad.
         """
         periodo = Periodo()
-        #~ periodo.parse_json(self.history());
-        periodo.parse_json(self.future(), True)
+        #~ periodo.parse_json(self.history(),temperatura);
+        periodo.parse_json(self.future(), temperatura, True)
         return periodo
 
     def download_page(self, domain):
@@ -386,6 +390,6 @@ class TuTiempo:
 if __name__ == "__main__":
     clima = TuTiempo("Asuncion")
     #~ clima.process_dom_hora();
-    periodo = clima.get_periodo()
+    periodo = clima.get_periodo(20)
     for h in periodo.dias:
         print h

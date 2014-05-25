@@ -56,3 +56,10 @@ USE geodenguedb;
 CREATE EXTENSION postgis;
 CREATE EXTENSION postgis_topology;
 ```
+
+Crear indices
+
+```sql
+CREATE INDEX evolucion_log_idx_codigo ON evolucion_log (codigo);
+CREATE INDEX evolucion_log_idx_estado ON evolucion_log (estado);
+```

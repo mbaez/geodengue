@@ -9,7 +9,9 @@ Este módulo contiene la definición del estado Pupa del Aedes Aegypti
 
 from aaegypti import *
 
-class Pupa(AeAegypti) :
+
+class Pupa(AeAegypti):
+
     """
     Esta clase contiene la representación del AeAegypti en su etapa de
     pupa. La etapa de pupa es una etapa de no alimentación, se mueven,
@@ -25,7 +27,8 @@ class Pupa(AeAegypti) :
     @see http://medicina.tij.uabc.mx/von/ciclo.html
     @see http://www.todosobremosquitos.com.ar/index.php?id=48&titulo=pupas-de-mosquitos
     """
-    def __init__(self, **kargs) :
+
+    def __init__(self, **kargs):
         """
         @param kargs: Parametros de inicialización de la clase
 
@@ -34,10 +37,9 @@ class Pupa(AeAegypti) :
         """
         # se invoca al constructor de la clase padre.
         kargs['estado'] = Estado.PUPA
-        AeAegypti.__init__(self, **kargs);
+        AeAegypti.__init__(self, **kargs)
 
-
-    def esta_muerto (self):
+    def esta_muerto(self):
         """
         El estadio de pupa dura aproximadamente dos o tres días, emergiendo
         alrededor del 88% de los adultos en cuestión de 48 horas (Méndez et al., 1996)
@@ -45,7 +47,7 @@ class Pupa(AeAegypti) :
         """
         return self.expectativa_vida <= 0
 
-    def desarrollar(self, hora) :
+    def desarrollar(self, hora):
         """
         El estadio de pupa dura aproximadamente dos o tres días, emergiendo
         alrededor del 88% de los adultos en cuestión de 48 horas (Méndez et al., 1996)
@@ -69,23 +71,27 @@ class Pupa(AeAegypti) :
         cantidad_dias = self.get_madurez_zona(hora)
         self._tiempo_madurez = cantidad_dias
 
-        if cantidad_dias > 0  :
+        if cantidad_dias > 0:
             #~ se hace madurar a pupa
-            self._madurez += 100/(cantidad_dias)
+            self._madurez += 100 / (cantidad_dias)
 
         #~ se envejece la pupa
         self._edad += 1
 
         return self
 
-    def mortalidad (self, temperatura) :
+    def mortalidad(self, temperatura, colonia):
         """
         En el caso de la pupa otero2006, la mortalidad intrínseca de una
         pupa se ha considerado como una ecuación dependiente de temperatura.
         Además de la mortalidad diaria en la fase de pupa, existe una importante
         mortalidad adicional, solo el 83% otero2006 de las pupas alcanzan
         la maduración y emergerán como mosquitos adultos, por lo tanto,
-        el factor de supervivencia es de 0.83.
+        el factor de supervivencia es de ef=0.83.
         """
         k = temperatura + 273.15
-        return (0.01 + 0.9725 * math.exp( -(k - 278)/2.7035)) * 0.83
+        ef = 0.83
+        mp = 0.01 + 0.9725 * math.exp(-(k - 278) / 2.7035)
+        coef = COEF_SH_DE.get_by(self.estado)
+        par = self.sharpe_demichele(temperatura, coef[0])
+        return (mp + (1 - ef) * par) * colonia[self.estado]["cantidad"]

@@ -9,12 +9,15 @@ Este módulo contiene la definición del estado Huevo del Aedes Aegypty
 
 from aaegypti import *
 
-class Huevo(AeAegypti) :
+
+class Huevo(AeAegypti):
+
     """
     Esta clase contiene la representación del AeAegypti en su etapa de
     huevo.
     """
-    def __init__(self, **kargs) :
+
+    def __init__(self, **kargs):
         """
         @param kargs: Parametros de inicialización de la clase
 
@@ -23,16 +26,16 @@ class Huevo(AeAegypti) :
         """
         # Se genera de forma aleatoria el sexo del huevo
         sexo = randint(0, 1)
-        if sexo == 0 :
+        if sexo == 0:
             sexo = Sexo.MACHO
-        else :
+        else:
             sexo = Sexo.HEMBRA
         kargs['sexo'] = sexo
         kargs['estado'] = Estado.HUEVO
         # se invoca al constructor de la clase padre.
-        AeAegypti.__init__(self, **kargs);
+        AeAegypti.__init__(self, **kargs)
 
-    def esta_muerto (self):
+    def esta_muerto(self):
         """
         La supervivencia de los mosquitos depende de la capacidad para alimentarse,
         reproducirse, protegerse y dispersarse.
@@ -41,7 +44,7 @@ class Huevo(AeAegypti) :
         """
         return self.expectativa_vida <= 0
 
-    def desarrollar(self, hora) :
+    def desarrollar(self, hora):
         """
         Para el estudío se supone que los criaderos disponibles estan
         delimitados por los puntos de control(dispositivos de ovipostura)
@@ -65,20 +68,44 @@ class Huevo(AeAegypti) :
 
         self._tiempo_madurez = cantidad_dias
 
-        if cantidad_dias > 0  :
+        if cantidad_dias > 0:
             #~ se hace madurar a pupa
-            delta_madurez = 100/(cantidad_dias)
-
+            delta_madurez = 100 / (cantidad_dias)
 
         #~ se envejece la pupa
         self._edad += 1
         #~ se incrementa la madurez del mosquito en un delta
         self._madurez += delta_madurez
-        return self;
+        return self
 
-    def mortalidad (self, temperatura) :
+    def inhibicion_eclosion(self, temperatura, colonia):
         """
-        Para la etapa huevo, otero2006 la define como una constante
+        [otero2006]La posibilidad de un proceso de regulación compleja, en la
+        que la alta densidad de larvas inhibe eclosión de los huevos, la
+        inducción de los huevos para entrar en diapausa, fue desenterrado por
+        Livdah. Hemos introducido este efecto a través de un factor de
+        reducción de la tasa de eclosión cuando las larvas supera una densidad
+        predeterminada.
+        """
+        H = colonia[Estado.HUEVO]["cantidad"]
+        L = colonia[Estado.LARVA]["cantidad"]
+        a_0 = 0.5
+        BS = 15
+        omega = L / BS
+        if omega < a_0:
+            omega = 0
+        else:
+            omega = 0.63
+
+        coef = COEF_SH_DE.get_by(Estado.HUEVO)
+        elr = self.sharpe_demichele(temperatura, coef[0])
+        hi = H * elr * omega
+        return hi
+
+    def mortalidad(self, temperatura, colonia):
+        """
+        Para la etapa huevo, [otero2006] la define como una constante
         independiente de la temperatura.
         """
-        return 0.01;
+
+        return colonia[self.estado]["cantidad"] / 100.0

@@ -108,9 +108,9 @@ class Poblacion:
             # se obtine la cantidad de individuos
             cantidad_larvas = int(grid.z[i])
             #~ se genera la sub población de larvas
-            #madurez=randint(0, 90),
             sub_poblacion = self.gen_sub_poblacion(
                 cantidad_larvas=cantidad_larvas,
+                #madurez=randint(0, 90),
                 clazz=Larva,
                 x=grid.x[i], y=grid.y[i])
             self.individuos.extend(sub_poblacion)
@@ -136,6 +136,7 @@ class Poblacion:
         }
         #~ Se actualizan los individuos
         grupo[aedes.estado]["cantidad"] -= 1
+        grupo[aedes.estado]["cantidad_ant"] -= 1
         grupo[next_state[aedes.estado]]["cantidad"] += 1
 
         return clazz[aedes.estado](sexo=aedes.sexo, posicion=aedes.posicion,
@@ -169,8 +170,11 @@ class Poblacion:
         for estado in estados:
             grupo[estado] = {}
             grupo[estado]["cantidad"] = 0
+            grupo[estado]["cantidad_ant"] = 0
             grupo[estado]["to_kill"] = 0
+            grupo[estado]["inhibicion"] = 0
             grupo[estado]["periodo"] = -1
+            grupo[estado]["dia"] = -1
             grupo[estado]["killed"] = 0
 
         grupo[state]["cantidad"] = cantidad
@@ -191,8 +195,8 @@ class Poblacion:
 
     def kill(self, aedes):
         """
-        Se encarga de eliminar un idividuo de la población y actualizar la información
-        de la población.
+        Se encarga de eliminar un idividuo de la población y actualizar la
+        información de la población.
         """
         if aedes.estado == Estado.ADULTO:
             grupo = self.get(aedes.posicion_origen)
@@ -222,14 +226,14 @@ class Poblacion:
         if grupo_estado["periodo"] < periodo:
             # se actualiza el periodo
             grupo_estado["periodo"] = periodo
-            # se calcula la tasa de mortalidad del individuo
-            tasa_mortalidad = aedes.mortalidad(dia.temperatura)
-            cantidad = grupo_estado["cantidad"]
+            # se calcula la mortalidad del individuo
+            mortalidad = aedes.mortalidad(dia.temperatura, grupo)
             """
             se actualiza la canitdad de inviduos que deben desaparecer
             en el periodo.
             """
-            grupo_estado["to_kill"] = math.ceil(cantidad * tasa_mortalidad)
+            grupo_estado["to_kill"] = math.ceil(mortalidad)
+            # print str(grupo_estado["to_kill"]) + "\t" + str(cantidad)
             self.gen_candidatos(grupo_estado)
         else:
             grupo_estado["index"] += 1
@@ -240,6 +244,50 @@ class Poblacion:
             is_candidato = grupo_estado["index"] in grupo_estado["candidatos"]
 
         return grupo_estado["to_kill"] > 0 and is_candidato
+
+    def inhibicion(self, aedes, dia, periodo):
+        """
+        [otero2006] se inhibe el desarrollo de huevos por influencia de las
+        larvas. Se encarga de realizar las validaciones para realizar
+        innibición del desarrollo.
+        """
+        if not aedes.estado == Estado.HUEVO:
+            return False
+
+        colonia = self.get(aedes.posicion)
+
+        colonia_estado = colonia[aedes.estado]
+        if colonia_estado["dia"] < periodo:
+            # se actualiza el periodo
+            colonia_estado["dia"] = periodo
+            # se calcula la mortalidad del individuo
+            mortalidad = aedes.inhibicion_eclosion(dia.temperatura, colonia)
+            """
+            se actualiza la canitdad de huevos que deben desaparecer
+            en el periodo debido a la innibición de la eclosión
+            """
+            colonia_estado["inhibicion"] = math.ceil(mortalidad)
+
+        # se verifica si el elemento actual es un candidato a eliminar
+        return colonia_estado["inhibicion"] > 0
+
+    def kill_inhibicion(self, aedes):
+        """
+        Se encarga de eliminar un idividuo de la población y actualizar la
+        información de la población.
+        """
+        colonia = self.get(aedes.posicion)
+        if colonia != None:
+            # se reduce la cantidad de huevos
+            colonia[aedes.estado]["cantidad"] -= 1
+            colonia[aedes.estado]["inhibicion"] -= 1
+            # se hace un cambio de estado para que se registre la mortalidad
+            # como una larva
+            aedes.estado = Estado.LARVA
+            colonia[aedes.estado]["killed"] += 1
+
+        aedes._expectativa_vida = -1
+        self.individuos.remove(aedes)
 
     def gen_candidatos(self, colonia):
         """
@@ -265,8 +313,8 @@ class Poblacion:
         self.total_huevos += huevos
         if huevos > 0:
             return self.gen_sub_poblacion(posicion=adulto.posicion,
-                                          cantidad_larvas=huevos, id_padre=adulto.id_mosquito)
-        return []
+                                          cantidad_larvas=huevos, id_padre=adulto.id_mosquito), huevos
+        return [], huevos
 
     def extend(self, nueva_poblacion):
         """

@@ -86,6 +86,18 @@ class Adulto(AeAegypti):
         return self._cantidad_alimentacion
 
     @property
+    def ciclo_gonotrofico(self):
+        return self.__ciclo_gonotrofico
+
+    @property
+    def no_se_alimenta(self):
+        return self.__no_se_alimenta
+
+    @property
+    def no_pone_huevos(self):
+        return self.__no_pone_huevos
+
+    @property
     def se_alimenta(self):
         """
         Boolean que determina si se alimento o no
@@ -127,6 +139,9 @@ class Adulto(AeAegypti):
         self._is_inseminada = False
         self._se_alimenta = False
         self._se_reproduce = False
+        self.__no_pone_huevos = False
+        self.__no_se_alimenta = False
+        self.__ciclo_gonotrofico = 0
 
     def se_reproduce(self, dia):
         """
@@ -148,7 +163,7 @@ class Adulto(AeAegypti):
 
         self._se_reproduce = self.is_inseminada == True \
             and self.sexo == Sexo.HEMBRA \
-            and dia.get_tipo_clima() != Clima.FRIO
+            and dia.temperatura >= 15
 
         return self._se_reproduce
 
@@ -168,9 +183,9 @@ class Adulto(AeAegypti):
         self._edad += 1
         self.inseminacion(dia)
         # se ranquea la zona
-        self.volar(dia)
 
-        if not dia.get_tipo_clima() == Clima.FRIO:
+        if dia.temperatura > 15:
+            self.volar(dia)
             self.buscar_alimento(dia)
 
         return self
@@ -191,46 +206,32 @@ class Adulto(AeAegypti):
         @param dia: el objeto que contiene los datos climatologicos para
             un dia.
         """
+
         self._ultimo_alimento += 1
-        #~ el mosquito se alimenta por primera vez de 20 a 72 horas
-        p = randint(20, 72)
-        se_alimenta = p % (self.edad * 24) == 0
-        if self._se_alimenta == False and se_alimenta:
+
+        """
+        Si el individuo se marcó para no ser alimentado se omite el proceso de
+        alimentación para el.
+        """
+        if self.no_se_alimenta == True:
+            return
+
+        """
+        Según "ESTUDIO DE LA LONGEVIDAD Y EL CICLO GONOTRÓFICO DEL Aedes
+        (Stegomyia) aegypti (LINNAEUS, 1762), CEPA GIRARDOT (CUNDINAMARCA) EN
+        CONDICIONES DE LABORATORIO" se puede observar  que el  22,56% (23) de
+        la población no realizó ninguna toma de sangre.
+        """
+        prob_alimentacion = randint(0, 100)
+        if prob_alimentacion <= 23 and self._cantidad_alimentacion == 0:
+            self.__no_se_alimenta = True
+
+        elif self._se_alimenta == False:
             self._se_alimenta = True
             self._ultimo_alimento = 0
             # 2-3 mg = 20-30 cg
-            self._cantidad_alimentacion += randint(0, MAX_ALIMENTACION)
-
-    def poner_huevos(self, dia):
-        """
-        Generalmente el apareamiento se realiza cuando la hembra busca
-        alimentarse; se ha observado que el ruido que emite al volar es
-        un mecanismo por el cual el macho es atraído. El mosquito hembra
-        necesita la sangre para obtener proteínas y  poner sus huevos.
-
-        La hembra embarazada es capaz de volar hasta 3km en busca de un
-        sitio optimo para la ovipostura.
-
-        @type dia : Dia
-        @param dia: el objeto que contiene los datos climatologicos para
-            un dia.
-        """
-        huevos = 0
-        #~ se obtiene el ciclo gonotrofico
-        ciclo_gonotrofico = self.get_ciclo_gonotrofico(dia)
-        # se aumenta el contador de ultima oviposición
-        self._ultima_oviposicion += 1
-
-        #~ se realizan los controles de las condiciones
-        if self.ultima_oviposicion >= ciclo_gonotrofico \
-            and self.cantidad_alimentacion >= 10:
-            self.volar(dia)
-            huevos = self.generar_huevos()
-            self._se_alimenta = False
-            self._cantidad_alimentacion = 0
-            self._cantidad_oviposicion += 1
-
-        return huevos
+            self._cantidad_alimentacion += 1
+            # self.poner_huevos(dia)
 
     def inseminacion(self, hora):
         """
@@ -329,6 +330,47 @@ class Adulto(AeAegypti):
 
         return cantidad_dias
 
+    def poner_huevos(self, dia):
+        """
+        Generalmente el apareamiento se realiza cuando la hembra busca
+        alimentarse; se ha observado que el ruido que emite al volar es
+        un mecanismo por el cual el macho es atraído. El mosquito hembra
+        necesita la sangre para obtener proteínas y  poner sus huevos.
+
+        La hembra embarazada es capaz de volar hasta 3km en busca de un
+        sitio optimo para la ovipostura.
+
+        @type dia : Dia
+        @param dia: el objeto que contiene los datos climatologicos para
+            un dia.
+        """
+        huevos = 0
+
+        if self.no_pone_huevos == True:
+            return -1
+
+        """
+        Según "ESTUDIO DE LA LONGEVIDAD Y EL CICLO GONOTRÓFICO DEL Aedes
+        (Stegomyia) aegypti (LINNAEUS, 1762), CEPA GIRARDOT (CUNDINAMARCA) EN
+        CONDICIONES DE LABORATORIO" se puede observar que el 21,9% (22) de los
+        mosquitos que tomaron una ingesta de sangre no realizaron ovoposturas.
+        """
+        if self.cantidad_alimentacion == 1 and self.ciclo_gonotrofico == 0:
+            prob_ovi = randint(0, 100)
+            if prob_ovi <= 22:
+                self.__no_pone_huevos = True
+                return 0
+        #~ se obtiene el ciclo gonotrofico
+        ciclo_gonotrofico = self.get_ciclo_gonotrofico(dia)
+        # se aumenta el contador de ultima oviposición
+        self.__ciclo_gonotrofico += 100 / ciclo_gonotrofico
+        #~ se realizan los controles de las condiciones
+        if self.ciclo_gonotrofico >= 100 \
+            and self.cantidad_alimentacion >= 1:
+            huevos = self.generar_huevos()
+
+        return huevos
+
     def generar_huevos(self):
         """
         Su ciclo para poner huevos es de aproximadamente cada tres días a
@@ -341,9 +383,12 @@ class Adulto(AeAegypti):
         Un solo mosquito hembra puede poner 80 a 150 huevos, cuatro veces
         al día.
         """
-        huevos = self.cantidad_alimentacion * MAX_HUEVOS / MAX_ALIMENTACION
+        huevos = randint(MIN_HUEVOS, MAX_HUEVOS)
         # se reinicia el contador
         self._ultima_oviposicion = 0
+        self._se_alimenta = False
+        self._cantidad_oviposicion += 1
+        self.__ciclo_gonotrofico = 0
 
         return huevos
 
@@ -463,9 +508,44 @@ class Adulto(AeAegypti):
 
         return v
 
-    def mortalidad(self, temperatura):
+    def mortalidad(self, temperatura, colonia):
         """
+
+        Los adultos pueden permanecer vivos en el laboratorio durante meses y
+        en la naturaleza pocas semanas. Con una mortalidad diaria de 10 %, la
+        mitad de los mosquitos morirán durante la primera semana y 95 % en el
+        primer mes.
+        Fuente : http://scielo.sld.cu/scielo.php?pid=S0864-34662010000100015&script=sci_arttext
+
         Para la etapa adulto, otero2006 la define como una constante
         independiente de la temperatura.
         """
-        return 0.09
+
+        return 0.09 * colonia[self.estado]["cantidad"]
+
+    def test(self):
+        """
+        Según ANDREA MARCELA CONDE OSORIO en "ESTUDIO DE LA LONGEVIDAD Y EL
+        CICLO GONOTRÓFICO DEL Aedes (Stegomyia) aegypti (LINNAEUS, 1762), CEPA
+        GIRARDOT (CUNDINAMARCA) EN CONDICIONES DE LABORATORIO" se puede
+        observar los siguientes valores descriptivos referentes a longevidad
+        en los diferentes tratamientos (tomas de sangre)
+
+        N      %
+        -------------------------------------------------------------
+        134   22,56   Ninguna toma de sangre
+        259   43,6    Una toma de sangre durante su tiempo de vida.
+        98    16,5    Dos toma de sangre durante su tiempo de vida.
+        50    8,42    Tres toma de sangre durante su tiempo de vida.
+        41    6,9     Cuatro toma de sangre durante su tiempo de vida.
+        12    2,02    Cinco toma de sangre durante su tiempo de vida.
+        594   100     Total
+
+        El 21, 9% de los 259 mosquitos que tomaron una ingesta de sangre no
+        realizaron ovoposturas.
+
+        134       22,56   Ninguna toma de sangre
+        56,721    9,55    Realizaron una toma de sangre y no ponen huevos
+        190,721   32,11   En total no realizaron oviposturas.
+        """
+        pass

@@ -136,12 +136,14 @@ class Adulto(AeAegypti):
         self._distancia_recorrida = 0
         self._cantidad_oviposicion = 0
         self._cantidad_alimentacion = 0
+        self._alimentacion_necesaria = 0
         self._is_inseminada = False
         self._se_alimenta = False
         self._se_reproduce = False
         self.__no_pone_huevos = False
         self.__no_se_alimenta = False
         self.__ciclo_gonotrofico = 0
+        self.calcular_cantidad_alimentacion()
 
     def se_reproduce(self, dia):
         """
@@ -165,7 +167,7 @@ class Adulto(AeAegypti):
             and self.sexo == Sexo.HEMBRA \
             and dia.temperatura >= 15
 
-        return self._se_reproduce
+        return self._se_reproduce and self._se_alimenta
 
     def desarrollar(self, dia):
         """
@@ -216,22 +218,59 @@ class Adulto(AeAegypti):
         if self.no_se_alimenta == True:
             return
 
-        """
-        Según "ESTUDIO DE LA LONGEVIDAD Y EL CICLO GONOTRÓFICO DEL Aedes
-        (Stegomyia) aegypti (LINNAEUS, 1762), CEPA GIRARDOT (CUNDINAMARCA) EN
-        CONDICIONES DE LABORATORIO" se puede observar  que el  22,56% (23) de
-        la población no realizó ninguna toma de sangre.
-        """
-        prob_alimentacion = randint(0, 100)
-        if prob_alimentacion <= 23 and self._cantidad_alimentacion == 0:
-            self.__no_se_alimenta = True
-
         elif self._se_alimenta == False:
-            self._se_alimenta = True
             self._ultimo_alimento = 0
             # 2-3 mg = 20-30 cg
             self._cantidad_alimentacion += 1
-            # self.poner_huevos(dia)
+
+        if self._cantidad_alimentacion == self._alimentacion_necesaria:
+            self._se_alimenta = True
+
+    def calcular_cantidad_alimentacion(self):
+        """
+        Según "ESTUDIO DE LA LONGEVIDAD Y EL CICLO GONOTRÓFICO DEL Aedes
+        (Stegomyia) aegypti (LINNAEUS, 1762), CEPA GIRARDOT (CUNDINAMARCA) EN
+        CONDICIONES DE LABORATORIO"
+        """
+        prob_ovi = randint(0, 10000)
+        if prob_ovi <= 2256:
+            """
+            Se puede observar  que el  22,56%(23) de la población no realizó
+            ninguna toma de sangre.
+            """
+            self.__no_se_alimenta = True
+            self._alimentacion_necesaria = 0
+        if prob_ovi <= 6616:
+            """
+            259   43,6    Una toma de sangre durante su tiempo de vida.
+            """
+            self._alimentacion_necesaria = 1
+            self._max_huevo = 67
+
+        elif prob_ovi <= 8266:
+            """
+            98    16,5    Dos toma de sangre durante su tiempo de vida.
+            """
+            self._alimentacion_necesaria = 2
+            self._max_huevo = 107
+        elif prob_ovi <= 9108:
+            """
+            50    8,42    Tres toma de sangre durante su tiempo de vida.
+            """
+            self._alimentacion_necesaria = 3
+            self._max_huevo = 137
+        elif prob_ovi <= 9798:
+            """
+            41    6,9     Cuatro toma de sangre durante su tiempo de vida.
+            """
+            self._alimentacion_necesaria = 4
+            self._max_huevo = 268
+        else:
+            """
+            12    2,02    Cinco toma de sangre durante su tiempo de vida.
+            """
+            self._alimentacion_necesaria = 5
+            self._max_huevo = 271
 
     def inseminacion(self, hora):
         """
@@ -243,17 +282,8 @@ class Adulto(AeAegypti):
         * La inseminación,generalmente, se efectúa durante el vuelo.
         * Una vez alimentada de sangre ocurren pocos apareamientos.
         """
-        if self.sexo == Sexo.MACHO:
-            #~ buscar a hembras para inseminarse
-            self.inseminar_macho(hora)
-        else:
+        if not self.sexo == Sexo.MACHO:
             self.inseminar_hembra(hora)
-
-    def inseminar_macho(self, hora):
-        """
-        Buscar hembras para inseminar
-        """
-        pass
 
     def inseminar_hembra(self, hora):
         """
@@ -355,11 +385,12 @@ class Adulto(AeAegypti):
         CONDICIONES DE LABORATORIO" se puede observar que el 21,9% (22) de los
         mosquitos que tomaron una ingesta de sangre no realizaron ovoposturas.
         """
+        prob_ovi = randint(0, 100)
         if self.cantidad_alimentacion == 1 and self.ciclo_gonotrofico == 0:
-            prob_ovi = randint(0, 100)
             if prob_ovi <= 22:
                 self.__no_pone_huevos = True
                 return 0
+
         #~ se obtiene el ciclo gonotrofico
         ciclo_gonotrofico = self.get_ciclo_gonotrofico(dia)
         # se aumenta el contador de ultima oviposición
@@ -383,12 +414,13 @@ class Adulto(AeAegypti):
         Un solo mosquito hembra puede poner 80 a 150 huevos, cuatro veces
         al día.
         """
-        huevos = randint(MIN_HUEVOS, MAX_HUEVOS)
+        huevos = randint(MIN_HUEVOS, self._max_huevo)
         # se reinicia el contador
         self._ultima_oviposicion = 0
         self._se_alimenta = False
         self._cantidad_oviposicion += 1
         self.__ciclo_gonotrofico = 0
+        self._cantidad_alimentacion = 0
 
         return huevos
 

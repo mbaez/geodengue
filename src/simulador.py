@@ -145,8 +145,8 @@ if __name__ == "__main__":
 
     id_muestras = 1
 
-    # for temperatura in [15, 18, 20, 22, 24, 25, 26, 27, 30, 34]:
-    for temperatura in [27]:
+    for temperatura in [15, 18, 20, 22, 24, 25, 26, 27, 30, 34]:
+    # for temperatura in [30]:
         print "=" * 10 + str(temperatura) + "=" * 10
         # se obtiene el historial climatico
         print "obteniendo los datos climaticos"
@@ -158,7 +158,7 @@ if __name__ == "__main__":
         data = dao.get_by(id_muestras)
         print "construyendo la grilla"
         #~ print data
-        codigo = 'temp=' + str(temperatura) + " new"
+        codigo = 'temp=' + str(temperatura) + " p-cant-ali"
         evol = Simulador(periodo=periodo, poblacion=data, codigo=codigo)
 
         print "iniciando simulación"

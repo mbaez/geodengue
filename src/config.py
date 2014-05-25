@@ -58,10 +58,10 @@ Configuraciones de las Zonas
 #~ El tamaño esta a un radio de 200 metros de la del punto de origen
 TAMANHO_ZONA = 400
 #~ la cantidad máxima de huevos que puede poner un indiviudo de una vez
-MAX_HUEVOS = 80
-MIN_HUEVOS = 10
+MAX_HUEVOS = 150
+MIN_HUEVOS = 0
 #~ cantidad de alimento que debe ingerir el individuo hasta estar satisfecho
-MAX_ALIMENTACION = 30  # ELIMINAR
-MIN_VUELO = 50
+MAX_ALIMENTACION = 30
+MIN_VUELO = 100
 MAX_VUELO = 30000
 #~ Porcentaje de las etapas inmaduras que abarca cada fase ELIMINAR

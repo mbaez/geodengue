@@ -8,7 +8,9 @@ Este módulo contiene la definición del estados Larva
 """
 from aaegypti import *
 
-class Larva(AeAegypti) :
+
+class Larva(AeAegypti):
+
     """
     Esta clase contiene la representación del AeAegypti en su etapa de
     larva.
@@ -23,7 +25,7 @@ class Larva(AeAegypti) :
     Culex quinquefasciatus tus and Aedes aegypti (Diptera: Culicidae
     """
 
-    def __init__(self, **kargs) :
+    def __init__(self, **kargs):
         """
         @param kargs: Parametros de inicialización de la clase
 
@@ -31,20 +33,19 @@ class Larva(AeAegypti) :
         @keyword [position]: El punto que determina la ubiación de la larva
         """
 
-        if not kargs.has_key('sexo') :
+        if not kargs.has_key('sexo'):
             # Se genera de forma aleatoria el sexo del mosquito
             sexo = randint(0, 1)
-            if sexo == 0 :
+            if sexo == 0:
                 kargs['sexo'] = Sexo.MACHO
-            else :
+            else:
                 kargs['sexo'] = Sexo.HEMBRA
         kargs['estado'] = Estado.LARVA
 
         # se invoca al constructor de la clase padre.
-        AeAegypti.__init__(self, **kargs);
+        AeAegypti.__init__(self, **kargs)
 
-
-    def esta_muerto (self):
+    def esta_muerto(self):
         """
         La supervivencia de los mosquitos depende de la capacidad para alimentarse,
         reproducirse, protegerse y dispersarse.
@@ -53,8 +54,7 @@ class Larva(AeAegypti) :
         """
         return self.expectativa_vida <= 0
 
-
-    def desarrollar(self, hora) :
+    def desarrollar(self, hora):
         """
         Este método se encarga de desarrollar el individuo que se encuentra
         en el estado de larva
@@ -68,23 +68,32 @@ class Larva(AeAegypti) :
         """
         cantidad_dias = self.get_madurez_zona(hora)
         self._tiempo_madurez = cantidad_dias
-        if cantidad_dias > 0  :
+        if cantidad_dias > 0:
             #~ se hace madurar a pupa
-            self._madurez += 100/(cantidad_dias)
+            self._madurez += 100 / (cantidad_dias)
 
-        #~ se envejece la pupa
+        #~ se envejece la larva
         self._edad += 1
 
         return self
 
-    def mortalidad (self, temperatura) :
+    def mortalidad(self, temperatura, colonia):
         """
         En el caso de las larvas otero2006 define que se
         encuentra influenciada dos métodos. La primera define como una
         ecuación dependiente de temperatura. La segunda depende de la
         densidad poblacional del habitad de la larva.
+        pag 1964
+
         """
-        k = temperatura  + 273.15
-        c = 0.01 + 0.9725 * math.exp( -(k - 278)/2.7035)
-        #~ print "Mortalidad :" + str(c)
-        return c
+        BS = 15
+        alpha = 1.5
+        k = temperatura + 273.15
+        ml = 0.01 + 0.9725 * math.exp(-(k - 278) / 2.7035)
+
+        L = colonia[self.estado]["cantidad"]
+        L_ant = colonia[self.estado]["cantidad_ant"]
+        m = ml * L + (alpha / BS) * L_ant
+        colonia[self.estado]["cantidad_ant"] = L
+        # innivición de eclosión de huevos
+        return m

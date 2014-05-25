@@ -56,15 +56,14 @@ class Simulador:
         """
         print self.poblacion
         i = 0
-        olimpia = False
         args = {}
+        HUEVOS = True
         for dia in self.periodo.dias:
             #~ se procesa cada individuo de la población
             j = 0
             total_huevos = 0
             nueva_poblacion = []
-            print "Día Nro :" + str(i) + " poblacion :" + str(len(self.poblacion.individuos))
-            # print str(self.poblacion)
+            print "=" * 5 + "Día Nro :" + str(i) + " poblacion :" + str(len(self.poblacion.individuos)) + "=" * 5
 
             for individuo in self.poblacion.individuos:
                 poner_huevos = False
@@ -78,6 +77,13 @@ class Simulador:
                     si el individuo esta muerto se lo remueve de la poblacion
                     """
                     self.poblacion.kill(individuo)
+
+                elif self.poblacion.inhibicion(individuo, dia, i):
+                    """
+                    [otero2006] se inhibe el desarrollo de huevos por
+                    influencia de las larvas
+                    """
+                    self.poblacion.kill_inhibicion(individuo)
 
                 elif individuo.esta_maduro() == True:
                     """
@@ -96,11 +102,10 @@ class Simulador:
                     self.poblacion.individuos[j] = individuo
                     cambio_estado = True
 
-                elif individuo.estado == Estado.ADULTO:
-                    if(individuo.se_reproduce(dia) == True
-                       and olimpia == False):
+                elif individuo.estado == Estado.ADULTO and HUEVOS:
+                    if individuo.se_reproduce(dia) == True:
                         # se genera un nueva poblacion
-                        sub_poblacion = self.poblacion.ovipostura(
+                        sub_poblacion, cantidad_huevos = self.poblacion.ovipostura(
                             individuo, dia)
                         """
                         se extiende la poblacion unicamente si se puso
@@ -123,6 +128,8 @@ class Simulador:
                 total_huevos += len(nueva_poblacion)
                 self.poblacion.extend(nueva_poblacion)
 
+            print str(self.poblacion)
+
             self.logger.save()
             i += 1
 
@@ -138,7 +145,8 @@ if __name__ == "__main__":
 
     id_muestras = 1
 
-    for temperatura in [15, 18, 20, 22, 24, 25, 26, 27, 30, 34]:
+    # for temperatura in [15, 18, 20, 22, 24, 25, 26, 27, 30, 34]:
+    for temperatura in [27]:
         print "=" * 10 + str(temperatura) + "=" * 10
         # se obtiene el historial climatico
         print "obteniendo los datos climaticos"
@@ -150,7 +158,7 @@ if __name__ == "__main__":
         data = dao.get_by(id_muestras)
         print "construyendo la grilla"
         #~ print data
-        codigo = 'temp=' + str(temperatura)
+        codigo = 'temp=' + str(temperatura) + " new"
         evol = Simulador(periodo=periodo, poblacion=data, codigo=codigo)
 
         print "iniciando simulación"

@@ -174,10 +174,6 @@ class AeAegypti:
         el modelo de sharpe&demichele.
 
         """
-        #~ se obtiene el tipo de zona
-        tipo_zona = str(self.rank_zona())
-        #~ se obitne el tipo de clima
-        tipo_clima = str(hora.get_tipo_clima())
         coef = COEF_SH_DE.get_by(self.estado)
         cantidad_dias = 1 / self.sharpe_demichele(hora.temperatura, coef[0])
         return cantidad_dias

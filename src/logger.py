@@ -180,5 +180,8 @@ class EventLogger():
     def save(self):
         sql_string = str(self.query)
         self.query = ""
+        if len(sql_string) == 0:
+            return
+
         t = threading.Thread(target=self.db.query, args=(sql_string,))
         t.start()

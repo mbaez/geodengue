@@ -86,14 +86,12 @@ class Larva(AeAegypti):
         pag 1964
 
         """
-        BS = 15
-        alpha = 1.5
         k = temperatura + 273.15
         ml = 0.01 + 0.9725 * math.exp(-(k - 278) / 2.7035)
 
         L = colonia[self.estado]["cantidad"]
         L_ant = colonia[self.estado]["cantidad_ant"]
-        m = ml * L + (alpha / BS) * L_ant
-        colonia[self.estado]["cantidad_ant"] = L
+        m = ml * L + (ALPHA / BS) * L_ant * L
+        colonia[self.estado]["cantidad_ant"] = m
         # innivición de eclosión de huevos
         return m

@@ -90,7 +90,6 @@ class Huevo(AeAegypti):
         H = colonia[Estado.HUEVO]["cantidad"]
         L = colonia[Estado.LARVA]["cantidad"]
         a_0 = 0.5
-        BS = 15
         omega = L / BS
         if omega < a_0:
             omega = 0

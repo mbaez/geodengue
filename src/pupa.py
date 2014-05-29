@@ -84,14 +84,19 @@ class Pupa(AeAegypti):
         """
         En el caso de la pupa otero2006, la mortalidad intrínseca de una
         pupa se ha considerado como una ecuación dependiente de temperatura.
-        Además de la mortalidad diaria en la fase de pupa, existe una importante
-        mortalidad adicional, solo el 83% otero2006 de las pupas alcanzan
-        la maduración y emergerán como mosquitos adultos, por lo tanto,
-        el factor de supervivencia es de ef=0.83.
+        Además de la mortalidad diaria en la fase de pupa, existe una
+        importante mortalidad adicional, solo el 83% otero2006 de las pupas
+        alcanzan la maduración y emergerán como mosquitos adultos, por lo
+        tanto, el factor de supervivencia es de ef=0.83.
         """
         k = temperatura + 273.15
         ef = 0.83
         mp = 0.01 + 0.9725 * math.exp(-(k - 278) / 2.7035)
         coef = COEF_SH_DE.get_by(self.estado)
         par = self.sharpe_demichele(temperatura, coef[0])
-        return (mp + (1 - ef) * par) * colonia[self.estado]["cantidad"]
+        p_ij = colonia[self.estado]["cantidad"]
+        """
+        Según [otero2008] la mortalidad de la pupa queda definida por la
+        siguiente formula:
+        """
+        return (mp + par * (1 - (ef / 2.0))) * p_ij

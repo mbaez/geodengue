@@ -48,7 +48,8 @@ class Simulador:
         self.periodo = kargs.get('periodo', [])
         # se inicializa la clase que hace log de los eventos
         codigo = kargs.get('codigo', '')
-        self.logger = EventLogger(1, codigo)
+        id_muestra = kargs.get('id_muestra', 1)
+        self.logger = EventLogger(id_muestra, codigo)
 
     def start(self):
         """
@@ -63,7 +64,7 @@ class Simulador:
             j = 0
             total_huevos = 0
             nueva_poblacion = []
-            print "=" * 5 + "Día Nro :" + str(i) + " poblacion :" + str(len(self.poblacion.individuos)) + "=" * 5
+            print "=" * 5 + "Día Nro :" + str(i) + " Temp : " + str(dia.temperatura) + " poblacion :" + str(len(self.poblacion.individuos)) + "=" * 5
 
             for individuo in self.poblacion.individuos:
                 poner_huevos = False
@@ -122,6 +123,8 @@ class Simulador:
                     args['periodo'] = i
                     args['huevos'] = cantidad_huevos
                     self.logger.add(args)
+                    if cantidad_huevos > 0:
+                        individuo.reset()
 
                 j += 1
             if len(nueva_poblacion) > 0:
@@ -146,7 +149,7 @@ if __name__ == "__main__":
     id_muestras = 1
 
     for temperatura in [15, 18, 20, 22, 24, 25, 26, 27, 30, 34]:
-    # for temperatura in [30]:
+    # for temperatura in [25]:
         print "=" * 10 + str(temperatura) + "=" * 10
         # se obtiene el historial climatico
         print "obteniendo los datos climaticos"
@@ -158,8 +161,9 @@ if __name__ == "__main__":
         data = dao.get_by(id_muestras)
         print "construyendo la grilla"
         #~ print data
-        codigo = 'temp=' + str(temperatura) + " p-cant-ali"
-        evol = Simulador(periodo=periodo, poblacion=data, codigo=codigo)
+        codigo = str(id_muestras) + ' temp=' + str(temperatura) + " ACUM"
+        evol = Simulador(id_muestra=id_muestras,
+                         periodo=periodo, poblacion=data, codigo=codigo)
 
         print "iniciando simulación"
         evol.start()

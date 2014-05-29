@@ -227,23 +227,28 @@ class Poblacion:
             # se actualiza el periodo
             grupo_estado["periodo"] = periodo
             # se calcula la mortalidad del individuo
+            # print str(grupo_estado)
             mortalidad = aedes.mortalidad(dia.temperatura, grupo)
             """
             se actualiza la canitdad de inviduos que deben desaparecer
             en el periodo.
             """
-            grupo_estado["to_kill"] = math.ceil(mortalidad)
-            # print str(grupo_estado["to_kill"]) + "\t" + str(cantidad)
+            delta = 0
+            if mortalidad > round(mortalidad):
+                delta = mortalidad - round(mortalidad)
+
+            grupo_estado["to_kill"] += round(mortalidad) + delta
+
             self.gen_candidatos(grupo_estado)
         else:
             grupo_estado["index"] += 1
 
         # se verifica si el elemento actual es un candidato a eliminar
         is_candidato = False
-        if grupo_estado["to_kill"] > 0:
+        if grupo_estado["to_kill"] >= 1:
             is_candidato = grupo_estado["index"] in grupo_estado["candidatos"]
 
-        return grupo_estado["to_kill"] > 0 and is_candidato
+        return grupo_estado["to_kill"] >= 1 and is_candidato
 
     def inhibicion(self, aedes, dia, periodo):
         """
@@ -294,8 +299,11 @@ class Poblacion:
         Se encarga de generar una lista aleatoria de candidatos de la
         población a ser eliminados.
         """
+        total = int(colonia["to_kill"])
+        if total > colonia["cantidad"]:
+            total = colonia["cantidad"]
         candidatos = []
-        for index in range(int(colonia["to_kill"])):
+        for index in range(total):
             candidato = randint(1, colonia["cantidad"])
             while candidato in candidatos:
                 candidato = randint(1, colonia["cantidad"])

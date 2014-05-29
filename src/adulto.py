@@ -226,14 +226,14 @@ class Adulto(AeAegypti):
         if self._cantidad_alimentacion == self._alimentacion_necesaria:
             self._se_alimenta = True
 
-    def calcular_cantidad_alimentacion(self):
+    def calcular_cantidad_alimentacion(self, is_frist=True):
         """
         Según "ESTUDIO DE LA LONGEVIDAD Y EL CICLO GONOTRÓFICO DEL Aedes
         (Stegomyia) aegypti (LINNAEUS, 1762), CEPA GIRARDOT (CUNDINAMARCA) EN
         CONDICIONES DE LABORATORIO"
         """
         prob_ovi = randint(0, 10000)
-        if prob_ovi <= 2256:
+        if prob_ovi <= 2256 and is_frist:
             """
             Se puede observar  que el  22,56%(23) de la población no realizó
             ninguna toma de sangre.
@@ -337,7 +337,7 @@ class Adulto(AeAegypti):
         """
         return False
 
-    def get_ciclo_gonotrofico(self, hora):
+    def get_ciclo_gonotrofico(self, dia):
         """
         El ciclo gonotrófrico de los mosquitos es el nombre que se le
         adjudico al período que existe desde que el mosquito chupa la
@@ -356,7 +356,7 @@ class Adulto(AeAegypti):
         else:
             coef = COEF_SH_DE.get_by(self.estado)
 
-        cantidad_dias = 1 / self.sharpe_demichele(hora.temperatura, coef[0])
+        cantidad_dias = 1 / self.sharpe_demichele(dia.temperatura, coef[0])
 
         return cantidad_dias
 
@@ -414,15 +414,23 @@ class Adulto(AeAegypti):
         Un solo mosquito hembra puede poner 80 a 150 huevos, cuatro veces
         al día.
         """
-        huevos = randint(MIN_HUEVOS, self._max_huevo)
-        # se reinicia el contador
+        cantidad = self.cantidad_alimentacion
+        min = MAX_HUEVOS - (MAX_HUEVOS * (5 - cantidad) / 5)
+        max = MAX_HUEVOS - (MIN_HUEVOS * (5 - cantidad) / cantidad)
+        huevos = randint(min, max)
+        self._cantidad_oviposicion += 1
+        return huevos
+
+    def reset(self):
+        """
+        Reinicia las variables de control
+        """
+        #
         self._ultima_oviposicion = 0
         self._se_alimenta = False
-        self._cantidad_oviposicion += 1
         self.__ciclo_gonotrofico = 0
+        self.calcular_cantidad_alimentacion(False)
         self._cantidad_alimentacion = 0
-
-        return huevos
 
     def volar(self, dia):
         """

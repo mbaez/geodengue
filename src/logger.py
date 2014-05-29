@@ -64,6 +64,7 @@ class EventLogger():
             args['is_inseminada'] = aedes.is_inseminada
             args['se_alimenta'] = aedes.se_alimenta
             args['se_reproduce'] = aedes.se_reproduce(dia)
+            args['ciclo_gonotrofico'] = aedes.get_ciclo_gonotrofico(dia)
             args['cantidad_huevos'] = kargs.get('huevos', 0)
             target_method = self.persist_adulto
         else:
@@ -96,6 +97,7 @@ class EventLogger():
             is_inseminada,
             se_alimenta,
             se_reproduce,
+            ciclo_gonotrofico,
             cantidad_huevos,
             estado,
             the_geom,
@@ -122,6 +124,7 @@ class EventLogger():
                 {is_inseminada},
                 {se_alimenta},
                 {se_reproduce},
+                {ciclo_gonotrofico},
                 {cantidad_huevos},
                 '{estado}',
                 ST_GeomFromText('POINT({x} {y})', 4326),

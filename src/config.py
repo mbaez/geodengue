@@ -48,7 +48,7 @@ API_DATA = {
 }
 # URLs de las fuentes de información de datos climaticos
 #~ API_URL = "http://api.openweathermap.org/data/2.5";
-API_URL = "http://localhost/geodengue/api.openweathermap.30-dias"
+API_URL = "http://localhost/geodengue/api.openweathermap.50-dias"
 #~ TUTIEMPO_URL = "http://localhost/geodengue/tutiempo.dom";
 #~ TUTIEMPO_URL = 'http://www.tutiempo.net/'
 
@@ -58,8 +58,8 @@ Configuraciones de las Zonas
 #~ El tamaño esta a un radio de 200 metros de la del punto de origen
 TAMANHO_ZONA = 400
 #~ la cantidad máxima de huevos que puede poner un indiviudo de una vez
-MAX_HUEVOS = 210
-MIN_HUEVOS = 30
+MAX_HUEVOS = 260
+MIN_HUEVOS = 45
 #~ cantidad de alimento que debe ingerir el individuo hasta estar satisfecho
 MAX_ALIMENTACION = 30
 MIN_VUELO = 100

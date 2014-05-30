@@ -146,7 +146,7 @@ if __name__ == "__main__":
     from models import *
     from tutiempo import *
 
-    id_muestras = 1
+    id_muestras = 2
 
     for temperatura in [15, 18, 20, 22, 24, 25, 26, 27, 30, 34]:
     # for temperatura in [25]:
@@ -161,7 +161,7 @@ if __name__ == "__main__":
         data = dao.get_by(id_muestras)
         print "construyendo la grilla"
         #~ print data
-        codigo = str(id_muestras) + ' temp=' + str(temperatura) + " ACUM"
+        codigo = str(id_muestras) + ' temp=' + str(temperatura)
         evol = Simulador(id_muestra=id_muestras,
                          periodo=periodo, poblacion=data, codigo=codigo)
 

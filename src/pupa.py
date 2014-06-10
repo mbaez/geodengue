@@ -99,4 +99,4 @@ class Pupa(AeAegypti):
         Según [otero2008] la mortalidad de la pupa queda definida por la
         siguiente formula:
         """
-        return (mp + par * (1 - (ef / 2.0))) * p_ij
+        return (mp + par * (1 - ef)) * p_ij

@@ -37,20 +37,21 @@ class RankingTable:
         30 > Pts  Normal
         20 > Pts  Mala
         8 > Pts   Pésima
+        "OPTIMA", "BUENA", "NORMAL", "MALA", "PESIMA"]
         """
-        if pts < 8:
+        if pts < 11:
             return Zonas.PESIMA
 
-        elif pts >= 8 and pts < 20:
+        elif pts >= 11 and pts < 23:
             return Zonas.MALA
 
-        elif pts >= 20 and pts < 30:
-            return Zonas.MALA
+        elif pts >= 23 and pts < 41:
+            return Zonas.NORMAL
 
-        elif pts >= 30 and pts < 60:
+        elif pts >= 41 and pts < 67:
             return Zonas.BUENA
 
-        elif pts >= 60:
+        elif pts >= 67:
             return Zonas.OPTIMA
 
     def gen_key(self, punto, distancia):
@@ -74,11 +75,7 @@ class RankingTable:
         #~ condiciones
         zona_muestras = DAO.get_within(point, distancia)
         if len(zona_muestras) == 0:
-            grupo = self.poblacion.get(point)
-            total = 0
-            for estado in grupo:
-                total += grupo[estado]["cantidad"]
-            return total
+            return 0
 
         sum_wi = 0
         _sum = 0
@@ -97,11 +94,29 @@ class RankingTable:
                 rank_value += (wi * ui) / sum_wi
                 _sum += ui
 
-        #~ print str(_sum/ len(zona_muestras)) + " \t "+ str(rank_value)
+        # print str(_sum / len(zona_muestras)) + " \t " + str(rank_value)
         #~ se calcula el promedio de riesgo
-        #~ rank_value = rank_value / len(zona_muestras)
+        rank_value = rank_value / len(zona_muestras)
 
         return rank_value
+
+    def lagrange_i(self, bs, i):
+        X = [0, 10.0, 23.0, 67.0, 100.0]
+        l_i = 1.0
+        for j in range(0, len(X)):
+            if j != i:
+                l_i *= (bs - X[j]) / (X[i] - X[j])
+        return l_i
+
+    def get_bs_ij(self, cantidad):
+        Y = [15.0, 15.0, 25.0, 50.0, 50.0]
+        if cantidad >= 100:
+            return 50
+
+        p_x = 0
+        for i in range(0, len(Y)):
+            p_x += self.lagrange_i(cantidad, i) * Y[i]
+        return p_x
 
     def get_ranking(self, punto, distancia):
         """
@@ -112,6 +127,6 @@ class RankingTable:
         key = self.gen_key(punto, distancia)
         if not self.memory.has_key(key):
             rank_value = self.raking_zona(punto, distancia)
-            self.memory[key] = rank_value
+            self.memory[key] = self.get_bs_ij(rank_value)
 
         return self.memory[key]

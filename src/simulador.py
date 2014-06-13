@@ -56,7 +56,7 @@ class Simulador:
         Se encarga de iniciar el simulador.
         """
         print self.poblacion
-        i = 0
+        dia_i = 0
         args = {}
         HUEVOS = True
         for dia in self.periodo.dias:
@@ -64,7 +64,7 @@ class Simulador:
             j = 0
             total_huevos = 0
             nueva_poblacion = []
-            print "=" * 5 + "Día Nro :" + str(i) + " Temp : " + str(dia.temperatura) + " poblacion :" + str(len(self.poblacion.individuos)) + "=" * 5
+            print "=" * 5 + "Día Nro :" + str(dia_i) + " Temp : " + str(dia.temperatura) + " poblacion :" + str(len(self.poblacion.individuos)) + "=" * 5
 
             for individuo in self.poblacion.individuos:
                 poner_huevos = False
@@ -73,13 +73,13 @@ class Simulador:
                 individuo.desarrollar(dia)
 
                 #~ Se verifica el estado del individuo
-                if self.poblacion.regular(individuo, dia, i):
+                if self.poblacion.regular(individuo, dia, dia_i):
                     """
                     si el individuo esta muerto se lo remueve de la poblacion
                     """
                     self.poblacion.kill(individuo)
 
-                elif self.poblacion.inhibicion(individuo, dia, i):
+                elif self.poblacion.inhibicion(individuo, dia, dia_i):
                     """
                     [otero2006] se inhibe el desarrollo de huevos por
                     influencia de las larvas
@@ -95,7 +95,7 @@ class Simulador:
                     args = {}
                     args['aedes'] = individuo
                     args['dia'] = dia
-                    args['periodo'] = i
+                    args['periodo'] = dia_i
                     args['huevos'] = cantidad_huevos
                     self.logger.add(args)
 
@@ -120,7 +120,7 @@ class Simulador:
                     args = {}
                     args['aedes'] = individuo
                     args['dia'] = dia
-                    args['periodo'] = i
+                    args['periodo'] = dia_i
                     args['huevos'] = cantidad_huevos
                     self.logger.add(args)
                     if cantidad_huevos > 0:
@@ -134,7 +134,7 @@ class Simulador:
             print str(self.poblacion)
 
             self.logger.save()
-            i += 1
+            dia_i += 1
 
         print 'Poblacion final'
         print str(self.poblacion)
@@ -149,7 +149,7 @@ if __name__ == "__main__":
     id_muestras = 2
 
     for temperatura in [15, 18, 20, 22, 24, 25, 26, 27, 30, 34]:
-    # for temperatura in [25]:
+    # for temperatura in [26, 27, 30, 34]:
         print "=" * 10 + str(temperatura) + "=" * 10
         # se obtiene el historial climatico
         print "obteniendo los datos climaticos"
@@ -161,7 +161,8 @@ if __name__ == "__main__":
         data = dao.get_by(id_muestras)
         print "construyendo la grilla"
         #~ print data
-        codigo = str(id_muestras) + ' temp=' + str(temperatura)
+        codigo = str(id_muestras) + ' temp=' + \
+            str(temperatura) + " D=1"
         evol = Simulador(id_muestra=id_muestras,
                          periodo=periodo, poblacion=data, codigo=codigo)
 

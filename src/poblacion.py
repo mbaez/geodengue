@@ -83,7 +83,7 @@ class Poblacion:
         posicion = kargs.get('posicion', Point(kargs))
         sub_poblacion = []
         # se inicializa la población
-        self.new_grupo(
+        colonia = self.new_grupo(
             posicion=posicion, cantidad=cantidad_larvas, estado=state)
 
         for cantidad in range(cantidad_larvas):
@@ -110,7 +110,8 @@ class Poblacion:
             #~ se genera la sub población de larvas
             sub_poblacion = self.gen_sub_poblacion(
                 cantidad_larvas=cantidad_larvas,
-                #madurez=randint(0, 90),
+                #madurez=randint(0, 90)
+                # madurez=90,
                 clazz=Larva,
                 x=grid.x[i], y=grid.y[i])
             self.individuos.extend(sub_poblacion)
@@ -318,8 +319,8 @@ class Poblacion:
         Se encarga de manejar el proceso de ovipostura del adulto hemba.
         """
         huevos = adulto.poner_huevos(dia)
-        self.total_huevos += huevos
         if huevos > 0:
+            self.total_huevos += huevos
             return self.gen_sub_poblacion(posicion=adulto.posicion,
                                           cantidad_larvas=huevos, id_padre=adulto.id_mosquito), huevos
         return [], huevos

@@ -46,7 +46,8 @@ class EventLogger():
         args['tiempo_madurez'] = aedes.tiempo_madurez
         args['tiempo_de_vida'] = aedes.tiempo_vida
         args['madurez'] = aedes.madurez
-        args['tipo_zona'] = dia.get_tipo_clima()
+        args['tipo_zona'] = aedes.get_tipo_zona()
+        args['bs'] = aedes.get_bs_ij()
         args['temperatura'] = dia.temperatura
         args['estado'] = aedes.estado
         args['edad'] = aedes.edad
@@ -56,9 +57,11 @@ class EventLogger():
         args['dia'] = periodo
         target_method = None
         if aedes.estado == Estado.ADULTO:
+            args['tipo_zona'] = aedes.tipo_zona
             args['ultima_oviposicion'] = aedes.ultima_oviposicion
             args['ultimo_alimento'] = aedes.ultimo_alimento
             args['distancia_recorrida'] = aedes.distancia_recorrida
+            args['desplazamiento_diario'] = aedes.desplazamiento_diario
             args['cantidad_oviposicion'] = aedes.cantidad_oviposicion
             args['cantidad_alimentacion'] = aedes.cantidad_alimentacion
             args['is_inseminada'] = aedes.is_inseminada
@@ -89,6 +92,7 @@ class EventLogger():
             tiempo_madurez,
             madurez,
             tipo_zona,
+            bs,
             ultima_oviposicion,
             ultimo_alimento,
             distancia_recorrida,
@@ -116,6 +120,7 @@ class EventLogger():
                 {tiempo_madurez},
                 {madurez},
                 '{tipo_zona}',
+                {bs},
                 {ultima_oviposicion},
                 {ultimo_alimento},
                 {distancia_recorrida},
@@ -153,6 +158,7 @@ class EventLogger():
             tiempo_madurez,
             madurez,
             tipo_zona,
+            bs,
             estado,
             the_geom,
             fecha,
@@ -170,6 +176,7 @@ class EventLogger():
             {tiempo_madurez},
             {madurez},
             '{tipo_zona}',
+            {bs},
             '{estado}',
             ST_GeomFromText('POINT({x} {y})', 4326),
             now(),

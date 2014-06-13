@@ -129,6 +129,13 @@ class Adulto(AeAegypti):
         """
         return self._is_inseminada
 
+    @property
+    def tipo_zona(self):
+        """
+        Indica el tipo de zona en la que se encuentra el individuo
+        """
+        return self._tipo_zona
+
     def __init__(self, **kargs):
         """
         @param kargs: Parametros de inicialización de la clase
@@ -158,6 +165,7 @@ class Adulto(AeAegypti):
         self.__buscando_criaderos = False
         self.__ciclo_gonotrofico = 0
         self.calcular_cantidad_alimentacion()
+        self._tipo_zona = self.get_tipo_zona()
 
     def se_reproduce(self, dia):
         """
@@ -199,6 +207,7 @@ class Adulto(AeAegypti):
         self._edad += 1
         self.inseminacion(dia)
         # se ranquea la zona
+        self._tipo_zona = self.get_tipo_zona()
 
         if dia.temperatura > 15:
             self.volar(dia)

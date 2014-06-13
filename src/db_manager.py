@@ -412,6 +412,7 @@ class LayersDao:
         cursor = self.db.query(sql_string, layer)
         return cursor
 
+
 class ReporteDao:
 
     """
@@ -533,7 +534,7 @@ class ReporteDao:
             group by estado
         """
          # se construye el diccionario que contiene los parametros del query.
-        cursor = self.db.query(sql_string, {"dia" : dia})
+        cursor = self.db.query(sql_string, {"dia": dia})
         return self.db.to_dict(cursor)
 
     def get_tiempo_promedio_de_vida(self, estado):
@@ -571,7 +572,7 @@ class ReporteDao:
             and id_mosquito_padre != 0) y;
         """
          # se construye el diccionario que contiene los parametros del query.
-        cursor = self.db.query(sql_string, {"estado" : estado})
+        cursor = self.db.query(sql_string, {"estado": estado})
         return self.db.to_dict(cursor)
 
     def get_cantidad_promedio_de_huevo(self):
@@ -614,6 +615,33 @@ class ReporteDao:
         return self.db.to_dict(cursor)
 
 
+class ConfiguracionesDao:
+
+    """
+    """
+
+    def __init__(self):
+        self.db = DBManager()
+
+    def get_all(self):
+        """
+
+        SELECT id_muestra, layer_name,  fecha
+            FROM configuraciones
+
+        @rtype  Dictionaries
+        @return Un diccionario con el resultado de la consulta
+        """
+        # se definie el query de la consulta.
+        sql_string = """
+        SELECT id, clave, valor
+            FROM configuraciones
+        """
+        # se construye el diccionario que contiene los parametros del query.
+        cursor = self.db.query(sql_string)
+        return self.db.to_dict(cursor)
+
+
 if __name__ == "__main__":
     #~ dic = da.get_by(1)
     #a = PuntosRiesgoDao()
@@ -623,10 +651,10 @@ if __name__ == "__main__":
     #~ cursor = a.persist({'id_muestra': 1, 'descripcion': 'test'})
     #~ print cursor.fetchone()[0]
 
-    dao = ReporteDao()
+    dao = ConfiguracionesDao()
     #~ print dao.get_poblacion_por_dia()
     #~ print '--------------------------'
     #~ print dao.get_poblacion_nueva_por_dia()
     #~ print '--------------------------'
     #~ print dao.get_poblacion_inicial_por_dia()
-    print dao.get_distribucion_de_sexo()
+    print dao.get_all()

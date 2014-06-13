@@ -97,6 +97,13 @@ class AeAegypti:
         return self._zonas
 
     @property
+    def colonia(self):
+        """
+        Amacena la referencia a la colonia de la que proviene el individuo
+        """
+        return self._colonia
+
+    @property
     def id_mosquito(self):
         """
         Campo para validar individualmente el proceso evolutivo de un
@@ -129,6 +136,7 @@ class AeAegypti:
         self._sexo = kargs.get('sexo', None)
         self._estado = kargs.get('estado', None)
         self._zonas = kargs.get('zonas', None)
+        self._colonia = kargs.get('colonia', None)
         if kargs.has_key('posicion'):
             self._posicion = kargs.get('posicion', None)
         else:
@@ -158,13 +166,16 @@ class AeAegypti:
         """
         return self.madurez >= 100
 
-    def rank_zona(self):
+    def get_bs_ij(self):
         """
-        Calcula el tipo de zona en la que se encuentra el mosquito
+        Calcula el valor de bs teniendo en cuenta la densidad larvaria de la
+        zona.
         """
-        #~ se calcula el puntaje de la zona
-        pts = self.zonas.get_ranking(self.posicion, TAMANHO_ZONA)
         #~ se retorna el tipo de zona
+        return self.zonas.get_ranking(self.posicion, TAMANHO_ZONA)
+
+    def get_tipo_zona(self):
+        pts = self.get_bs_ij()
         return self.zonas.get_tipo_zona(pts)
 
     def get_madurez_zona(self, hora):
@@ -202,5 +213,4 @@ class AeAegypti:
             " \nedad=" + str(self.edad / 24.0) + \
             " \nubicacion=" + str(self.posicion) + \
             " \ntiempo_madurez=" + str(self.tiempo_madurez) + \
-            " \nmadurez=" + str(self.madurez) + \
-            " \nzonas= " + str(self.rank_zona())
+            " \nmadurez=" + str(self.madurez)

@@ -90,7 +90,8 @@ class Huevo(AeAegypti):
         H = colonia[Estado.HUEVO]["cantidad"]
         L = colonia[Estado.LARVA]["cantidad"]
         a_0 = 0.5
-        omega = L / BS
+        bs_ij = self.get_bs_ij()
+        omega = L / bs_ij
         if omega < a_0:
             omega = 0
         else:

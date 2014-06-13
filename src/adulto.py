@@ -98,6 +98,10 @@ class Adulto(AeAegypti):
         return self.__no_pone_huevos
 
     @property
+    def buscando_criaderos(self):
+        return self.__buscando_criaderos
+
+    @property
     def se_alimenta(self):
         """
         Boolean que determina si se alimento o no
@@ -110,6 +114,13 @@ class Adulto(AeAegypti):
         La distancia en metros recorrida por el mosquito adulto.
         """
         return self._distancia_recorrida
+
+    @property
+    def desplazamiento_diario(self):
+        """
+        La distancia en metros recorrida por el mosquito adulto.
+        """
+        return self._desplazamiento_diario
 
     @property
     def is_inseminada(self):
@@ -133,7 +144,9 @@ class Adulto(AeAegypti):
         self.posicion_origen = self.posicion.clone()
         self._ultima_oviposicion = 1
         self._ultimo_alimento = 1
+        self._dias_vuelo = 0
         self._distancia_recorrida = 0
+        self._desplazamiento_diario = 0
         self._cantidad_oviposicion = 0
         self._cantidad_alimentacion = 0
         self._alimentacion_necesaria = 0
@@ -142,6 +155,7 @@ class Adulto(AeAegypti):
         self._se_reproduce = False
         self.__no_pone_huevos = False
         self.__no_se_alimenta = False
+        self.__buscando_criaderos = False
         self.__ciclo_gonotrofico = 0
         self.calcular_cantidad_alimentacion()
 
@@ -208,6 +222,8 @@ class Adulto(AeAegypti):
         @param dia: el objeto que contiene los datos climatologicos para
             un dia.
         """
+        if self.buscando_criaderos == True:
+            return
 
         self._ultimo_alimento += 1
 
@@ -375,8 +391,20 @@ class Adulto(AeAegypti):
             un dia.
         """
         huevos = 0
+        if self.buscando_criaderos == True:
+            """
+            The Anopheles mosquito can fly for up to four hours continuously
+            at 1–2 km/h ,traveling up to 12 km (7.5 mi) in a night.
+            """
+            horas_vuelo = randint(1, 4)
+            self._dias_vuelo += 1
+            for hora in range(0, horas_vuelo):
+                self.volar(dia)
+                huevos = self.generar_huevos(dia)
+                if self.buscando_criaderos == False:
+                    return huevos
 
-        if self.no_pone_huevos == True:
+        elif self.no_pone_huevos == True:
             return -1
 
         """
@@ -398,11 +426,11 @@ class Adulto(AeAegypti):
         #~ se realizan los controles de las condiciones
         if self.ciclo_gonotrofico >= 100 \
             and self.cantidad_alimentacion >= 1:
-            huevos = self.generar_huevos()
+            huevos = self.generar_huevos(dia)
 
         return huevos
 
-    def generar_huevos(self):
+    def generar_huevos(self, dia):
         """
         Su ciclo para poner huevos es de aproximadamente cada tres días a
         cuatro días.
@@ -414,18 +442,25 @@ class Adulto(AeAegypti):
         Un solo mosquito hembra puede poner 80 a 150 huevos, cuatro veces
         al día.
         """
-        cantidad = self.cantidad_alimentacion
-        min = MAX_HUEVOS - (MAX_HUEVOS * (5 - cantidad) / 5)
-        max = MAX_HUEVOS - (MIN_HUEVOS * (5 - cantidad) / cantidad)
-        huevos = randint(min, max)
+        tipo = self.get_tipo_zona()
+        if self._dias_vuelo >= MAX_DIAS_VUELO:
+            self._dias_vuelo = 0
+        elif tipo == Zonas.MALA or tipo == Zonas.PESIMA:
+            # print "seguir buscando.."
+            self.__buscando_criaderos = True
+            return 0
+        # print "busqueda done.."
+        self.__buscando_criaderos = False
         self._cantidad_oviposicion += 1
-        return huevos
+        return 63
 
     def reset(self):
         """
         Reinicia las variables de control
         """
-        #
+        if self.buscando_criaderos == True:
+            return
+
         self._ultima_oviposicion = 0
         self._se_alimenta = False
         self.__ciclo_gonotrofico = 0
@@ -452,17 +487,14 @@ class Adulto(AeAegypti):
         es capaz de volar hasta tres kilómetros en busca de este sitio.
         Los machos suelen dispersarse en menor magnitud que las hembras
 
-        En un ensayo de laboratorio, con viento en calma mosquitos
-        Ae. aegypti se desplazan a 17 cm/s, al introducir viento en contra
-        de 33 cm/s, incrementaron su velocidad para contrarrestarle disminuyendo
-        su avance a 16 cm/s, lo que implica un esfuerzo de desplazamiento
-        como si hubieran volado a 49 cm/s, por consiguiente volar con
-        viento de mayor velocidad le representa un mayor esfuerzo y suelen
-        hacerlo (Kettle, 1993).
         """
+        dist_vuelo = MIN_VUELO
+        if self.buscando_criaderos == True:
+            dist_vuelo = MAX_VUELO
+
         # Se calcula la distancia desde la posición actual a la origen
         distancia_origen = self.posicion.distance_to(self.posicion_origen)
-        if distancia_origen >= MIN_VUELO:
+        if distancia_origen >= dist_vuelo:
             angulo = self.posicion_origen.angle_to(self.posicion)
             # se modifica el sentido del angulo de vuelo
             angulo_vuelo = angulo + 180
@@ -483,41 +515,8 @@ class Adulto(AeAegypti):
         """
         distancia = velocidad
         self._distancia_recorrida += distancia
+        self._desplazamiento_diario = distancia
         self.posicion.move(velocidad, angulo_vuelo)
-
-    def move_to_neighbors(self):
-        """
-        Este método se encarga de evaluar el vecino inmediato y comparalo
-        con el valor de la posicion actual, si el vecino posee un puntaje
-        mayor que el puntaje actual retorna true.
-
-        En caso de no haber recipientes adecuados, la hembra grávida
-        es capaz de volar hasta tres kilómetros en busca de este sitio.
-        Los machos suelen dispersarse en menor magnitud que las hembras
-
-        Son muchos los factores que afectan el vuelo de los mosquitos:
-
-        1. disponibilidad de sitios resguardados del sol,
-        2. disponibilidad de vegetación y fuentes de néctar,
-        3. ubicación, cantidad y disponibilidad de sitios de cría,
-        4. dirección del viento,
-        5. lluvias,
-        6. urbanización,
-        7. fuentes para la ingesta de sangre
-        8. estado del mosquito: recién emergido, hembras grávidas, edad,
-            nivel de alimentación, etc.
-
-        @return True si el vecino posee una mayor puntación, False en caso
-            contrario.
-        @rtype Boolean
-        """
-        #~ se evalua la zona
-        rank = self.rank_zona()
-        #~ se verifica el estado de la zona
-        if rank == Zonas.MALA or rank == Zonas.PESIMA:
-            return True
-
-        return False
 
     def velocidad_vuelo(self, hora, angulo_vuelo):
         """
@@ -531,8 +530,10 @@ class Adulto(AeAegypti):
         The Anopheles mosquito can fly for up to four hours continuously
         at 1–2 km/h ,traveling up to 12 km (7.5 mi) in a night.
         """
-
         speed = randint(0, MIN_VUELO)
+        if self.buscando_criaderos == True:
+            speed = randint(MIN_VUELO, MAX_VEL)
+
         wind_speed = hora.viento
 
         """
@@ -562,30 +563,3 @@ class Adulto(AeAegypti):
         """
 
         return 0.09 * colonia[self.estado]["cantidad"]
-
-    def test(self):
-        """
-        Según ANDREA MARCELA CONDE OSORIO en "ESTUDIO DE LA LONGEVIDAD Y EL
-        CICLO GONOTRÓFICO DEL Aedes (Stegomyia) aegypti (LINNAEUS, 1762), CEPA
-        GIRARDOT (CUNDINAMARCA) EN CONDICIONES DE LABORATORIO" se puede
-        observar los siguientes valores descriptivos referentes a longevidad
-        en los diferentes tratamientos (tomas de sangre)
-
-        N      %
-        -------------------------------------------------------------
-        134   22,56   Ninguna toma de sangre
-        259   43,6    Una toma de sangre durante su tiempo de vida.
-        98    16,5    Dos toma de sangre durante su tiempo de vida.
-        50    8,42    Tres toma de sangre durante su tiempo de vida.
-        41    6,9     Cuatro toma de sangre durante su tiempo de vida.
-        12    2,02    Cinco toma de sangre durante su tiempo de vida.
-        594   100     Total
-
-        El 21, 9% de los 259 mosquitos que tomaron una ingesta de sangre no
-        realizaron ovoposturas.
-
-        134       22,56   Ninguna toma de sangre
-        56,721    9,55    Realizaron una toma de sangre y no ponen huevos
-        190,721   32,11   En total no realizaron oviposturas.
-        """
-        pass

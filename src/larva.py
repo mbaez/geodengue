@@ -90,8 +90,21 @@ class Larva(AeAegypti):
         ml = 0.01 + 0.9725 * math.exp(-(k - 278) / 2.7035)
 
         L = colonia[self.estado]["cantidad"]
-        L_ant = colonia[self.estado]["cantidad_ant"]
-        m = ml * L + (ALPHA / BS) * L_ant * L
+        """
+        Marcelo Otero:
+        El termino L-1 corresponde a la competencia intraespecífica en el
+        estadío larval. Si tengo L larvas, entonces una larva cualquiera
+        interactua no con las L larvas sino con L-1 larvas ya que no
+        interactua consigo misma. Por eso el término de interacción no lineal
+        es L*(L-1). Esto se debe también debido a que las poblaciones son
+        discretas, es decir la población de larvas solo puede tomar valores en
+        los naturales incluyendo el 0. Entonces si la población de larvas es
+        una sola larva, el término no lineal es L*(L-1) = 1*(1-1) = 0.
+        Conclusión, si hay una sola larva, no hay competencia intraespecífica.
+        """
+        bs_ij = self.get_bs_ij()
+        m = ml * L + (ALPHA / bs_ij) * L * (L - 1)
+
         colonia[self.estado]["cantidad_ant"] = m
         # innivición de eclosión de huevos
         return m

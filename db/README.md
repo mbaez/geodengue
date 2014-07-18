@@ -63,4 +63,5 @@ Crear indices
 CREATE INDEX evolucion_log_idx_codigo ON evolucion_log (codigo);
 CREATE INDEX evolucion_log_idx_estado ON evolucion_log (estado);
 CREATE INDEX evolucion_log_idx_muestra ON evolucion_log (id_muestra);
+CREATE INDEX evolucion_log_idx_temperatura ON evolucion_log (temperatura);
 ```

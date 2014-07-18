@@ -38,8 +38,8 @@ class EventLogger():
         args = {}
         args['codigo'] = self.__codigo
         args['id_muestra'] = self.id_muestra
-
         args['id_mosquito'] = aedes.id_mosquito
+        args['id_colonia'] = aedes.id_colonia
         args['id_mosquito_padre'] = aedes.id_padre
         args['sexo'] = aedes.sexo
         args['expectativa_de_vida'] = aedes.expectativa_vida
@@ -67,7 +67,7 @@ class EventLogger():
             args['is_inseminada'] = aedes.is_inseminada
             args['se_alimenta'] = aedes.se_alimenta
             args['se_reproduce'] = aedes.se_reproduce(dia)
-            args['ciclo_gonotrofico'] = aedes.get_ciclo_gonotrofico(dia)
+            args['ciclo_gonotrofico'] = aedes.ciclo_gonotrofico
             args['cantidad_huevos'] = kargs.get('huevos', 0)
             target_method = self.persist_adulto
         else:
@@ -82,6 +82,7 @@ class EventLogger():
         sql_string = """
         INSERT INTO public.evolucion_log(
             id_mosquito,
+            id_colonia,
             id_mosquito_padre,
             id_muestra,
             codigo,
@@ -110,6 +111,7 @@ class EventLogger():
             edad)
             VALUES (
                 {id_mosquito},
+                '{id_colonia}',
                 {id_mosquito_padre},
                 {id_muestra},
                 '{codigo}',
@@ -148,6 +150,7 @@ class EventLogger():
         sql_string = """
         INSERT INTO public.evolucion_log(
             id_mosquito,
+            id_colonia,
             id_mosquito_padre,
             id_muestra,
             codigo,
@@ -166,6 +169,7 @@ class EventLogger():
             edad
         ) VALUES (
             {id_mosquito},
+            '{id_colonia}',
             {id_mosquito_padre},
             {id_muestra},
             '{codigo}',

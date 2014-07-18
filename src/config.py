@@ -56,7 +56,7 @@ API_URL = "http://localhost/geodengue/api.openweathermap.50-dias"
 Configuraciones de las Zonas
 """
 #~ El tamaño esta a un radio de 200 metros de la del punto de origen
-TAMANHO_ZONA = 150
+TAMANHO_ZONA = 200
 #~ la cantidad máxima de huevos que puede poner un indiviudo de una vez
 MAX_HUEVOS = 260
 MIN_HUEVOS = 0

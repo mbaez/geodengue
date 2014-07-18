@@ -81,6 +81,7 @@ class Poblacion:
         # se determina el tipo de individuo a instanciar
         clazz = kargs.get('clazz', Huevo)
         posicion = kargs.get('posicion', Point(kargs))
+        id_colonia = self.gen_key(posicion)
         sub_poblacion = []
         # se inicializa la población
         colonia = self.new_grupo(
@@ -88,7 +89,7 @@ class Poblacion:
 
         for cantidad in range(cantidad_larvas):
             indv = clazz(posicion=posicion, zonas=self.zonas_table,
-                         madurez=madurez, id_padre=id_padre)
+                         madurez=madurez, id_padre=id_padre, id_colonia=id_colonia)
             # id del mosquito
             indv._id_mosquito = Poblacion.ID
             Poblacion.ID += 1
@@ -141,7 +142,8 @@ class Poblacion:
         grupo[next_state[aedes.estado]]["cantidad"] += 1
 
         return clazz[aedes.estado](sexo=aedes.sexo, posicion=aedes.posicion,
-                                   zonas=self.zonas_table, id=aedes.id_mosquito, id_padre=aedes.id_padre)
+                                   zonas=self.zonas_table, id=aedes.id_mosquito,
+                                   id_padre=aedes.id_padre, id_colonia=aedes.id_colonia)
 
     def gen_key(self, punto):
         """

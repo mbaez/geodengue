@@ -79,13 +79,6 @@ class Simulador:
                     """
                     self.poblacion.kill(individuo)
 
-                elif self.poblacion.inhibicion(individuo, dia, dia_i):
-                    """
-                    [otero2006] se inhibe el desarrollo de huevos por
-                    influencia de las larvas
-                    """
-                    self.poblacion.kill_inhibicion(individuo)
-
                 elif individuo.esta_maduro() == True:
                     """
                     si el individuo esta maduro, se realiza el cambio de
@@ -149,7 +142,7 @@ if __name__ == "__main__":
     id_muestras = 2
 
     for temperatura in [15, 18, 20, 22, 24, 25, 26, 27, 30, 34]:
-    # for temperatura in [26, 27, 30, 34]:
+    # for temperatura in [30]:
         print "=" * 10 + str(temperatura) + "=" * 10
         # se obtiene el historial climatico
         print "obteniendo los datos climaticos"
@@ -162,7 +155,7 @@ if __name__ == "__main__":
         print "construyendo la grilla"
         #~ print data
         codigo = str(id_muestras) + ' temp=' + \
-            str(temperatura) + " D=1"
+            str(temperatura) + " ID_COLONIA"
         evol = Simulador(id_muestra=id_muestras,
                          periodo=periodo, poblacion=data, codigo=codigo)
 

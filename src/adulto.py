@@ -439,7 +439,7 @@ class Adulto(AeAegypti):
         """
         # print "busqueda done.."
         self._cantidad_oviposicion += 1
-        return 63
+        return randint(MIN_HUEVOS, MAX_HUEVOS)
 
     def reset(self):
         """

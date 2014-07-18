@@ -32,26 +32,27 @@ class RankingTable:
 
     def get_tipo_zona(self, pts):
         """
-        60 < Pts  Optima
-        60 > Pts  Buena
-        30 > Pts  Normal
-        20 > Pts  Mala
-        8 > Pts   Pésima
-        "OPTIMA", "BUENA", "NORMAL", "MALA", "PESIMA"]
+                     & Mínimo$^a$ & Máximo$^a$ & Hembras     & Hembras$^c$ \\
+        Tipo de zona & $u(x,y)$   & $u(x,y)$   & Adultas$^b$ & Reproductivas$^c$ \\
+        Pésima       &     0      &    19      &      8      & 5
+        Mala         &     20     &    35      &      15     & 10
+        Regular      &     36     &    51      &      22     & 15
+        Buena        &     52     &    69      &      30     & 20
+        Óptima       &     70     &
         """
-        if pts < 11:
+        if pts <= 19:
             return Zonas.PESIMA
 
-        elif pts >= 11 and pts < 23:
+        elif pts >= 20 and pts <= 35:
             return Zonas.MALA
 
-        elif pts >= 23 and pts < 41:
+        elif pts >= 36 and pts <= 51:
             return Zonas.NORMAL
 
-        elif pts >= 41 and pts < 67:
+        elif pts >= 52 and pts < 69:
             return Zonas.BUENA
 
-        elif pts >= 67:
+        elif pts >= 70:
             return Zonas.OPTIMA
 
     def gen_key(self, punto, distancia):
@@ -101,7 +102,11 @@ class RankingTable:
         return rank_value
 
     def lagrange_i(self, bs, i):
-        X = [0, 10.0, 23.0, 67.0, 100.0]
+        """
+        Los valores conocidos de las densidades $19$, $51$ y $70$ son $bs_{min}$, $bs_{med}$ y
+        $bs_{max}$.
+        """
+        X = [0, 19, 51, 70]
         l_i = 1.0
         for j in range(0, len(X)):
             if j != i:
@@ -109,10 +114,21 @@ class RankingTable:
         return l_i
 
     def get_bs_ij(self, cantidad):
-        Y = [15.0, 15.0, 25.0, 50.0, 50.0]
-        if cantidad >= 100:
-            return 50
+        """
+        Consideramos un polinomio de grado 3, con los para $u_0$, $u_1$ y $u_2$ igual a $19$, $51$
+        y $70$, correspondientes a zonas del tipo pésima, regular y óptima. Los valores conocidos
+        de las densidades $19$, $51$ y $70$ son $bs_{min}$, $bs_{med}$ y $bs_{max}$
+        respectivamente, estos son parámetros configurables del modelo donde $bs_{min}$ representa
+        el menor $BS$ observado, $bs_{max}$ representa el mayor $BS$ observado y  $bs_{med}$ es el
+        valor medio exitente entre $bs_{max}$ y $bs_{min}$.
+        """
+        bs_min = 15
+        bs_med = 32.5
+        bs_max = 50
 
+        Y = [bs_min, bs_min, bs_med, bs_max]
+        if cantidad >= 70:
+            return bs_max
         p_x = 0
         for i in range(0, len(Y)):
             p_x += self.lagrange_i(cantidad, i) * Y[i]

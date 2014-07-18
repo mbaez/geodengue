@@ -56,14 +56,11 @@ class Geoserver:
 
         @keyword tipo: El tipo de layer a genear (inst|evol)
         @keyword id_muestra: El identificador de la muestra de origen
+        @keyword codigo: El codigo correspondiente al proceso evolutivo
         """
-        dao = MuestraModel()
-        muestra = dao.get_by(args['id_muestra'])
-        # se setea la fecha de inicio
-        args["inicio"] = muestra[0]['fecha']
         args["fin"] = datetime.date.today()
         # se construye el template del layer
-        layer_name = "raster_{tipo}_{id_muestra}_{inicio}_{fin}"
+        layer_name = "raster_{tipo}_{id_muestra}_{codigo}_{fin}"
         return layer_name.format(**args)
 
     def make_request(self, path, data, method="POST"):
@@ -115,8 +112,8 @@ class Geoserver:
         """
         Este método se encarga de genear el archivo de forma temporal
         """
-        path = '/var/www/geodengue_server'
-        name = path + "/data/{0}.tmp".format(name)
+        path = '/var/www/coverages/'
+        name = path + "{0}.asc".format(name)
         fo = open(name, "wb")
         fo.write(content)
         fo.close()

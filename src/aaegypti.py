@@ -104,6 +104,13 @@ class AeAegypti:
         return self._colonia
 
     @property
+    def id_colonia(self):
+        """
+        Amacena la referencia a la colonia de la que proviene el individuo
+        """
+        return self._id_colonia
+
+    @property
     def id_mosquito(self):
         """
         Campo para validar individualmente el proceso evolutivo de un
@@ -137,6 +144,7 @@ class AeAegypti:
         self._estado = kargs.get('estado', None)
         self._zonas = kargs.get('zonas', None)
         self._colonia = kargs.get('colonia', None)
+        self._id_colonia = kargs.get('id_colonia', None)
         if kargs.has_key('posicion'):
             self._posicion = kargs.get('posicion', None)
         else:

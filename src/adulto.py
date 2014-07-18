@@ -165,7 +165,7 @@ class Adulto(AeAegypti):
         self.__buscando_criaderos = False
         self.__ciclo_gonotrofico = 0
         self.calcular_cantidad_alimentacion()
-        self._tipo_zona = self.get_tipo_zona()
+        self._tipo_zona = None
 
     def se_reproduce(self, dia):
         """
@@ -231,8 +231,6 @@ class Adulto(AeAegypti):
         @param dia: el objeto que contiene los datos climatologicos para
             un dia.
         """
-        if self.buscando_criaderos == True:
-            return
 
         self._ultimo_alimento += 1
 
@@ -400,20 +398,8 @@ class Adulto(AeAegypti):
             un dia.
         """
         huevos = 0
-        if self.buscando_criaderos == True:
-            """
-            The Anopheles mosquito can fly for up to four hours continuously
-            at 1–2 km/h ,traveling up to 12 km (7.5 mi) in a night.
-            """
-            horas_vuelo = randint(1, 4)
-            self._dias_vuelo += 1
-            for hora in range(0, horas_vuelo):
-                self.volar(dia)
-                huevos = self.generar_huevos(dia)
-                if self.buscando_criaderos == False:
-                    return huevos
 
-        elif self.no_pone_huevos == True:
+        if self.no_pone_huevos == True:
             return -1
 
         """
@@ -451,15 +437,7 @@ class Adulto(AeAegypti):
         Un solo mosquito hembra puede poner 80 a 150 huevos, cuatro veces
         al día.
         """
-        tipo = self.get_tipo_zona()
-        if self._dias_vuelo >= MAX_DIAS_VUELO:
-            self._dias_vuelo = 0
-        elif tipo == Zonas.MALA or tipo == Zonas.PESIMA:
-            # print "seguir buscando.."
-            self.__buscando_criaderos = True
-            return 0
         # print "busqueda done.."
-        self.__buscando_criaderos = False
         self._cantidad_oviposicion += 1
         return 63
 
@@ -467,8 +445,6 @@ class Adulto(AeAegypti):
         """
         Reinicia las variables de control
         """
-        if self.buscando_criaderos == True:
-            return
 
         self._ultima_oviposicion = 0
         self._se_alimenta = False
@@ -498,7 +474,10 @@ class Adulto(AeAegypti):
 
         """
         dist_vuelo = MIN_VUELO
-        if self.buscando_criaderos == True:
+
+        tipo = self.get_tipo_zona()
+
+        if self.sexo == Sexo.HEMBRA and (tipo == Zonas.MALA or tipo == Zonas.PESIMA):
             dist_vuelo = MAX_VUELO
 
         # Se calcula la distancia desde la posición actual a la origen
@@ -540,7 +519,10 @@ class Adulto(AeAegypti):
         at 1–2 km/h ,traveling up to 12 km (7.5 mi) in a night.
         """
         speed = randint(0, MIN_VUELO)
-        if self.buscando_criaderos == True:
+
+        tipo = self.get_tipo_zona()
+        if self.sexo == Sexo.HEMBRA and (tipo == Zonas.MALA or tipo == Zonas.PESIMA):
+            dist_vuelo = MAX_VUELO
             speed = randint(MIN_VUELO, MAX_VEL)
 
         wind_speed = hora.viento

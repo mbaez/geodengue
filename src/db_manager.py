@@ -429,189 +429,268 @@ class ReporteDao:
     def __init__(self):
         self.db = DBManager()
 
-    def get_poblacion_inicial_por_dia(self):
+    def get_codigos_by_muestra(self, id_muestra):
         """
-        Se encarga de obtener los datos sobre la cantidad de individuos
-        vivos de la poblacion inicial por dia de la tabla de
-        evolucion_log
+        Se encarga de obtener la lista de códigos exitentes para un id de muestra especificado
+        previamente.
 
-            select dia, count(*)
-            from evolucion_log
-            where expectativa_de_vida != 0
-            and id_mosquito_padre = 0
-            group by dia
-            order by dia
-
-        @rtype  Dictionaries
-        @return Un diccionario con el resultado de la consulta
+            SELECT DISTINCT codigo
+            FROM evolucion_log
+            WHERE id_muestra = %(id_muestra)s
         """
         # se definie el query de la consulta.
         sql_string = """
-            select dia, count(*)
-            from evolucion_log
-            where expectativa_de_vida != 0
-            and id_mosquito_padre = 0
-            group by dia
-            order by dia
+            SELECT DISTINCT codigo
+            FROM evolucion_log
+            WHERE id_muestra = %(id_muestra)s
         """
         # se construye el diccionario que contiene los parametros del query.
-        cursor = self.db.query(sql_string)
+        cursor = self.db.query(sql_string, {"id_muestra": id_muestra})
         return self.db.to_dict(cursor)
 
-    def get_poblacion_nueva_por_dia(self):
+    def get_tasa_desarrollo(self, codigo):
         """
-        Se encarga de obtener los datos sobre la cantidad de individuos
-        vivos de la nueva por dia de la tabla de evolucion_log
-
-            select dia, count(*)
-            from evolucion_log
-            where expectativa_de_vida != 0
-            and id_mosquito_padre != 0
-            group by dia
-            order by dia
-
-        @rtype  Dictionaries
-        @return Un diccionario con el resultado de la consulta
+        Se encarga de calcular la tasa de desarrollo diaria para todas la estapas del ciclo de vida
+        del mosquito.
         """
-        # se definie el query de la consulta.
+
         sql_string = """
-            select dia, count(*)
-            from evolucion_log
-            where expectativa_de_vida != 0
-            and id_mosquito_padre != 0
-            group by dia
-            order by dia
+        select * from (
+            select x.codigo, x.estado, round (sum(x.c - x.m)*1.0/count(x),2) as dias
+            from(
+                select codigo,estado, min(dia) as m, max(dia) as c
+                from evolucion_log tmp
+                where estado = 'HUEVO'
+                and expectativa_de_vida != 0
+                and exists (
+                    select *
+                    from evolucion_log
+                    where id_mosquito = tmp.id_mosquito and estado = 'LARVA'
+                    and codigo = tmp.codigo
+                )
+                group by codigo, id_mosquito, estado
+                order by id_mosquito
+            ) x
+            group by x.codigo,x.estado
+            UNION
+            select x.codigo, x.estado, round (sum(x.c - x.m)*1.0/count(x),2) as dias
+            from(
+                select codigo,estado, min(dia) as m, max(dia) as c
+                from evolucion_log tmp
+                where estado = 'LARVA'
+                and expectativa_de_vida != 0
+                and exists (
+                    select *
+                    from evolucion_log
+                    where id_mosquito = tmp.id_mosquito and estado = 'PUPA'
+                    and codigo = tmp.codigo
+                )
+                group by codigo, id_mosquito, estado
+                order by id_mosquito
+            ) x
+            group by x.codigo,x.estado
+            UNION
+            select x.codigo, x.estado, round (sum(x.c - x.m)*1.0/count(x),2) as dias
+            from(
+                select codigo,estado, min(dia) as m, max(dia) as c
+                from evolucion_log tmp
+                where estado = 'PUPA'
+                and expectativa_de_vida != 0
+                and exists (
+                    select *
+                    from evolucion_log
+                    where id_mosquito = tmp.id_mosquito and estado = 'ADULTO'
+                    and codigo = tmp.codigo
+                )
+                group by codigo, id_mosquito, estado
+                order by id_mosquito
+            ) x
+            group by x.codigo,x.estado
+            UNION
+            select x.codigo, x.estado, round (sum(x.c - x.m)*1.0/count(x),2) as dias
+            from(
+                select codigo,estado, min(dia) as m, max(dia) as c
+                from evolucion_log tmp
+                where estado = 'ADULTO'
+                and id_mosquito_padre =0
+                group by codigo, id_mosquito, estado
+                order by id_mosquito
+            ) x
+            group by x.codigo,x.estado
+        ) todos
+        where  todos.codigo= %(codigo)s
         """
         # se construye el diccionario que contiene los parametros del query.
-        cursor = self.db.query(sql_string)
+        cursor = self.db.query(sql_string, {"codigo": codigo})
         return self.db.to_dict(cursor)
 
-    def get_poblacion_por_dia(self):
+    def get_tasa_mortalidad(self, codigo):
         """
-        Se encarga de obtener los datos sobre la cantidad de individuos
-        vivos por dia de la tabla de evolucion_log
-
-            select dia, count(*)
-            from evolucion_log
-            where expectativa_de_vida != 0
-
-            group by dia
-            order by dia
-
-        @rtype  Dictionaries
-        @return Un diccionario con el resultado de la consulta
+        Se encarga de calcular la tasa de mortalidad diaria para todas la estapas del ciclo de vida
+        del mosquito.
         """
         # se definie el query de la consulta.
         sql_string = """
-            select dia, count(*)
-            from evolucion_log
-            where expectativa_de_vida != 0
-
-            group by dia
+        select tmp.codigo, tmp.estado, sum(tmp.total) as muertos,
+        sum(tmp2.total) as total, round(sum(tmp.total)/sum(tmp2.total), 4) * 100.0 as "porcentaje"
+        from (
+            select codigo,dia,estado, count(*) as total
+            from evolucion_log as tmp
+            where expectativa_de_vida = 0
+            group by codigo,dia, estado
             order by dia
+        ) as tmp, (
+            select codigo, dia,estado, count(*) as total
+            from evolucion_log as tmp
+            group by codigo,dia, estado
+            order by dia
+        ) tmp2
+        where tmp.codigo = tmp2.codigo
+        and tmp.estado = tmp2.estado
+        and tmp.codigo= %(codigo)s
+        and tmp.dia = tmp2.dia
+        group by tmp.codigo,tmp.estado
+        order by codigo, estado;
         """
         # se construye el diccionario que contiene los parametros del query.
-        cursor = self.db.query(sql_string)
+        cursor = self.db.query(sql_string, {"codigo": codigo})
         return self.db.to_dict(cursor)
 
-    def get_distribucion_de_estados(self, dia):
+    def get_poblacion_diaria(self, codigo):
         """
-        Se encarga de obtener la cantidad de huevos, larvas, pupas y
-        adultos en un dia especifico
-
-        select count(*) , estado
-        from evolucion_log
-        where dia = <dia>
-        group by estado
-
-        """
-
-        # se definie el query de la consulta.
-        sql_string = """
-            select count(*) , estado
-            from evolucion_log
-            where dia = %(dia)s
-            group by estado
-        """
-         # se construye el diccionario que contiene los parametros del query.
-        cursor = self.db.query(sql_string, {"dia": dia})
-        return self.db.to_dict(cursor)
-
-    def get_tiempo_promedio_de_vida(self, estado):
-        """
-        Se encarga de obtener los datos sobre el tiempo promedio de los
-        diferentes estados.
-        si :estado = ADULTO se tiene un valor x que representa el tiempo
-        promedio de vida de toda la poblacion que llego al estado ADULTO
-
-        select cast(sum(x.c) as float)/max(y.c)
-        from(select max(edad) as c
-            from evolucion_log
-            where estado = :estado
-            and id_mosquito_padre != 0
-            group by id_mosquito
-            order by id_mosquito) x,
-            (select count(distinct(id_mosquito)) as c
-            from evolucion_log
-            where estado = :estado
-            and id_mosquito_padre != 0) y;
-        """
-
-        # se definie el query de la consulta.
-        sql_string = """
-            select cast(sum(x.c) as float)/max(y.c) as tiempo_promedio
-            from(select max(edad) as c
-            from evolucion_log
-            where estado = %(estado)s
-            and id_mosquito_padre != 0
-            group by id_mosquito
-            order by id_mosquito) x,
-            (select count(distinct(id_mosquito)) as c
-            from evolucion_log
-            where estado = %(estado)s
-            and id_mosquito_padre != 0) y;
-        """
-         # se construye el diccionario que contiene los parametros del query.
-        cursor = self.db.query(sql_string, {"estado": estado})
-        return self.db.to_dict(cursor)
-
-    def get_cantidad_promedio_de_huevo(self):
-        """
-        Obtiene la cantidad promedio de huevos depositados
-        Si se realicen en total x oviposturas, el metodo
-        halla la cantidad promedio de huevos generados sobre el total
-        de oviposturas x dentro del periodo de estudio.
-
-        select sum(cantidad_huevos)/count(*)
-        from evolucion_log
-        where cantidad_huevos > 0
-
+        Se encarga de calcular el estado diario de la poblacion
         """
         # se definie el query de la consulta.
         sql_string = """
-            select sum(cantidad_huevos)/count(*)
-            from evolucion_log
-            where cantidad_huevos > 0
+        select tmp.codigo, tmp.dia, tmp.estado, sum(tmp.total) as muertos,
+        sum(tmp2.total) as total, round(sum(tmp.total)/sum(tmp2.total), 4) * 100.0 as "porcentaje"
+        from (
+            select codigo,dia,estado, count(*) as total
+            from evolucion_log as tmp
+            where expectativa_de_vida = 0
+            group by codigo,dia, estado
+            order by dia
+        ) as tmp, (
+            select codigo, dia,estado, count(*) as total
+            from evolucion_log as tmp
+            group by codigo,dia, estado
+            order by dia
+        ) tmp2
+        where tmp.codigo = tmp2.codigo
+        and tmp.estado = tmp2.estado
+        and tmp.codigo= %(codigo)s
+        and tmp.dia = tmp2.dia
+        group by tmp.codigo,tmp.estado,tmp.dia
+        order by codigo, estado;
         """
-         # se construye el diccionario que contiene los parametros del query.
-        cursor = self.db.query(sql_string)
+        # se construye el diccionario que contiene los parametros del query.
+        cursor = self.db.query(sql_string, {"codigo": codigo})
         return self.db.to_dict(cursor)
 
-    def get_distribucion_de_sexo(self):
+    def get_dispersion(self, codigo):
         """
-        Obtiene la cantidad de individuos MACHO y la cantidad de
-        individuos HEMBRA dentro de la poblacion total.
-
-        Permite determinar la distribucion de sexos
+        Se encarga de calcular el estado diario de la poblacion
         """
         # se definie el query de la consulta.
         sql_string = """
-            select sexo, count(distinct (id_mosquito))
-            from evolucion_log
-            group by sexo
+        select codigo, tipo_zona, sum(distancia_recorrida)/count(*) as distancia
+        from evolucion_log as tmp
+        where estado='ADULTO'
+            and sexo = 'HEMBRA'
+            and tmp.codigo = %(codigo)s
+        group by tmp.codigo, tipo_zona
+        order by tmp.codigo, tipo_zona
         """
-         # se construye el diccionario que contiene los parametros del query.
-        cursor = self.db.query(sql_string)
+        # se construye el diccionario que contiene los parametros del query.
+        cursor = self.db.query(sql_string, {"codigo": codigo})
+        return self.db.to_dict(cursor)
+
+    def get_ciclo_gonotrofico(self, codigo):
+        """
+        Se encarga de calcular el estado diario de la poblacion
+        """
+        # se definie el query de la consulta.
+        sql_string = """
+        select * from (
+        select codigo,2 as tipo,sum(tmp.cg_dias)/count(tmp) as dias
+        from (
+            select codigo, id_mosquito,cantidad_oviposicion, ciclo_gonotrofico as cg_dias
+            from evolucion_log
+            where ciclo_gonotrofico is not null
+            and ciclo_gonotrofico > 0
+            and estado='ADULTO'
+            and sexo = 'HEMBRA'
+            and se_alimenta = 'TRUE'
+            and cantidad_oviposicion > 0
+            group by codigo, id_mosquito,cantidad_oviposicion ,ciclo_gonotrofico
+        ) as tmp
+        group by codigo
+        --order by codigo
+
+        UNION
+
+        select codigo,1 as tipo, sum(tmp.cg_dias)/count(tmp)  as dias
+        from (
+            select codigo, id_mosquito,cantidad_oviposicion, ciclo_gonotrofico as cg_dias
+            from evolucion_log
+            where ciclo_gonotrofico is not null
+            and ciclo_gonotrofico > 0
+            and estado='ADULTO'
+            and sexo = 'HEMBRA'
+            and se_alimenta = 'TRUE'
+            and cantidad_oviposicion = 0
+            group by codigo, id_mosquito,cantidad_oviposicion ,ciclo_gonotrofico
+        ) as tmp
+        group by codigo
+
+        UNION
+
+        select codigo,0 as tipo, sum(tmp.cg_dias)/count(tmp)  as dias
+        from (
+            select codigo, id_mosquito,cantidad_oviposicion, ciclo_gonotrofico as cg_dias
+            from evolucion_log
+            where ciclo_gonotrofico is not null
+            and ciclo_gonotrofico > 0
+            and estado='ADULTO'
+            and sexo = 'HEMBRA'
+            and se_alimenta = 'TRUE'
+            --and cantidad_oviposicion = 0
+            group by codigo, id_mosquito,cantidad_oviposicion ,ciclo_gonotrofico
+        ) as tmp
+        group by codigo
+
+        ) as todos
+        where todos.codigo=%(codigo)s
+        order by todos.codigo
+
+        """
+        # se construye el diccionario que contiene los parametros del query.
+        cursor = self.db.query(sql_string, {"codigo": codigo})
+        return self.db.to_dict(cursor)
+
+    def get_cantidad_dias(self, codigo):
+        # se definie el query de la consulta.
+        sql_string = """
+        select max(dia), min(dia) from evolucion_log
+        where codigo = %(codigo)s
+        """
+        # se construye el diccionario que contiene los parametros del query.
+        cursor = self.db.query(sql_string, {"codigo": codigo})
+        return self.db.to_dict(cursor)
+
+    def get_poblacion_control(self, codigo, dia):
+        # se definie el query de la consulta.
+        sql_string = """
+        SELECT 0 as id, id_muestra, codigo, count(*) as cantidad,
+        ST_X(the_geom) as x, ST_Y(the_geom) as y
+        FROM evolucion_log
+        WHERE codigo=%(codigo)s
+            AND dia = %(dia)s
+            AND estado != 'ADULTO'
+        GROUP BY id_muestra, codigo,the_geom
+        """
+        # se construye el diccionario que contiene los parametros del query.
+        cursor = self.db.query(sql_string, {"codigo": codigo, "dia": dia})
         return self.db.to_dict(cursor)
 
 
@@ -651,10 +730,13 @@ if __name__ == "__main__":
     #~ cursor = a.persist({'id_muestra': 1, 'descripcion': 'test'})
     #~ print cursor.fetchone()[0]
 
-    dao = ConfiguracionesDao()
+    #dao = ConfiguracionesDao()
+    dao = ReporteDao()
     #~ print dao.get_poblacion_por_dia()
     #~ print '--------------------------'
     #~ print dao.get_poblacion_nueva_por_dia()
     #~ print '--------------------------'
     #~ print dao.get_poblacion_inicial_por_dia()
-    print dao.get_all()
+    list = dao.get_poblacion_control('2 temp=30 D=1', 1)
+    for el in list:
+        print el

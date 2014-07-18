@@ -13,6 +13,7 @@ __mail__ = "mxbg.py@gmail.com"
 
 # Se inicializa la api rest
 app = Flask(__name__)
+controller = MainController()
 
 
 @app.route('/', methods=['GET'])
@@ -54,10 +55,45 @@ def evolutive(id_muestra):
     return jsonify(resp)
 
 
-@app.route('/muestras/<id_muestra>/resumen-poblacion', methods=['GET'])
-def resumen_poblacion(id_muestra):
-    controller = ReportesContoller()
-    resp = controller.get_evolucion_poblacion_diaria()
+@app.route('/muestras/<id_muestra>/focos/<codigo>/<dia>', methods=['GET'])
+def identificar_focos(id_muestra, codigo, dia):
+    resp = controller.instante_diario(id_muestra, codigo, dia)
+    return jsonify(resp)
+
+
+@app.route('/muestras/<id_muestra>/codigos', methods=['GET'])
+def get_codigos(id_muestra):
+    resp = controller.get_codigos_by_muestra(id_muestra)
+    return jsonify(lista=resp)
+
+
+@app.route('/logs/<codigo>/tasa-desarrollo', methods=['GET'])
+def get_tasa_desarrollo(codigo):
+    resp = controller.get_tasa_desarrollo(codigo)
+    return jsonify(lista=resp)
+
+
+@app.route('/logs/<codigo>/poblacion-diaria', methods=['GET'])
+def get_poblacion_diaria(codigo):
+    resp = controller.get_poblacion_diaria(codigo)
+    return jsonify(lista=resp)
+
+
+@app.route('/logs/<codigo>/dispersion', methods=['GET'])
+def get_dispersion(codigo):
+    resp = controller.get_dispersion(codigo)
+    return jsonify(lista=resp)
+
+
+@app.route('/logs/<codigo>/ciclo-gonotrofico', methods=['GET'])
+def get_ciclo_gonotrofico(codigo):
+    resp = controller.get_ciclo_gonotrofico(codigo)
+    return jsonify(lista=resp)
+
+
+@app.route('/logs/<codigo>/cantidad-dias', methods=['GET'])
+def get_cantidad_dias(codigo):
+    resp = controller.get_cantidad_dias(codigo)
     return jsonify(lista=resp)
 
 

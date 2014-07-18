@@ -13,7 +13,7 @@ __author__ = "Maximiliano Báez"
 __mail__ = "mxbg.py@gmail.com"
 
 
-class GisController:
+class MainController:
 
     def __init__(self, id_muestras=1):
         """
@@ -23,13 +23,12 @@ class GisController:
         @type id_muestras : Integer
         @param id_muestras : El identificador de la muestra.
         """
-        print "obteniendo los datos"
-        dao = PuntosControlModel()
-        self.__id_muestra = id_muestras
-        self.data = dao.get_by(id_muestras)
-        self.layerDao = LayersDao()
+        self.puntos_control_dao = PuntosControlModel()
+        self.layer_dao = LayersDao()
+        self.muestras_dao = MuestraModel()
+        self.dao = ReporteDao()
 
-    def method_idw(self, cols=300, rows=300):
+    def method_idw(self, data, cols=300, rows=300):
         """
         Este método se encarga de interpolar el grid utilizando el método
         de idw.
@@ -47,7 +46,7 @@ class GisController:
         print "construyendo la grilla"
         #~ print data
         muestras = Grid()
-        muestras.parse(self.data)
+        muestras.parse(data)
         # genera los n puntos
         print "generando los puntos a interpolar"
         grid = muestras.extend(cols, rows)
@@ -59,7 +58,7 @@ class GisController:
         #~ print "done."
         return grid
 
-    def method_voronoi(self, cols=300, rows=300):
+    def method_voronoi(self, data, cols=300, rows=300):
         """
         Se encarga de ejecutar el algoritmo de voronoi sobre los datos
         de la grilla.
@@ -77,7 +76,7 @@ class GisController:
         print "construyendo la grilla"
         #~ print data
         muestras = Grid()
-        muestras.parse(self.data)
+        muestras.parse(data)
         grid = muestras.extend(cols, rows)
         # genera los n puntos
         alg = Interpotalion()
@@ -89,7 +88,7 @@ class GisController:
         print "done."
         return grid
 
-    def method_evolutive(self, cols=300, rows=300):
+    def method_evolutive(self, id_muestras, cols=300, rows=300):
         """
         Este método se encarga de ejecutar el proceso evolutivo sobre los
         puntos de control de la muestra.
@@ -108,8 +107,10 @@ class GisController:
         resp = {}
         clima = TuTiempo("Asuncion")
         periodo = clima.get_periodo()
+        print "obteniendo los datos"
+        data = self.puntos_control_dao.get_by(id_muestras)
         #~ print data
-        evol = Simulador(periodo=periodo, poblacion=self.data)
+        evol = Simulador(periodo=periodo, poblacion=data)
         print "iniciando simulación"
         resp['poblacion'] = evol.start()
         resp['resumen'] = evol.poblacion.get_resumen()
@@ -157,8 +158,8 @@ class GisController:
         #~ se mueve genera el layer en la carpeta temporal
         src_file = geo.tmp_buffer(store, grid.to_raster(cols, rows))
         #~ se añade el layer al geoserver
-        print "uploading file.."
-        geo.upload_file(src_file, layer_name)
+        # print "uploading file.."
+        #geo.upload_file(src_file, layer_name)
         #~  se publica el layer
         print "publish file.."
         geo.publish_coverage(store)
@@ -173,7 +174,7 @@ class GisController:
         @keyword tipo: El tipo de layer a genear (inst|evol)
         """
         geo = Geoserver()
-        args["id_muestra"] = self.__id_muestra
+        #args["id_muestra"] = self.__id_muestra
         return geo.gen_layer_name(args)
 
     def instantanea(self):
@@ -181,7 +182,7 @@ class GisController:
         """
         print "verificando"
         layer_name = self.gen_layer_name({"tipo": "inst"})
-        layer = self.layerDao.get_by(layer_name)
+        layer = self.layer_dao.get_by(layer_name)
         if len(layer) == 1:
             return layer[0]
         else:
@@ -190,7 +191,7 @@ class GisController:
                 "id_muestra": self.__id_muestra,
                 "fecha": "now()"
             }
-            self.layerDao.persist(layer)
+            self.layer_dao.persist(layer)
             print "starting..."
             data = {}
             data["grid"] = self.method_idw()
@@ -204,7 +205,7 @@ class GisController:
         """
         print "verificando"
         layer_name = self.gen_layer_name({"tipo": "evol"})
-        layer = self.layerDao.get_by(layer_name)
+        layer = self.layer_dao.get_by(layer_name)
         if len(layer) == 1:
             return layer[0]
         else:
@@ -213,7 +214,7 @@ class GisController:
                 "id_muestra": self.__id_muestra,
                 "fecha": "now()"
             }
-            self.layerDao.persist(layer)
+            self.layer_dao.persist(layer)
             print "starting..."
             data = self.method_evolutive()
             data['layer_name'] = layer_name
@@ -225,29 +226,71 @@ class GisController:
             resp['layer_name'] = layer_name
         return resp
 
-
-class MuestrasController:
-
-    def __init__(self):
+    def gen_layer_name(self, args):
         """
-        Inicializa la clase muestras
+        Se encarga de genear el nombre del layer
+        @param args: Parametros utilizados para la generación de layers
+
+        @keyword tipo: El tipo de layer a genear (inst|evol)
         """
-        self.dao = MuestraModel()
+        geo = Geoserver()
+        #args["id_muestra"] = self.__id_muestra
+        return geo.gen_layer_name(args)
+
+    def instante_diario(self, id_muestra, codigo, dia):
+        """
+        """
+        puntos_control = self.dao.get_poblacion_control(codigo, dia)
+        print "verificando"
+        layer_name = self.gen_layer_name({
+            "tipo": dia,
+            "id_muestra": id_muestra,
+            "codigo": codigo
+        })
+        layer = self.layer_dao.get_by(layer_name)
+        if len(layer) == 1:
+            return layer[0]
+        else:
+            layer = {
+                "layer_name": layer_name,
+                "id_muestra": id_muestra,
+                "fecha": "now()"
+            }
+            self.layer_dao.persist(layer)
+            print "starting..."
+            data = {}
+            data["grid"] = self.method_idw(puntos_control)
+            data['layer_name'] = layer_name
+            print "parsing"
+            self.to_geoserver(data)
+        return layer
 
     def get_all_muestras(self):
         """
         Se encarga de obtener los datos de la tabla de muestras
         """
-        return self.dao.get_all()
+        return self.muestras_dao.get_all()
 
+    def get_codigos_by_muestra(self, id_muestra):
+        return self.dao.get_codigos_by_muestra(id_muestra)
 
-class ReportesContoller:
+    def get_tasa_desarrollo(self, codigo):
+        return self.dao.get_tasa_desarrollo(codigo)
 
-    def __init__(self):
-        """
-        Inicializa la clase...
-        """
-        self.dao = ReporteDao()
+    def get_tasa_mortalidad(self, codigo):
+        return self.dao.get_tasa_mortalidad(codigo)
+
+    def get_poblacion_diaria(self, codigo):
+        return self.dao.get_poblacion_diaria(codigo)
+
+    def get_dispersion(self, codigo):
+        return self.dao.get_dispersion(codigo)
+
+    def get_ciclo_gonotrofico(self, codigo):
+        return self.dao.get_ciclo_gonotrofico(codigo)
+
+    def get_cantidad_dias(self, codigo):
+        return self.dao.get_cantidad_dias(codigo)
 
     def get_evolucion_poblacion_diaria(self):
         """
@@ -275,11 +318,11 @@ class ReportesContoller:
 
 
 if __name__ == "__main__":
-    gis = ReportesContoller()
+    gis = MainController()
     col = row = 300
     print "starting..."
     #~ resp = gis.method_voronoi(col,row);
-    resp = gis.get_evolucion_poblacion_diaria()
+    resp = gis.get_codigos_by_muestra(2)
     print resp
     # print "{x_min: -57.602724725986, ymin: -25.318104903934, x_max: -57.580130758362, y_max: -25.299749132232}"
     # resp = gis.method_evolutive()

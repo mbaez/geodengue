@@ -69,7 +69,6 @@ define(["OpenLayers", "openlayers-layer", "text!templates/map/map-tmpl.html"],
                 // se instancia el mapa
                 var mapOptions = {
                     numZoomLevels: 21,
-                    //~ controls : [],
                     maxExtend: maxExtent,
                     projection: DataSource.projectionCode,
                     units: 'm'
@@ -77,14 +76,13 @@ define(["OpenLayers", "openlayers-layer", "text!templates/map/map-tmpl.html"],
                 //inicializa el map
                 this.map = new OpenLayers.Map("map", mapOptions);
                 //se construye el base layer
-                var baseLayer = new Layer.WMS(DataSource.baseLayerConf);
-                var riesgoLayer = new Layer.WMS(DataSource.puntosRiesgoLayerConf);
-                this.map.addLayers(baseLayer);
-                this.map.addLayers(riesgoLayer);
+                var osmLayer = new OpenLayers.Layer.OSM( "Simple OSM");
+                this.map.addLayer(osmLayer);
                 // Se añade el switch para las capas
                 this.map.addControl(new OpenLayers.Control.LayerSwitcher());
                 this.map.addControl(new OpenLayers.Control.CacheRead());
                 this.map.addControl(new OpenLayers.Control.CacheWrite());
+                this.map.addControl(new OpenLayers.Control.ScaleLine());
                 //se realiza un zoom  para que centrar el mapa
                 this.map.zoomToExtent(maxExtent);
             }

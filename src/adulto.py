@@ -520,11 +520,6 @@ class Adulto(AeAegypti):
         """
         speed = randint(0, MIN_VUELO)
 
-        tipo = self.get_tipo_zona()
-        if self.sexo == Sexo.HEMBRA and (tipo == Zonas.MALA or tipo == Zonas.PESIMA):
-            dist_vuelo = MAX_VUELO
-            speed = randint(MIN_VUELO, MAX_VEL)
-
         wind_speed = hora.viento
 
         """

@@ -334,6 +334,8 @@ div.olControlSaveFeaturesItemInactive {
 .olControlLayerSwitcher .layersDiv .baseLayersDiv,
 .olControlLayerSwitcher .layersDiv .dataLayersDiv {
     padding-left: 10px;
+    max-height: 250px;
+    overflow-y: auto;
 }
 
 .olControlLayerSwitcher .maximizeDiv,

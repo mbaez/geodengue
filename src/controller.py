@@ -226,6 +226,23 @@ class MainController:
             resp['layer_name'] = layer_name
         return resp
 
+   
+    def new_proceso_evolutivo(self,id_muestra,codigo):
+        """
+        """
+        print "obteniendo los datos climaticos"
+        resp = {}
+        clima = TuTiempo("Asuncion")
+        periodo = clima.get_periodo()
+        print "obteniendo los datos"
+        data = self.puntos_control_dao.get_by(id_muestra)
+        #~ print data
+        evol = Simulador(id_muestra=id_muestra, periodo=periodo, poblacion=data, codigo=codigo)
+        print "iniciando simulación"
+        resp['poblacion'] = evol.start()
+        resp['resumen'] = evol.poblacion.get_resumen()
+        return resp
+    
     def gen_layer_name(self, args):
         """
         Se encarga de genear el nombre del layer

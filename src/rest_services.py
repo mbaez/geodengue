@@ -35,7 +35,6 @@ def not_found(error):
 
 @app.route('/muestras', methods=['GET'])
 def get_lista_muestras():
-    controller = MuestrasController()
     resp = controller.get_all_muestras()
     print "parsing"
     return jsonify(lista=resp)
@@ -48,23 +47,25 @@ def interpolate_idw(id_muestra):
     return jsonify(resp)
 
 
-@app.route('/muestras/<id_muestra>/evolucionar', methods=['POST'])
-def evolutive(id_muestra):
-    gis = GisController(id_muestra)
-    resp = gis.evolucionar()
-    return jsonify(resp)
-
-
-@app.route('/muestras/<id_muestra>/focos/<codigo>/<dia>', methods=['GET'])
-def identificar_focos(id_muestra, codigo, dia):
-    resp = controller.instante_diario(id_muestra, codigo, dia)
-    return jsonify(resp)
-
-
-@app.route('/muestras/<id_muestra>/codigos', methods=['GET'])
+@app.route('/muestras/<id_muestra>/procesos', methods=['GET'])
 def get_codigos(id_muestra):
     resp = controller.get_codigos_by_muestra(id_muestra)
     return jsonify(lista=resp)
+
+@app.route('/muestras/<id_muestra>/procesos/<codigo>', methods=['POST'])
+def crear_proceso(id_muestra, codigo):
+    resp = controller.new_proceso_evolutivo(id_muestra, codigo)
+    return jsonify(resp)
+
+@app.route('/muestras/<id_muestra>/procesos/<codigo>/dias', methods=['GET'])
+def get_cantidad_dias(codigo):
+    resp = controller.get_cantidad_dias(codigo)
+    return jsonify(lista=resp)
+
+@app.route('/muestras/<id_muestra>/procesos/<codigo>/dias/<dia>/foco', methods=['POST', 'GET' ])
+def identificar_focos(id_muestra, codigo, dia):
+    resp = controller.instante_diario(id_muestra, codigo, dia)
+    return jsonify(resp)
 
 
 @app.route('/logs/<codigo>/tasa-desarrollo', methods=['GET'])
@@ -88,12 +89,6 @@ def get_dispersion(codigo):
 @app.route('/logs/<codigo>/ciclo-gonotrofico', methods=['GET'])
 def get_ciclo_gonotrofico(codigo):
     resp = controller.get_ciclo_gonotrofico(codigo)
-    return jsonify(lista=resp)
-
-
-@app.route('/logs/<codigo>/cantidad-dias', methods=['GET'])
-def get_cantidad_dias(codigo):
-    resp = controller.get_cantidad_dias(codigo)
     return jsonify(lista=resp)
 
 

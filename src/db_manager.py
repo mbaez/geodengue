@@ -440,9 +440,10 @@ class ReporteDao:
         """
         # se definie el query de la consulta.
         sql_string = """
-            SELECT DISTINCT codigo
+            SELECT DISTINCT codigo, id_muestra, max(dia), min(dia)
             FROM evolucion_log
             WHERE id_muestra = %(id_muestra)s
+            GROUP BY codigo, id_muestra
         """
         # se construye el diccionario que contiene los parametros del query.
         cursor = self.db.query(sql_string, {"id_muestra": id_muestra})

@@ -1,9 +1,61 @@
 <div class="container">
     <div id="loaderBody" class="row">
         <section class="col-lg-3">
-            <div id="muestras-box"></div>
+            <section id="selector-muestras"></section>
+            <div id="lista-procesos"></div>
+            <div id="lista-procesos-dia"></div>
             <div id="form"></div>
+            
         </section>
-        <div id="incioContent" class="col-lg-9">content</div>
+
+        <div class="col-lg-9">
+            <!-- Nav tabs -->
+            <ul class="nav nav-tabs" role="tablist">
+                <li class="active"><a href="#focos-infestacion" role="tab" data-toggle="tab">Focos de infestaci&oacute;n</a>
+                </li>
+                <li><a href="#analisis-datos" role="tab" data-toggle="tab">An&aacute;lisis de datos</a>
+                </li>
+
+                <li><a href="#resumen" role="tab" data-toggle="tab">Resumen</a>
+                </li>
+            </ul>
+
+            <!-- Tab panes -->
+            <div class="tab-content">
+                <div class="tab-pane active" id="focos-infestacion">...</div>
+                <div class="tab-pane" id="analisis-datos">...</div>
+                <div class="tab-pane" id="resumen">
+                    <div class="page-header">
+                        <h1><small>Tasa de desarrollo </small></h1>
+                    </div>
+                    <div class="panel panel-default">
+                        <div class="panel-body">
+                            Basic panel example
+                        </div>
+                    </div>
+
+                    <div class="page-header">
+                        <h1><small>Tasa de mortalidad</small></h1>
+                    </div>
+                    <div class="panel panel-default">
+                        <div class="panel-body">
+                            Basic panel example
+                        </div>
+                    </div>
+
+
+                    <div class="page-header">
+                        <h1><small>Dispersi&oacute;n</small></h1>
+                    </div>
+                    <div class="panel panel-default">
+                        <div class="panel-body">
+                            Basic panel example
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
+        </div>
     </div>
 </div>

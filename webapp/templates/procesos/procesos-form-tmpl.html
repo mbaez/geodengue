@@ -1,11 +1,22 @@
 <!-- ./procesos/procesos-form-tmpl -->
-<div id="procesosForm" class="form-horizontal">
-    <div class="control-group">
-        <button class="btn btn-default" id="evolucionar">Evolucionar</button>
-        <button class="btn btn-default" id="instantanea">Instantanea</button>
+<h4 class="page-header">Nuevo Proceso</h4>
+<p>
+    Al crear un nuevo proceso, se inicia la simulacion del proceso evolutivo 
+    de ciclo de vida del vector.
+</p>
+<form role="form">
+    <div class="input-group">
+        <input type="text" class="form-control" id="nombre-proceso" placeholder="Nombre del proceso">
+        <div class="input-group-btn" placehoder="Nombre del proceso">
+            <a type="button" class="btn btn-default" tabindex="-1" id="crear-proceso">
+                <i class="glyphicon glyphicon-plus"></i>
+                Crear
+            </a>
+        </div>
     </div>
-</div>
+</form>
 <br/>
+
 <section id="process-info" class="panel panel-default">
     <div class="panel-heading">Individuos de la poblaci&oacute;n</div>
     <ul class="list-group">

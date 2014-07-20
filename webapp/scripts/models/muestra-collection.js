@@ -50,8 +50,36 @@ define(["backbone", "scripts/models/muestra-model"],
                 this.url = function () {
                     return baseUrl + "/1/resumen-poblacion";
                 }
-                this.fetch(GeoDengue.callback );
+                this.fetch(GeoDengue.callback);
+            },
+            /**
+             * Realiza un GET a /muestras/{iduestra}/procesos
+             * @function
+             *
+             * @name models.MuestraCollection#getProcesosByMuestra
+             */
+            getProcesosByMuestra: function (params) {
+                var baseUrl = this.url();
+                this.url = function () {
+                    return baseUrl + "/" + params.id + "/procesos";
+                }
+                this.fetch(GeoDengue.callback);
+            },
+            /**
+             * Realiza un GET a /muestras/<id_muestra>/procesos/<codigo>/cantidad-dias
+             * @function
+             *
+             * @name models.MuestraCollection#getDiasProcesos
+             */
+            getDiasProcesos: function (params) {
+                var baseUrl = this.url();
+                this.url = function () {
+                    return baseUrl + "/" + params.id_muestra + "/procesos/" +
+                        params.codigo + "/cantidad-dias";
+                }
+                this.fetch(GeoDengue.callback);
             }
+
 
         });
     });

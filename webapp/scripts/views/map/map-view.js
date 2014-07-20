@@ -66,25 +66,30 @@ define(["OpenLayers", "openlayers-layer", "text!templates/map/map-tmpl.html"],
              */
             initMap: function () {
                 var maxExtent = new OpenLayers.Bounds(DataSource.maxExtent);
+                var projection = new OpenLayers.Projection(DataSource.projectionCode);
+                var center = new OpenLayers.LonLat(DataSource.center);
                 // se instancia el mapa
                 var mapOptions = {
                     numZoomLevels: 21,
                     maxExtend: maxExtent,
-                    projection: DataSource.projectionCode,
+                    //projection: "EPSG:900913",
+                    //displayProjection : projection,
+                    projection : projection,
                     units: 'm'
                 };
                 //inicializa el map
                 this.map = new OpenLayers.Map("map", mapOptions);
                 //se construye el base layer
-                var osmLayer = new OpenLayers.Layer.OSM( "Simple OSM");
-                this.map.addLayer(osmLayer);
+                var osmLayer = new OpenLayers.Layer.OSM("Simple OSM");
+                var baseLayer = new Layer.WMS(DataSource.baseLayerConf);
+                //this.map.addLayer(osmLayer);
+                this.map.addLayers(baseLayer);
                 // Se añade el switch para las capas
                 this.map.addControl(new OpenLayers.Control.LayerSwitcher());
                 this.map.addControl(new OpenLayers.Control.CacheRead());
                 this.map.addControl(new OpenLayers.Control.CacheWrite());
                 this.map.addControl(new OpenLayers.Control.ScaleLine());
-                //se realiza un zoom  para que centrar el mapa
-                this.map.zoomToExtent(maxExtent);
+                this.map.setCenter(center, 12);
             }
         });
     }

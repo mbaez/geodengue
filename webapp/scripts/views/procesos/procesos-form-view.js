@@ -24,7 +24,9 @@ define(["text!templates/procesos/procesos-form-tmpl.html"],
              * @type Object
              * @name #events
              */
-            events: {},
+            events: {
+                "click #crear-proceso": "onClick",
+            },
             /**
              * Si posee los permisos para cargar el view, se configuran
              * los eventos y se realizan las peticiones para obtener los
@@ -38,17 +40,6 @@ define(["text!templates/procesos/procesos-form-tmpl.html"],
              */
             allowed: function (options) {
                 this.render();
-            },
-
-
-            /**
-             * Json que mapea los eventos a los handlers
-             * @field
-             * @type Object
-             * @name #events
-             */
-            events: {
-                "click #procesosForm .btn": "onClick",
             },
 
             /**
@@ -74,11 +65,16 @@ define(["text!templates/procesos/procesos-form-tmpl.html"],
              * @name #onClick
              */
             onClick: function (event) {
-                var process = $(event.target).attr("id");
-                $(".btn").button("loading");
+                var nombre = $("#nombre-proceso").val();
+                if (nombre == null || nombre.length == 0) {
+                    $("#nombre-proceso").parent().addClass("has-error");
+                    return;
+                }
+                $("#nombre-proceso").parent().removeClass("has-error");
+                $("#crear-proceso").button("loading");
                 // se dispara el evento
-                this.trigger("on-execute", {
-                    proceso: process
+                this.trigger("on-crear-proceso", {
+                    nombre: nombre
                 });
             },
 

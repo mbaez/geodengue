@@ -9,18 +9,21 @@ define(['text!pages/procesos/procesos.html',
         'openlayers-style',
         //se incluyen los models necesarios,
         "scripts/models/muestra-model",
+        "scripts/models/muestra-collection",
         //se incluyen los views necesarios,
         "scripts/views/map/map-view",
         "scripts/views/common/navbar-view",
+        "scripts/views/common/search-view",
         "scripts/views/procesos/procesos-form-view",
-        "scripts/views/procesos/muestras-box-view",
+        "scripts/views/procesos/tabla-procesos-muestra-view",
         ],
     function (template,
         Layer, Style,
         // models
-        MuestraModel,
+        MuestraModel, MuestraCollection,
         //Se incluyen los Views
-        MapView, NavbarView, ProcesosFormView, MuestrasBoxView) {
+        MapView, NavbarView, SearchView,
+        ProcesosFormView, ProcesosMuestraView) {
         "use strict";
         return Backbone.Page.extend({
             /**
@@ -55,41 +58,99 @@ define(['text!pages/procesos/procesos.html',
                     el: $("#appHeader")
                 });
                 this.mapPanel = new MapView({
-                    el: $("#incioContent")
+                    el: $("#focos-infestacion")
                 });
 
-                var view = new MuestrasBoxView({
-                    el: $("#muestras-box"),
-                    map: this.mapPanel.map
-                });
+                var view = this.getAllMuestras();
 
                 this.form = new ProcesosFormView({
                     el: $("#form")
                 });
 
                 //se añade el handler del view
-                this.form.on("on-execute", this.onEjecutarProceso, this);
+                this.form.on("on-crear-proceso", this.onCrearProceso, this);
+                view.on("on-search", this.buildTablaProcesos, this);
                 //se retorna la referencia al view.
                 return this;
             },
+            /**
+             * Se ecarga de obtener todas las muestras disponibles
+             * @function
+             *
+             * @name #getAllMuestras
+             */
+            getAllMuestras: function () {
+                this.collection = new MuestraCollection();
+                var view = new SearchView({
+                    el: $("#selector-muestras"),
+                    collection: this.collection,
+                    attr: "descripcion",
+                    placeholder: "Muestras"
+                });
+                return view;
+            },
+
+            /**
+             * Se ecarga de obtener todas los porocesos iniciados para una muestra
+             * @function
+             *
+             * @name #buildTablaProcesos
+             */
+            buildTablaProcesos: function (muestra) {
+                this.muestra = muestra;
+                if (typeof this.procesoView != "undefined") {
+                    this.procesoView.close();
+                }
+
+                this.procesoView = new ProcesosMuestraView({
+                    el: $("#lista-procesos"),
+                    muestra: muestra
+                });
+
+                //this.procesoView.on("on-select-proceso", this.buildProcesoDia, this);
+                this.procesoView.on("on-ready-layer", this.addRasterLayer, this);
+            },
+
+
+            /**
+             * Añade una capa raster al mapa.
+             *
+             * @function
+             *
+             * @name #addRasterLayer
+             * @author <a href="mxbg.py@gmail.com">Maximiliano Báez</a>
+             */
+            addRasterLayer: function (layer) {
+                var conf = $.extend({}, DataSource.rasterLayerConf);
+                conf.name = layer.layer_name;
+                var raster = new Layer.WMS([conf]);
+                // se añade el layer al mapa
+                this.mapPanel.map.addLayers(raster);
+            },
+
             /**
              * Este método se encarga de manejar el evento 'on-execute' disparado
              * desde el from view.
              * @function
              *
-             * @name #onEjecutarProceso
+             * @name #onCrearProceso
              * @author <a href="mxbg.py@gmail.com">Maximiliano Báez</a>
              * @params {Object}data
-             * @config {String}proceso El nombre del proceso a iniciar
+             * @config {String}nombre El nombre del proceso a iniciar
              */
-            onEjecutarProceso: function (data) {
+            onCrearProceso: function (data) {
+                if (typeof this.muestra == "undefined") {
+                    return;
+                }
+                data.id_muestra = this.muestra.codigo;
                 this.model = new MuestraModel();
                 // se añade el handler del model
                 this.model.on('ready', this.onProcesoReady, this);
                 this.model.on('error', this.error, this);
                 // se hace el post
-                this.model.executeProcess(data);
+                this.model.crearProceso(data);
             },
+
 
             /**
              * Este método se encarga de manejar el evento 'ready' de la
@@ -102,41 +163,6 @@ define(['text!pages/procesos/procesos.html',
              */
             onProcesoReady: function () {
                 //se reinicia los botones
-                $(".btn").button("reset");
-                //se procesa el layer reaster
-                var conf = $.extend({}, DataSource.rasterLayerConf);
-                conf.name = this.model.get("layer_name");
-                var geojsonFormat = new OpenLayers.Format.GeoJSON();
-                var vectorLayer = new OpenLayers.Layer.Vector();
-                vectorLayer.styleMap = this.style.styleMap;
-                //se procesa el vector layer
-                var data = this.model.get("poblacion");
-                if (typeof data != 'undefined') {
-                    vectorLayer.addFeatures(geojsonFormat.read(data));
-                    this.mapPanel.map.addLayer(vectorLayer);
-                }
-                var resumen = this.model.get("resumen");
-                if (typeof resumen != "undefined") {
-                    this.form.showProcessInfo(resumen);
-                }
-                //se construye el raster layer
-                var raster = new Layer.WMS([conf]);
-                // se añade el layer al mapa
-                this.mapPanel.map.addLayers(raster);
-            },
-
-            /**
-             * Este método se encarga de manejar el evento 'error' de la
-             * petición realizada con el model.
-             *
-             * @function
-             *
-             * @name #error
-             * @author <a href="mxbg.py@gmail.com">Maximiliano Báez</a>
-             */
-            error: function () {
-                $(".btn").button("reset");
-                console.error("Error");
             }
         });
     });

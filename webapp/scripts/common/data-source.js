@@ -1,4 +1,3 @@
-
 /**
  * Esta clase contiene varialbles estaticas que contiene información
  * las configuraciones necesarias.
@@ -9,48 +8,48 @@ DataSource = {
     /**
      * Sistema de proyecciones del mapa
      */
-    projectionCode : "EPSG:4326",
+    projectionCode: "EPSG:4326",
     //~ projectionCode : "EPSG:900913",
-    maxExtent : [
+    maxExtent: [
         -60.60455146882159, -27.40893277789768,
         -54.2972992541837, -21.032259302736406
     ],
-
+    center: [-57.6111, -25.2939],
     /**
      * Las configuraciones de la capa
      */
-    puntosControlLayerConf : {
+    puntosControlLayerConf: {
         name: 'puntos_control',
         geometryName: 'the_geom',
-        featureNS : "py.com.geodengue" ,
-        workspace : "geodengue"
+        featureNS: "py.com.geodengue",
+        workspace: "geodengue"
     },
     /**
      * Las configuraciones de la capa
      */
-    puntosRiesgoLayerConf : {
+    puntosRiesgoLayerConf: {
         name: 'puntos_riesgo',
         geometryName: 'the_geom',
-        featureNS : "py.com.geodengue" ,
-        workspace : "geodengue"
+        featureNS: "py.com.geodengue",
+        workspace: "geodengue"
     },
 
     /**
      * Configuraciones de la capa base.
      */
-    baseLayerConf : {
+    baseLayerConf: {
         name: 'MapasPy',
-        workspace : "geodengue",
-        base : true
+        workspace: "geodengue",
+        base: true
     },
 
     /**
      * Las configuraciones de la capa de raster
      */
-    rasterLayerConf : {
+    rasterLayerConf: {
         name: '',
-        featureNS : "py.com.geodengue" ,
-        workspace : "geodengue"
+        featureNS: "py.com.geodengue",
+        workspace: "geodengue"
     },
 };
 
@@ -69,4 +68,4 @@ DataSource.url = DataSource.server;
 /**
  * El path completo del geoservrer
  */
-DataSource.host = DataSource.url+"/geoserver/";
+DataSource.host = DataSource.url + "/geoserver/";

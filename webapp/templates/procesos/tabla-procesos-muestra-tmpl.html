@@ -1,0 +1,41 @@
+<!-- ./procesos/tabla-procesos-muestra-tmpl-->
+<!-- Table -->
+<h4 class="page-header">Procesos por muestra</h4>
+<p>
+    Resultados de la simulación del porceso evolutivo del ciclo de vida del 
+    vector.
+</p>
+
+<form role="form">
+    <fieldset>
+        <div class="form-group">
+            <label for="select-dias">Procesos</label>
+            <%if(typeof data == "undefined"){%>
+                <select id="list-procesos-muestra" class="form-control" disabled>
+                    <option >Cargando...</option>
+                </select>
+            <%}else if(data.collection.length != 0){%>
+                <select id="list-procesos-muestra" class="form-control">
+                <%for(var i=0;i<data.collection.length; i++){%>
+                    <option <%if(i==0){%>selected<%}%> value="<%=data.collection[i].codigo%>">
+                        <%=data.collection[i].codigo%>
+                    </option>
+                <%}%>
+                </select>
+            <%} else {%>
+                <select id="list-procesos-muestra" class="form-control" disabled>
+                    <option>No existen datos!</option>
+                </select>
+            <%}%>
+        </div>
+        <div class="form-group">
+            <label for="select-dias">Días</label>
+            <select id="select-dias" class="form-control" disabled>
+                <option>No existen datos!</option>
+            </select>
+        </div>
+    </fieldset>
+
+    <a id="calcular-foco" class="btn btn-primary btn-sm">Calcular Foco</a>
+</form>    
+<!-- fin de ./procesos/tabla-procesos-muestra-tmpl-->

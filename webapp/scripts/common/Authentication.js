@@ -2,18 +2,18 @@
 /**
  * Esta clase ofrece métodos para la autenticacion de usuarios con el servidor
  * de mapas geoserver mediante los metodos post y get.
- * 
- * @autor Maximiliano Báez <mbaez@konecta.com.py>
+ *
+ * @autor Maximiliano Báez <mxbg.py@gmail.com>
  */
 Authentication = function() {
-	
+
 	var baseUrl = DataSource.server;
 	this.url = "/rplaces/Security?url="+baseUrl;
 	/**
 	 * Realiza un get al servlet de geosercer para cerrar la sesión establecida.
-	 * 
-	 * @autor Maximiliano Báez <mbaez@konecta.com.py>
-	 * 
+	 *
+	 * @autor Maximiliano Báez <mxbg.py@gmail.com>
+	 *
 	 * @return el codigo del estado de la petición
 	 */
 	this.logout = function(options) {
@@ -50,8 +50,8 @@ Authentication = function() {
 
 	/**
 	 * Se encarga de procesar las cookies y hacer que expire el SESSIONID.
-	 * 
-	 * @autor Maximiliano Báez <mbaez@konecta.com.py>
+	 *
+	 * @autor Maximiliano Báez <mxbg.py@gmail.com>
 	 */
 	this.expiresCookie = function() {
 		$.cookie("SPRING_SECURITY_REMEMBER_ME_COOKIE", null);
@@ -60,9 +60,9 @@ Authentication = function() {
 
 	/**
 	 * Realiza un post al servlet de geoserver para establecer una sesión.
-	 * 
-	 * @autor Maximiliano Báez <mbaez@konecta.com.py>
-	 * 
+	 *
+	 * @autor Maximiliano Báez <mxbg.py@gmail.com>
+	 *
 	 * @param user
 	 *            el codigo de usuario con el cual se iniciara sesión.
 	 * @param password

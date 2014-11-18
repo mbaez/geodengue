@@ -3,8 +3,8 @@
 """
 Este módulo contiene la definición de datos utilizados en el simulador.
 
-@autors Maximiliano Báez, Roberto Bañuelos
-@contact mxbg.py@gmail.com, robertobanuelos@gmail.com
+@autors Maximiliano Báez
+@contact mxbg.py@gmail.com
 """
 from datatype import *
 from db_manager import *
@@ -49,7 +49,7 @@ class RankingTable:
         elif pts >= 36 and pts <= 51:
             return Zonas.NORMAL
 
-        elif pts >= 52 and pts < 69:
+        elif pts >= 52 and pts <= 69:
             return Zonas.BUENA
 
         elif pts >= 70:

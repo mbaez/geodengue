@@ -5,8 +5,8 @@
 Este módulo contiene la definición del proceso evolutivo de los puntos
 de control.
 
-@autors Maximiliano Báez, Roberto Bañuelos
-@contact mxbg.py@gmail.com, robertobanuelos@gmail.com
+@autors Maximiliano Báez
+@contact mxbg.py@gmail.com
 """
 
 # Se impotan los modulos.
@@ -120,6 +120,10 @@ class Simulador:
                         individuo.reset()
 
                 j += 1
+
+                if (j%500) == 0 :
+                    self.logger.save()
+
             if len(nueva_poblacion) > 0:
                 total_huevos += len(nueva_poblacion)
                 self.poblacion.extend(nueva_poblacion)
@@ -131,7 +135,7 @@ class Simulador:
 
         print 'Poblacion final'
         print str(self.poblacion)
-        return self.poblacion.to_grid()
+        #return self.poblacion.to_grid()
 
 
 if __name__ == "__main__":
@@ -139,10 +143,10 @@ if __name__ == "__main__":
     from models import *
     from tutiempo import *
 
-    id_muestras = 2
+    id_muestras = 4
 
-    for temperatura in [15, 18, 20, 22, 24, 25, 26, 27, 30, 34]:
-    # for temperatura in [30]:
+    #for temperatura in [15, 18, 20, 22, 24, 25, 26, 27, 30, 34]:
+    for temperatura in [30]:
         print "=" * 10 + str(temperatura) + "=" * 10
         # se obtiene el historial climatico
         print "obteniendo los datos climaticos"
@@ -154,8 +158,7 @@ if __name__ == "__main__":
         data = dao.get_by(id_muestras)
         print "construyendo la grilla"
         #~ print data
-        codigo = str(id_muestras) + ' temp=' + \
-            str(temperatura) + " ID_COLONIA"
+        codigo = "m-" +str(id_muestras) + '-temp-' + str(temperatura)
         evol = Simulador(id_muestra=id_muestras,
                          periodo=periodo, poblacion=data, codigo=codigo)
 

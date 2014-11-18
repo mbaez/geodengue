@@ -5,8 +5,8 @@ import psycopg2
 from psycopg2 import connect
 import psycopg2.extras
 """
-@autors Maximiliano Báez, Roberto Bañuelos
-@contact mxbg.py@gmail.com, robertobanuelos@gmail.com
+@autors Maximiliano Báez
+@contact mxbg.py@gmail.com
 """
 
 
@@ -682,13 +682,13 @@ class ReporteDao:
     def get_poblacion_control(self, codigo, dia):
         # se definie el query de la consulta.
         sql_string = """
-        SELECT 0 as id, id_muestra, codigo, count(*) as cantidad,
+        SELECT 0 as id, id_muestra, codigo, dia, count(*) as cantidad,
         ST_X(the_geom) as x, ST_Y(the_geom) as y
         FROM evolucion_log
         WHERE codigo=%(codigo)s
             AND dia = %(dia)s
             AND estado != 'ADULTO'
-        GROUP BY id_muestra, codigo,the_geom
+        GROUP BY the_geom, codigo, dia, id_muestra
         """
         # se construye el diccionario que contiene los parametros del query.
         cursor = self.db.query(sql_string, {"codigo": codigo, "dia": dia})

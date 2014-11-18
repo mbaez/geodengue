@@ -11,6 +11,10 @@ from db_manager import MuestraModel
 
 import datetime
 
+"""
+@autors Maximiliano Báez
+@contact mxbg.py@gmail.com
+"""
 
 class Geoserver:
 
@@ -58,10 +62,13 @@ class Geoserver:
         @keyword id_muestra: El identificador de la muestra de origen
         @keyword codigo: El codigo correspondiente al proceso evolutivo
         """
-        args["fin"] = datetime.date.today()
+        #args["fin"] = datetime.date.today()
+        #args["fin"] = "2014-08-20"
         # se construye el template del layer
-        layer_name = "raster_{tipo}_{id_muestra}_{codigo}_{fin}"
-        return layer_name.format(**args)
+        layer_name = "{id_muestra}_{codigo}_{tipo}"
+        layer = layer_name.format(**args)
+        print layer
+        return layer
 
     def make_request(self, path, data, method="POST"):
         """
@@ -77,6 +84,7 @@ class Geoserver:
 
         host = GEOSERVER["host"] + ":" + GEOSERVER["port"]
         conn = httplib.HTTPConnection(host)
+        print str(data)
         req = conn.request(method, path, data, headers)
 
         response = conn.getresponse()

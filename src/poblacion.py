@@ -3,8 +3,8 @@
 """
 Este módulo contiene la definición de datos utilizados en el simulador.
 
-@autors Maximiliano Báez, Roberto Bañuelos
-@contact mxbg.py@gmail.com, robertobanuelos@gmail.com
+@autors Maximiliano Báez
+@contact mxbg.py@gmail.com
 """
 import math
 # Se impotan los modulos.
@@ -74,6 +74,7 @@ class Poblacion:
         cantidad_larvas = kargs.get('cantidad_larvas', 0)
         madurez = kargs.get("madurez", 0)
         id_padre = kargs.get("id_padre", 0)
+        generacion = kargs.get("generacion", 0)
         # se determina el estado
         state = Estado.HUEVO
         if kargs.has_key('clazz') == True:
@@ -89,7 +90,8 @@ class Poblacion:
 
         for cantidad in range(cantidad_larvas):
             indv = clazz(posicion=posicion, zonas=self.zonas_table,
-                         madurez=madurez, id_padre=id_padre, id_colonia=id_colonia)
+                         madurez=madurez, id_padre=id_padre, id_colonia=id_colonia,
+                         generacion=generacion)
             # id del mosquito
             indv._id_mosquito = Poblacion.ID
             Poblacion.ID += 1
@@ -143,7 +145,8 @@ class Poblacion:
 
         return clazz[aedes.estado](sexo=aedes.sexo, posicion=aedes.posicion,
                                    zonas=self.zonas_table, id=aedes.id_mosquito,
-                                   id_padre=aedes.id_padre, id_colonia=aedes.id_colonia)
+                                   id_padre=aedes.id_padre, id_colonia=aedes.id_colonia,
+                                   generacion=aedes.generacion)
 
     def gen_key(self, punto):
         """
@@ -323,8 +326,9 @@ class Poblacion:
         huevos = adulto.poner_huevos(dia)
         if huevos > 0:
             self.total_huevos += huevos
+            generacion = adulto.generacion + 1;
             return self.gen_sub_poblacion(posicion=adulto.posicion,
-                                          cantidad_larvas=huevos, id_padre=adulto.id_mosquito), huevos
+                                          cantidad_larvas=huevos, id_padre=adulto.id_mosquito, generacion=generacion), huevos
         return [], huevos
 
     def extend(self, nueva_poblacion):

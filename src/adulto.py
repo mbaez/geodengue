@@ -3,8 +3,8 @@
 """
 Este módulo contiene la definición del estado Adulto
 
-@autors Maximiliano Báez, Roberto Bañuelos
-@contact mxbg.py@gmail.com, robertobanuelos@gmail.com
+@autors Maximiliano Báez
+@contact mxbg.py@gmail.com
 """
 
 from aaegypti import *
@@ -548,4 +548,4 @@ class Adulto(AeAegypti):
         independiente de la temperatura.
         """
 
-        return 0.09 * colonia[self.estado]["cantidad"]
+        return 0.1 * colonia[self.estado]["cantidad"]

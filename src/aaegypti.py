@@ -3,8 +3,8 @@
 """
 Este módulo contiene la definición del AeAegypti
 
-@autors Maximiliano Báez, Roberto Bañuelos
-@contact mxbg.py@gmail.com, robertobanuelos@gmail.com
+@autors Maximiliano Báez
+@contact mxbg.py@gmail.com
 """
 from random import randint, uniform
 from datatype import *
@@ -126,6 +126,15 @@ class AeAegypti:
         """
         return self._id_padre
 
+    @property
+    def generacion(self):
+        """
+        Campo para validar individualmente el proceso evolutivo de un
+        mosquito
+        """
+        return self._generacion
+
+
     def __init__(self, **kargs):
         """
         Inicializa la clase setenado la expectativa de vida y la edad a
@@ -158,6 +167,7 @@ class AeAegypti:
         self._tiempo_madurez = 0
         self._id_mosquito = kargs.get('id', 0)
         self._id_padre = kargs.get('id_padre', 0)
+        self._generacion = kargs.get('generacion', 0)
 
     def se_reproduce(self, hora):
         """

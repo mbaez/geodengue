@@ -3,8 +3,8 @@
 """
 Este módulo contiene la definición del estado Pupa del Aedes Aegypti
 
-@autors Maximiliano Báez, Roberto Bañuelos
-@contact mxbg.py@gmail.com, robertobanuelos@gmail.com
+@autors Maximiliano Báez
+@contact mxbg.py@gmail.com
 """
 
 from aaegypti import *

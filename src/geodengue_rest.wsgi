@@ -2,7 +2,7 @@
 """
 Archivo wsgi utilizado para deployar los servicios en apache.
 
-@autor Maximiliano Báez
+@autors Maximiliano Báez
 @contact mxbg.py@gmail.com
 
 Fuente : http://flask.pocoo.org/docs/deploying/mod_wsgi/

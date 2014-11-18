@@ -3,6 +3,8 @@
 
 """
 Configuraciones para la conexión con la base de datos
+@autors Maximiliano Báez
+@contact mxbg.py@gmail.com
 """
 DB = {
     "dbname": "dengue",
@@ -41,14 +43,20 @@ LOCALIDADES_HORA = {
 }
 # Datos utilizads para contruir los queryparams para realizar el get
 API_DATA = {
-    #~ "appid" : "2d9be00662629ff5c269672af48013d8",
-    #~ "type" : "day",
-    "id": "3439389"
-    #~ "mode" : "json"
+    #"appid" : "2d9be00662629ff5c269672af48013d8",
+    "type" : "day",
+    #"cnt" :"0" ,
+    #"city_id": "3439389",
+    "id": "104786",
+    "mode" : "json"
 }
 # URLs de las fuentes de información de datos climaticos
-#~ API_URL = "http://api.openweathermap.org/data/2.5";
-API_URL = "http://localhost/geodengue/api.openweathermap.50-dias"
+#API_URL = "http://api.openweathermap.org/data/2.5";
+#API_URL = "http://localhost/geodengue/api.openweathermap.50-dias"
+#API_URL = "http://localhost/geodengue/api.openweathermap
+API_URL = "http://localhost/geodengue/py.2010"
+#API_URL = "http://localhost/geodengue/api.openweathermap.90"
+#API_URL = "http://localhost/geodengue/api.openweathermap.30"
 #~ TUTIEMPO_URL = "http://localhost/geodengue/tutiempo.dom";
 #~ TUTIEMPO_URL = 'http://www.tutiempo.net/'
 
@@ -70,4 +78,5 @@ MAX_VUELO = 3000
 # Cantida de sitios de reproducción agrupados como uno solo.
 BS = 50.0
 # mortalidad asociada a un sitio
-ALPHA = 0.0353
+#ALPHA = 0.09353
+ALPHA = 0.1

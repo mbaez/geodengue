@@ -3,9 +3,12 @@
 import json
 from config import *
 from datatype import *
-
+from random import randint
 # para convertir horas
-
+"""
+@autors Maximiliano Báez
+@contact mxbg.py@gmail.com
+"""
 
 class Dia:
 
@@ -42,11 +45,23 @@ class Dia:
             self.direccion_viento = float(data.get('deg', 0))
             self._parse_datetime(data)
 
-        else:
+        elif future == False:
             self._parse_rain_node(data)
             self._parse_main_node(data)
             self._parse_wind_node(data)
             self._parse_clouds_node(data)
+            self._parse_datetime(data)
+
+        else:
+            temp = data["temp"].get('v', 0)
+            self.temperatura = float(temp) - 273.15
+            self.presion = data["pressure"].get('v', 0)
+            self.humedad = data["humidity"].get('v', 0)
+            if not data.has_key("wind"):
+                data["wind"]={"speed":{}, "deg":{}}
+
+            self.viento = float(data["wind"]["speed"].get('v', randint(0,10)))
+            self.direccion_viento = float(data["wind"]["deg"].get('v', randint(0,360)))
             self._parse_datetime(data)
 
     def _parse_rain_node(self, data):
@@ -82,6 +97,7 @@ class Dia:
             self.temperatura = float(temp) - 273.15
             self.presion = float(data["main"].get('pressure', 0))
             self.humedad = float(data["main"].get('humidity', 0))
+
 
     def _parse_wind_node(self, data):
         """
@@ -156,15 +172,15 @@ class Dia:
         from datetime import datetime
 
         dt = datetime.fromtimestamp(float(data.get('dt', 0)))
-        self.hora = int(dt.strftime('%H'))
+        self.hora = dt.strftime('%d/%m/%Y %H:%M')
+        self.dt = float(data.get('dt', 0))
 
     def __str__(self):
-        return str(self.hora) + "hs " + \
-            str(self.precipitacion) + " " + \
-            str(self.temperatura) + "*C " + \
-            str(self.humedad) + "% " + \
-            str(self.viento ) + " " + \
-            str(self.direccion_viento) + " "
+        return  str(self.dt)+ " "+\
+           str(self.hora) + "hs " + \
+           str(self.temperatura) + " C " + \
+           str(self.viento ) + " m/s " + \
+           str(self.direccion_viento) + " *"
 
 
 class Periodo:
@@ -239,8 +255,9 @@ class TuTiempo:
         localidad.
         """
         periodo = Periodo()
-        #~ periodo.parse_json(self.history(),temperatura);
-        periodo.parse_json(self.future(), temperatura, True)
+        periodo.parse_json(self.history(),temperatura, None);
+        #periodo.parse_json(self.history(),temperatura, None)
+        #periodo.parse_json(self.future(), temperatura, True)
         return periodo
 
     def download_page(self, domain):
@@ -260,7 +277,8 @@ class TuTiempo:
         """
         params = "?"
         for key in API_DATA:
-            params += key + "=" + API_DATA[key] + "&"
+            if not args.has_key(key) :
+                params += key + "=" + API_DATA[key] + "&"
 
         for key in args:
             params += key + "=" + args[key] + "&"
@@ -317,8 +335,10 @@ class TuTiempo:
         # se calcula el rango de fechas
         now = datetime.datetime.now()
         # se crea una fecha de 10 dias antes a modo de prueba
-        delta = datetime.timedelta(days=10)
+        delta = datetime.timedelta(days=60)
         past = now - delta
+        #delta = datetime.timedelta(days=100)
+        #now = now - delta
         # se  transforma a unix time
         end = str(int(time.mktime(now.timetuple())))
         start = str(int(time.mktime(past.timetuple())))
@@ -328,8 +348,9 @@ class TuTiempo:
             "end": end  # 2013/03/31
         }
 
-        #~ url = API_URL + "/history/city" + self.build_url_params(args);
-        url = API_URL + ".json"
+        #url = API_URL + "/history/city" + self.build_url_params(args);
+        #url = API_URL + "/history/station" + self.build_url_params(args);
+        url = API_URL + ".history.json"
         json_string = self.download_page(url)
         return json.loads(json_string)
 
@@ -381,15 +402,25 @@ class TuTiempo:
         }
         </pre>
         """
-        args = {"cnt": "15"}
-        #~ url = API_URL + "/forecast/daily" + self.build_url_params(args);
-        url = API_URL + ".forecast.json"
+        args = {
+            "cnt": "15",
+            "id": "3439389"
+        }
+        #url = API_URL + "/forecast/daily" + self.build_url_params(args);
+        url = API_URL + ".forecast.15.json"
         json_string = self.download_page(url)
         return json.loads(json_string)
 
 if __name__ == "__main__":
     clima = TuTiempo("Asuncion")
     #~ clima.process_dom_hora();
-    periodo = clima.get_periodo(20)
+    periodo = clima.get_periodo()
+    cnt = 0
+    t_med=0
     for h in periodo.dias:
         print h
+        t_med += h.temperatura
+        cnt +=1
+
+    med = t_med/cnt
+    print str(cnt) +" : "+ str(med)

@@ -7,9 +7,9 @@ import traceback
 
 """
 Este modulo define la interfaz de los servicios rest.
+@autors Maximiliano Báez
+@contact mxbg.py@gmail.com
 """
-__author__ = "Maximiliano Báez"
-__mail__ = "mxbg.py@gmail.com"
 
 # Se inicializa la api rest
 app = Flask(__name__)

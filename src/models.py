@@ -13,6 +13,10 @@ import math
 import cmath
 import types
 
+from pyproj import Proj
+import shapely.geometry
+from shapely.geometry import MultiPoint
+from shapely.geometry.polygon import Polygon
 
 class Bounds:
 
@@ -51,9 +55,9 @@ class Bounds:
 
     def __str__(self):
         to_str = 'min x : ' + str(self.x_min) + \
-            'min y : ' + str(self.y_min) + \
-            'max x : ' + str(self.x_max) + \
-            'max y : ' + str(self.y_max)
+            ' min y : ' + str(self.y_min) + \
+            ' max x : ' + str(self.x_max) + \
+            ' max y : ' + str(self.y_max)
         return to_str
 
 
@@ -68,6 +72,9 @@ class Grid:
         self.x = x
         self.y = y
         self.z = z
+        self.proj = Proj(proj='utm',zone=27,ellps='WGS84')
+        self.nodata_value =-9999
+        
 
     def parse(self, data):
         """
@@ -90,6 +97,70 @@ class Grid:
         self.y = numpy.array(y, dtype=numpy.float)
         self.z = numpy.array(z, dtype=numpy.float)
         self.ids = ids
+        
+        #se proyecta las esquinas a 200 metros para que la grilla temga una mayor
+        #extensión
+#        top_corner, bottom_corner = self.normalizar_tamano()
+#        
+#        x.append(top_corner.x) 
+#        y.append(top_corner.y) 
+#        z.append(-1) 
+#        self.ids.append(-1)
+#        
+#        x.append(bottom_corner.x) 
+#        y.append(bottom_corner.y) 
+#        z.append(-1) 
+#        self.ids.append(-1)
+#        
+#        # se inicializa el array
+#        self.x = numpy.array(x, dtype=numpy.float)
+#        self.y = numpy.array(y, dtype=numpy.float)
+#        self.z = numpy.array(z, dtype=numpy.float)
+        
+    def normalizar_tamano (self):
+        """
+        """
+        bounds = self.get_bounds()
+        
+        p1 = shapely.geometry.Point(self.proj(bounds.x_min, bounds.y_min))
+        p2 = shapely.geometry.Point(self.proj(bounds.x_min, bounds.y_max))
+        p3 = shapely.geometry.Point(self.proj(bounds.x_max, bounds.y_max))
+        
+        dist_v = p1.distance(p2)
+        dist_h = p2.distance(p3)
+        
+        if dist_v > dist_h :
+            d_v = 0
+            d_h = float(dist_v)*1.0 - float(dist_h)*1.0
+            
+        elif dist_h >  dist_v:
+            d_h = 0
+            d_v = float(dist_h)*1.0 - float(dist_v)*1.0
+        else :
+            d_v = 0
+            d_h = 0
+            
+        x_y_min = Point({"x" :bounds.x_min, "y" :bounds.y_min});
+        x_y_max = Point({"x" :bounds.x_max, "y" :bounds.y_max});
+        
+        #print "#1 "+ str(d_h)+" : "+ str(d_v)
+        delta_h = 0 
+        delta_v = 0
+        
+        if d_h > 0 :
+            delta_h += float(d_h/2)
+            
+        elif d_v > 0 :
+            delta_v += float(d_v/2)
+    
+        xy_min = x_y_min.project(delta_v, 270);
+        xy_min = xy_min.project(delta_h, 180);
+        
+        xy_max = x_y_max.project(delta_v, 90);
+        xy_max = xy_max.project(delta_h, 0)
+        
+        return xy_min, xy_max
+
 
     def get_bounds(self):
         """
@@ -101,7 +172,7 @@ class Grid:
         """
         bounds = Bounds()
         bounds.parse_array(self.x, self.y)
-        print bounds
+        #print bounds
         return bounds
 
     def extend(self, cols, rows):
@@ -150,7 +221,7 @@ class Grid:
         # Given the “legs” of a right triangle, return its hypotenuse.
         return numpy.hypot(d0, d1)
 
-    def to_raster(self, cols, rows, nodata_value=-9999):
+    def to_raster(self, cols, rows):
         """
         Se encarga de generar un capa raster en el formato
         <a href="http://en.wikipedia.org/wiki/Esri_grid">Esri grid.</a>
@@ -168,29 +239,70 @@ class Grid:
         """
         # se gira la matriz
         z = numpy.flipud(self.z.reshape((cols, rows)))
+        x = numpy.flipud(self.x.reshape((cols, rows)))
+        y = numpy.flipud(self.y.reshape((cols, rows)))
         # se obtiene la extensión del grid
         bounds = self.get_bounds()
-        # Se calcula el size de la celda
-        size_y = float(abs((bounds.y_max - bounds.y_min) / (cols)))
-        size_x = abs((bounds.y_max - bounds.y_min) / (cols))
+        # Se calcula el size de la celda    
+        x_min = y_min = 0.0
+        x_max = y_max = self.nodata_value
+        
+        values =""
+        # Se construye la matriz con las alturas
+        for i in range(rows):
+            values += "\n"
+            for j in range(cols):
+                if x_min > x[i][j] :
+                    x_min = x[i][j]
+                elif x_max <  x[i][j] :
+                    x_max = x[i][j]
+                
+                if y_min > y[i][j] :
+                    y_min = y[i][j]
+                elif y_max <  y[i][j] :
+                    y_max = y[i][j]
+                    
+                values += str(z[i][j]) + " "
+        
+        x_min = float('{0:.4f}'.format(x_min))
+        y_min = float('{0:.4f}'.format(y_min))
+        
+        #Se calcula el tamaño de la celda
+        size_y = abs((y_max - y_min) / (cols * 1.0))
+        size_x = abs((x_max - x_min) / (cols * 1.0))
+        #print str(size_x) + " : " + str(size_y)
         size = size_y
         if size_x > size_y:
             size = size_x
+        size = size + (size)/(cols)
         # Se construye la cabecera del raster
         out = "ncols\t" + str(cols)
         out += "\nnrows\t" + str(rows)
-        out += "\nxllcorner\t" + str(bounds.x_min)
-        out += "\nyllcorner\t" + str(bounds.y_min)
-        out += "\ncellsize\t" + str(size)
-        out += "\nNODATA_value\t" + str(nodata_value)
-        # Se construye la matriz con las alturas
-        for i in range(rows):
-            out += "\n"
-            for j in range(cols):
-                out += str(z[i][j]) + " "
+        out += "\nxllcorner\t" + str(x_min)
+        out += "\nyllcorner\t" + str(y_min)
+        out += "\ncellsize\t" + '{0:.10f}'.format(size)
+        out += "\nNODATA_value\t" + str(self.nodata_value)
+        #se añade el value
+        out += values;
         # se retorna el raster como un string
         return out
-
+    
+    def convex_hull(self, data) :
+        """
+        """
+        pts = []
+        # se separan los datos en array indepedientes
+        for i in range(len(data)):
+            pts.append(self.proj(data[i]['x'], data[i]['y']))
+        polygon = MultiPoint(pts).convex_hull
+        for i in range(len(self.x)):
+            point = shapely.geometry.Point(self.proj(self.x[i],self.y[i]))
+            dist = point.distance(polygon)
+            #print dist
+            if int(dist) > 200 :
+                self.z[i] = self.nodata_value
+        
+    
     def to_dict(self, args):
         """
         Este metodo se encarga de generar un diccionario de los atributos
@@ -207,6 +319,7 @@ class Grid:
 
         return grid
 
+    
     def __len__(self):
         return len(self.x)
 
@@ -275,6 +388,7 @@ class Point:
     def __init__(self, args):
         self.__x = args.get('x', 0)
         self.__y = args.get('y', 0)
+        self.proj = Proj(proj='utm',zone=27,ellps='WGS84')
 
     def distance_to(self, point):
         """
@@ -399,4 +513,4 @@ if __name__ == "__main__":
     for angle in [0, 30, 60, 90, 120, 160, 180, 200, 245, 270, 330, 360]:
         des = src.project(100, angle)
         a = src.angle_to(des)
-        print str(angle) + " ==? " + str(a)
+        #print str(angle) + " ==? " + str(a)

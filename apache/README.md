@@ -30,7 +30,13 @@ Configuraciones
    $ cd /var/www
    $ ln -s /path/to/proyect/geodengue/src geodengue_server
 ```
+* Añadir el path del coverage store del geoserver
 
+```sh
+   $ cd /var/www
+   $ ln -s /path/to//geoserver/data/coverages/geodengue coverages
+
+```
 * Reiniciar el apache
 
 ```sh

@@ -9,8 +9,10 @@ from simulador import *
 from tutiempo import *
 from geoserver import *
 
-__author__ = "Maximiliano Báez"
-__mail__ = "mxbg.py@gmail.com"
+"""
+@autors Maximiliano Báez
+@contact mxbg.py@gmail.com
+"""
 
 
 class MainController:
@@ -28,7 +30,7 @@ class MainController:
         self.muestras_dao = MuestraModel()
         self.dao = ReporteDao()
 
-    def method_idw(self, data, cols=300, rows=300):
+    def method_idw(self, data, cols, rows):
         """
         Este método se encarga de interpolar el grid utilizando el método
         de idw.
@@ -112,17 +114,17 @@ class MainController:
         #~ print data
         evol = Simulador(periodo=periodo, poblacion=data)
         print "iniciando simulación"
-        resp['poblacion'] = evol.start()
+        evol.start()
         resp['resumen'] = evol.poblacion.get_resumen()
         print "generando los puntos a interpolar"
-        grid = resp['poblacion'].extend(cols, rows)
-        alg = Interpotalion()
+        # grid = resp['poblacion'].extend(cols, rows)
+        # alg = Interpotalion()
         # Calculate IDW
-        print "Interpolando idw"
-        interpolated_grid = alg.simple_idw(resp['poblacion'], grid)
-        grid.z = interpolated_grid
-        resp['grid'] = grid
-        resp['poblacion'] = str(resp['poblacion'])
+        # print "Interpolando idw"
+        # interpolated_grid = alg.simple_idw(resp['poblacion'], grid)
+        # grid.z = interpolated_grid
+        # resp['grid'] = grid
+        # resp['poblacion'] = str(resp['poblacion'])
         return resp
 
     def to_geoserver(self, args):
@@ -147,8 +149,8 @@ class MainController:
         @return El nombre del layer publicado en el geoserver.
         """
         grid = args.get('grid')
-        cols = args.get('cols', 300)
-        rows = args.get('rows', 300)
+        cols = args.get('cols', 500)
+        rows = args.get('rows', 500)
         store = args.get('layer_name')
         geo = Geoserver()
         #~ se crea el sotre para el layer
@@ -226,7 +228,7 @@ class MainController:
             resp['layer_name'] = layer_name
         return resp
 
-   
+
     def new_proceso_evolutivo(self,id_muestra,codigo):
         """
         """
@@ -239,22 +241,13 @@ class MainController:
         #~ print data
         evol = Simulador(id_muestra=id_muestra, periodo=periodo, poblacion=data, codigo=codigo)
         print "iniciando simulación"
-        resp['poblacion'] = evol.start()
+        evol.start()
         resp['resumen'] = evol.poblacion.get_resumen()
         return resp
-    
-    def gen_layer_name(self, args):
-        """
-        Se encarga de genear el nombre del layer
-        @param args: Parametros utilizados para la generación de layers
 
-        @keyword tipo: El tipo de layer a genear (inst|evol)
-        """
-        geo = Geoserver()
-        #args["id_muestra"] = self.__id_muestra
-        return geo.gen_layer_name(args)
 
-    def instante_diario(self, id_muestra, codigo, dia):
+
+    def instante_diario(self, id_muestra, codigo, dia, cols=500, rows=500):
         """
         """
         puntos_control = self.dao.get_poblacion_control(codigo, dia)
@@ -276,8 +269,12 @@ class MainController:
             self.layer_dao.persist(layer)
             print "starting..."
             data = {}
-            data["grid"] = self.method_idw(puntos_control)
+            grid = self.method_idw(puntos_control,cols,rows)
+            grid.convex_hull(puntos_control)
+            data["grid"] = grid
             data['layer_name'] = layer_name
+            data['cols'] = cols
+            data['rows'] = rows
             print "parsing"
             self.to_geoserver(data)
         return layer

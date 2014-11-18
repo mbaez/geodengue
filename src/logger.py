@@ -2,10 +2,11 @@
 # -*- coding: utf-8 -*-
 
 """
+Clase encargada de recibir strings de eventos y almacenarlos
+en un archivo de salida en un tabla de eventos.
 
-Content : Clase encargada de recibir strings de eventos y almacenarlos
-en un archivo de salida en formato csv
-
+@autors Maximiliano Báez
+@contact mxbg.py@gmail.com
 """
 import threading
 import os
@@ -51,6 +52,7 @@ class EventLogger():
         args['temperatura'] = dia.temperatura
         args['estado'] = aedes.estado
         args['edad'] = aedes.edad
+        args['generacion'] = aedes.generacion
         args['x'] = aedes.posicion.x
         args['y'] = aedes.posicion.y
         # args['fecha'] =
@@ -108,8 +110,9 @@ class EventLogger():
             the_geom,
             fecha,
             dia,
-            edad)
-            VALUES (
+            generacion,
+            edad
+            ) VALUES (
                 {id_mosquito},
                 '{id_colonia}',
                 {id_mosquito_padre},
@@ -137,6 +140,7 @@ class EventLogger():
                 ST_GeomFromText('POINT({x} {y})', 4326),
                 now(),
                 {dia},
+                {generacion},
                 {edad}
             );
         """
@@ -166,7 +170,8 @@ class EventLogger():
             the_geom,
             fecha,
             dia,
-            edad
+            edad,
+            generacion
         ) VALUES (
             {id_mosquito},
             '{id_colonia}',
@@ -185,7 +190,8 @@ class EventLogger():
             ST_GeomFromText('POINT({x} {y})', 4326),
             now(),
             {dia},
-            {edad}
+            {edad},
+            {generacion}
             );
         """
         # se construye el diccionario que contiene los parametros del query.

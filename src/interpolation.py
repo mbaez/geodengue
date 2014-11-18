@@ -3,9 +3,10 @@
 """
 Este módulo contiene las clases que son utilizadas para representar los
 distintos metodos de interpolación.
+
+@autors Maximiliano Báez
+@contact mxbg.py@gmail.com
 """
-__author__ = "Maximiliano Báez"
-__mail__ = "mxbg.py@gmail.com"
 
 import numpy as np
 import math

@@ -14,12 +14,32 @@ DataSource = {
         -60.60455146882159, -27.40893277789768,
         -54.2972992541837, -21.032259302736406
     ],
-    center: [-57.6111, -25.2939],
+
+    center: [-57.59405207780335, -25.30465826128996],
     /**
      * Las configuraciones de la capa
      */
     puntosControlLayerConf: {
         name: 'puntos_control',
+        geometryName: 'the_geom',
+        featureNS: "py.com.geodengue",
+        workspace: "geodengue"
+    },  
+    /**
+     * Las configuraciones de la capa que contiene los datos de los adultos
+     */
+    eventosAdultosLayerConf: {
+        name: 'eventos_adultos',
+        geometryName: 'the_geom',
+        featureNS: "py.com.geodengue",
+        workspace: "geodengue"
+    },
+    /**
+     * Las configuraciones de la capa que contiene los datos de los inidividuos
+     * de etapas inmaduras.
+     */
+    eventosInmadurasLayerConf: {
+        name: 'eventos_inmaduras',
         geometryName: 'the_geom',
         featureNS: "py.com.geodengue",
         workspace: "geodengue"

@@ -54,6 +54,7 @@ define(['text!pages/procesos/procesos.html',
              */
             render: function () {
                 this.style = new Style.Layer('/geodengue/sld/pixel.xml');
+                this.pointStyle = new Style.Layer('/geodengue/sld/point.xml');
                 var view = new NavbarView({
                     el: $("#appHeader")
                 });
@@ -109,6 +110,7 @@ define(['text!pages/procesos/procesos.html',
 
                 //this.procesoView.on("on-select-proceso", this.buildProcesoDia, this);
                 this.procesoView.on("on-ready-layer", this.addRasterLayer, this);
+                this.procesoView.on("on-change", this.addVectorLayer, this);
             },
 
 
@@ -128,6 +130,66 @@ define(['text!pages/procesos/procesos.html',
                 this.mapPanel.map.addLayers(raster);
             },
 
+            /**
+             * Inicializa los layers
+             * @function
+             *
+             * @name #addVectorLayer
+             * @params data
+             * @config {String}codigo
+             * @config {Number}dia
+             * @config {Number}id_muestra
+             */
+            addVectorLayer: function (data) {
+                var filterCod = new OpenLayers.Filter.Comparison({
+                    type: OpenLayers.Filter.Comparison.EQUAL_TO,
+                    property: "codigo",
+                    value: data.codigo
+                });
+
+                var filterDia = new OpenLayers.Filter.Comparison({
+                    type: OpenLayers.Filter.Comparison.EQUAL_TO,
+                    property: "dia",
+                    value: data.dia
+                });
+
+                var filterMuestra = new OpenLayers.Filter.Comparison({
+                    type: OpenLayers.Filter.Comparison.EQUAL_TO,
+                    property: "id_muestra",
+                    value: data.id_muestra
+                });
+
+                var filter = new OpenLayers.Filter.Logical({
+                    type: OpenLayers.Filter.Logical.AND,
+                    filters: [filterCod, filterDia]
+                });
+                
+                var configAdultos = $.extend({}, DataSource.eventosAdultosLayerConf);
+                configAdultos.filter = filter;
+                configAdultos.displayName = 'adultos-' + data.dia + "-" + data.codigo;
+
+                var configInmaduras = $.extend({}, DataSource.eventosInmadurasLayerConf);
+                configInmaduras.filter = filter;
+                configInmaduras.displayName = 'inmaduras-' + data.dia + "-" + data.codigo;
+
+                var adultos = new Layer.Vector(configAdultos);
+                adultos.styleMap = this.pointStyle.styleMap;
+                
+                this.adultos = adultos
+                var thiz = this;
+                this.adultos.events.register('loadend', this.adultos, function (evt) {
+                    if(thiz.adultos.features.length > 0){
+                        thiz.mapPanel.map.zoomToExtent(thiz.adultos.getDataExtent());
+                    }
+                });
+                
+                var inmaduras = new Layer.Vector(configInmaduras);
+                inmaduras.styleMap = this.style.styleMap;
+                this.mapPanel.map.addLayers([adultos, inmaduras]);
+                
+                GeoDengue.map = this.mapPanel.map;
+
+            },
             /**
              * Este método se encarga de manejar el evento 'on-execute' disparado
              * desde el from view.
@@ -163,6 +225,7 @@ define(['text!pages/procesos/procesos.html',
              */
             onProcesoReady: function () {
                 //se reinicia los botones
+                $("#crear-proceso").button("reset");
             }
         });
     });

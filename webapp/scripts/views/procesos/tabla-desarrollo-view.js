@@ -1,11 +1,11 @@
 /**
  * Descripción del view
  * @class
- * @author <a href="mailto:correo@autor">Nombre del autor</a>
+ * @author <a href="mailto:mxbg.py@gmail.com">Maximiliano Báez</a>
  * @name nombre del view
  */
 define(["text!templates/Tmpl.html"],
-    function ($, _, Backbone, tmpl) {
+    function (tmpl) {
         return Backbone.View.extend({
             /**
              * Constructor de la clase
@@ -39,12 +39,9 @@ define(["text!templates/Tmpl.html"],
              */
             allowed: function (options) {
                 this.data = options;
-                /**
                 this.collection.on('ready', this.render, this);
                 this.collection.on('error', this.error, this);
                 this.collection.on('fetch', this.loading, this);
-                this.collection.fetch(BaseCallback.fetch);
-                */
                 //si son models
                 /**
                 this.model.on('ready', this.render, this);

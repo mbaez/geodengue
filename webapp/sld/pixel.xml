@@ -61,7 +61,7 @@
                     <ogc:Filter>
                         <ogc:PropertyIsGreaterThanOrEqualTo>
                             <ogc:PropertyName>cantidad</ogc:PropertyName>
-                            <ogc:Literal>8</ogc:Literal>
+                            <ogc:Literal>20</ogc:Literal>
                         </ogc:PropertyIsGreaterThanOrEqualTo>
                     </ogc:Filter>
                     <PointSymbolizer>
@@ -112,7 +112,7 @@
                     <ogc:Filter>
                         <ogc:PropertyIsGreaterThanOrEqualTo>
                             <ogc:PropertyName>cantidad</ogc:PropertyName>
-                            <ogc:Literal>20</ogc:Literal>
+                            <ogc:Literal>36</ogc:Literal>
                         </ogc:PropertyIsGreaterThanOrEqualTo>
                     </ogc:Filter>
                     <PointSymbolizer>
@@ -163,7 +163,7 @@
                     <ogc:Filter>
                         <ogc:PropertyIsGreaterThanOrEqualTo>
                             <ogc:PropertyName>cantidad</ogc:PropertyName>
-                            <ogc:Literal>30</ogc:Literal>
+                            <ogc:Literal>52</ogc:Literal>
                         </ogc:PropertyIsGreaterThanOrEqualTo>
                     </ogc:Filter>
                     <PointSymbolizer>
@@ -214,7 +214,7 @@
                     <ogc:Filter>
                         <ogc:PropertyIsGreaterThanOrEqualTo>
                             <ogc:PropertyName>cantidad</ogc:PropertyName>
-                            <ogc:Literal>60</ogc:Literal>
+                            <ogc:Literal>70</ogc:Literal>
                         </ogc:PropertyIsGreaterThanOrEqualTo>
                     </ogc:Filter>
                     <PointSymbolizer>

@@ -8,7 +8,7 @@
 }
 .olMapViewport, #map {
     width: 100%;
-    min-height: 550px;
+    min-height: 685px;
     max-height:1042px;
     height:100%;
 }
@@ -25,7 +25,18 @@
 .panel-heading .centrar .glyphicon{
     padding-bottom: 2px;
 }
+
 .badge.badge-danger {
     background-color: #d9534f;
     color : white;
+}
+
+.olControlAttribution {
+    background-image: url(../img/start-sign.png);
+    height: 99px;
+    width: 92px;
+    background-size: 100% 100%;
+    background-repeat: no-repeat;
+    top: 15px;
+    left: 90px;
 }

@@ -1,7 +1,7 @@
 /**
  * Inicializador de la página de inicio
  * @class
- * @author <a href="mailto:mbaez@konecta.com.py">Maximiliano Báez</a>
+ * @author <a href="mailto:mxbg.py@gmail.com">Maximiliano Báez</a>
  * @name controllers.Inicio
  */
 define([ //se importa el template html del page

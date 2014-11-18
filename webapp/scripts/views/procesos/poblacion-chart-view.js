@@ -1,7 +1,7 @@
 /**
  * Descripción del view
  * @class
- * @author <a href="mailto:correo@autor">Nombre del autor</a>
+ * @author <a href="mailto:mxbg.py@gmail.com">Maximiliano Báez</a>
  * @name nombre del view
  */
 define(["text!templates/procesos/poblacion-chart-tmpl.html", 'highcharts',

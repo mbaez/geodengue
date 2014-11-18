@@ -53,7 +53,7 @@ requirejs.config({
         'highcharts': {
             deps: ['jquery'],
             exports: 'Highcharts'
-        },     
+        },
         'selectize': {
             deps: ['jquery'],
             exports: 'Selectize'
@@ -94,7 +94,7 @@ requirejs.config({
  * Se añade el handler de error de requierejs. Se ivoca a este método
  * cuando no se pudo cargar una dependencia.
  *
- * @author <a href="mailto:mbaez@konecta.com.py">Maximiliano Báez</a>
+ * @author <a href="mailto:mxbg.py@gmail.com">Maximiliano Báez</a>
  */
 requirejs.onError = function (err) {
     console.error(err.requireModules);

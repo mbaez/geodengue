@@ -2,7 +2,7 @@
  * Define el router genérico de la aplicación.
  * @class
  * @name common.Router
- * @author <a href="mailto:mbaez@konecta.com.py">Maximiliano Báez</a>
+ * @author <a href="mailto:mxbg.py@gmail.com">Maximiliano Báez</a>
  */
 define(['backbone', 'backbone-extend'], function (Backbone, BackboneExtend) {
     /**

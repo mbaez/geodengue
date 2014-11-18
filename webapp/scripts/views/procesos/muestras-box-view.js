@@ -1,12 +1,14 @@
 /**
  * Descripción del view
  * @class
- * @author <a href="mailto:correo@autor">Nombre del autor</a>
+ * @author <a href="mailto:mxbg.py@gmail.com">Maximiliano Báez</a>
  * @name nombre del view
  */
-define(["text!templates/procesos/muestras-box-tmpl.html", 'openlayers-style',
-        "scripts/models/muestra-collection", "scripts/views/common/search-view"],
-    function (tmpl, Style, MuestraCollection, SearchView) {
+define(["text!templates/procesos/muestras-box-tmpl.html",
+        "openlayers-style",
+        "scripts/models/muestra-model"
+       ],
+    function (tmpl, Style, MuestraModel) {
         return Backbone.View.extend({
             /**
              * Constructor de la clase
@@ -28,7 +30,7 @@ define(["text!templates/procesos/muestras-box-tmpl.html", 'openlayers-style',
              */
             events: {
                 "click #centrar-mapa": "onCentrarMapa",
-                "click a.list-group-item": "onClick"
+                "onChange #select-dias": "getInterpolationLayer"
             },
             /**
              * Si posee los permisos para cargar el view, se configuran
@@ -43,7 +45,7 @@ define(["text!templates/procesos/muestras-box-tmpl.html", 'openlayers-style',
              */
             allowed: function (options) {
                 this.params = options;
-                this.render();
+                this.render(options);
             },
 
             /**
@@ -54,29 +56,14 @@ define(["text!templates/procesos/muestras-box-tmpl.html", 'openlayers-style',
              * @public
              * @name #render
              */
-            render: function () {
-                var compTmpl = _.template(tmpl, {});
+            render: function (options) {
+                var compTmpl = _.template(tmpl, {
+                    data: options
+                });
                 this.$el.html(compTmpl);
-                this.getAllMuestras();
                 return this;
             },
-            /**
-             * Se ecarga de obtener todas las muestras disponibles
-             * @function
-             *
-             * @name #getAllMuestras
-             */
-            getAllMuestras: function () {
-                this.collection = new MuestraCollection();
-                var view = new SearchView({
-                    el: $("#selector-muestras"),
-                    collection: this.collection,
-                    attr: "descripcion",
-                    placeholder: "Muestras"
-                });
-                //se añade el handler
-                view.on("on-search", this.initLayers, this);
-            },
+
             /**
              * Inicializa los layers
              * @function
@@ -93,27 +80,38 @@ define(["text!templates/procesos/muestras-box-tmpl.html", 'openlayers-style',
                 this.puntosControl.styleMap = style.styleMap;
                 this.params.map.addLayer(this.puntosControl);
             },
+
             /**
-             * Se encarga de centrar el mapa cuando se hace click en la tabla de puntos de
-             * control.
+             * Se encarga de hacer un post para obtener el layer correspondiente
+             * a la muestra, proceso y día
              * @function
              *
-             * @name #onClick
+             * @name #getInterpolationLayer
              */
-            onClick: function (events) {
-                //se desactiva el item anterior
-                $(".list-group-item.active").removeClass("active");
-                var $target = $(events.target);
-                //se obtiene el fid del elemento
-                var fid = $target.data("fid");
-                //se obtiene el featrue a partir del fid del feature
-                var p = this.puntosControl.getFeatureByFid(fid);
-                //se centra el mapa
-                var lonlat = new OpenLayers.LonLat(p.geometry.x, p.geometry.y);
-                this.params.map.setCenter(lonlat, 20);
-                //se hace active la fila
-                $target.addClass("active");
+            getInterpolationLayer: function () {
+                var dia = $("#select-dias").val();
+                var data = {};
+                data.dia = dia.trim();
+                data.id_muestra = this.params.proceso.id_muestra;
+                data.codigo = this.params.proceso.codigo;
+
+                this.model = new MuestraModel();
+                // se añade el handler del model
+                this.model.on('ready', this.onReadyLayer, this);
+                this.model.on('error', this.error, this);
+                // se hace el post
+                this.model.getLayerFoco(data);
             },
+            /**
+             * Se encarga de disparar el evento `on-ready-layer`
+             * @function
+             *
+             * @name #onReadyLayer
+             */
+            onReadyLayer: function () {
+                this.trigger('on-ready-layer', this.model.toJSON());
+            },
+
             /**
              * Se encarga de centrar el mapa con zoom a la extensión del layer.
              * @function
@@ -123,23 +121,6 @@ define(["text!templates/procesos/muestras-box-tmpl.html", 'openlayers-style',
             onCentrarMapa: function () {
                 var bounds = this.puntosControl.getDataExtent();
                 this.params.map.zoomToExtent(bounds);
-            },
-            /**
-             * Se encarga de construir la tabla con la lista de puntos de control pertenecientes
-             * a la muestra.
-             * @function
-             *
-             * @name #buildTable
-             * @param {OpenLayers.Layer.Vector}layer el la referencia al layer de puntos de control
-             */
-            buildTable: function (layer) {
-                this.onCentrarMapa();
-                var $target = $("#lista-features");
-                for (var i = 0; i < layer.features.length; i++) {
-                    var $tmpl = this.putAttributes(layer.features[i].data, $("#tmpl-row a"));
-                    $tmpl.data("fid", layer.features[i].fid);
-                    $target.append($tmpl);
-                }
             }
 
         });

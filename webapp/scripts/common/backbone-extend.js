@@ -226,6 +226,7 @@ Backbone.View.prototype.error = function (data) {
         mensaje: response.mensaje,
         type: "error"
     });
+    $(".btn" ).button("reset");
 };
 
 

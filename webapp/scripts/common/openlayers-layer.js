@@ -110,10 +110,10 @@ Layer = {
         protocol.read({
             callback: params['callback']
         });
-
-
+        //se calcula el nombre del layer
+        var displayName = typeof options.displayName != "undefinded" ? options.displayName : options.name;
         //Se construye la capa del tipo vector
-        return new OpenLayers.Layer.Vector(options.name, {
+        return new OpenLayers.Layer.Vector(displayName, {
             strategies: [fixed, strategySave],
             protocol: protocol,
             /**
@@ -161,7 +161,7 @@ Layer = {
         // nombre de las capas que se solicitan al servidor
         var layers = [];
         var names = []
-        //se validan los parametros del constructor
+            //se validan los parametros del constructor
         if (typeof options.base == "undefined") {
             options.base = false;
         }
@@ -183,6 +183,7 @@ Layer = {
             layers[i] = new OpenLayers.Layer.WMS(
                 config.LAYERS,
                 server + names[i].workspace + "/wms",
+                //server + "gwc/service/wms",
                 config
             );
             layers[i].transitionEffect = 'resize';

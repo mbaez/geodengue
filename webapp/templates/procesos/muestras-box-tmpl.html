@@ -1,21 +1,12 @@
 <!-- ./procesos/muestras-box-tmpl.html-->
-<section id="tmpl-row" style="display:none">
-    <a class="list-group-item">
-        <span data-attr="cantidad" class="badge">?</span>
-        <span data-attr="descripcion">?</span>
-    </a>
-</section>
-<div>
-    <section id="selector-muestras"></section>
-    <div class="panel panel-default">
-        <!-- Default panel contents -->
-        <div class="panel-heading">Puntos de control
-            <button id="centrar-mapa" type="button" class="btn btn-default centrar" >
-                <span class="glyphicon glyphicon-screenshot"></span>
-            </button>
-        </div>
-        <!-- Table -->
-        <div id="lista-features" class="list-group scroll"></div>
-    </div>
-</div>
+
+<form role="form">
+    <label for="select-dias">Días</label>
+    <select id="select-dias" class="form-control">
+    <%for(var i=data.proceso.min; i< data.proceso.max; i++){%>
+        <option><%=i%></option>
+    <%};%>
+    </select>
+</form>
+
 <!-- fin de ./procesos/muestras-box-tmpl.html-->

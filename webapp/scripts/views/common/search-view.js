@@ -1,7 +1,7 @@
 /**
  * View generico para busqueda.
  * @class
- * @author <a href="mailto:mbaez@konecta.com.py">Maximiliano Báez</a>
+ * @author <a href="mailto:mxbg.py@gmail.com">Maximiliano Báez</a>
  * @name views.common.ViewSearch
  */
 define(["jquery-ui", 'selectize', "text!templates/common/search-tmpl.html"],
@@ -45,7 +45,7 @@ define(["jquery-ui", 'selectize', "text!templates/common/search-tmpl.html"],
              * @function
              *
              * @name views.common.ViewSearch#allowed
-             * @author <a href="mailto:mbaez@konecta.com.py">Maximiliano Báez</a>
+             * @author <a href="mailto:mxbg.py@gmail.com">Maximiliano Báez</a>
              * @param {Object}options
              * @config {Backbone.Collection}collection el collection con
              *         utilizado para cargar los datos.
@@ -101,7 +101,7 @@ define(["jquery-ui", 'selectize', "text!templates/common/search-tmpl.html"],
              *
              * @public
              * @name views.common.ViewSearch#loading
-             * @author <a href="mailto:mbaez@konecta.com.py">Maximiliano Báez</a>
+             * @author <a href="mailto:mxbg.py@gmail.com">Maximiliano Báez</a>
              */
             loading: function () {
                 var data = $.extend({}, this.data);
@@ -119,7 +119,7 @@ define(["jquery-ui", 'selectize', "text!templates/common/search-tmpl.html"],
              * @function
              *
              * @name views.common.ViewSearch#setDefault
-             * @author <a href="mailto:mbaez@konecta.com.py">Maximiliano Báez</a>
+             * @author <a href="mailto:mxbg.py@gmail.com">Maximiliano Báez</a>
              */
             setDefault: function () {
                 if (this.collection.length > 0) {
@@ -183,7 +183,7 @@ define(["jquery-ui", 'selectize', "text!templates/common/search-tmpl.html"],
              * @function
              *
              * @name views.common.ViewSearch#eventProxy
-             * @author <a href="mailto:mbaez@konecta.com.py">Maximiliano Báez</a>
+             * @author <a href="mailto:mxbg.py@gmail.com">Maximiliano Báez</a>
              */
             eventProxy: function () {
                 var thiz = this;
@@ -198,7 +198,7 @@ define(["jquery-ui", 'selectize', "text!templates/common/search-tmpl.html"],
              * @function
              *
              * @name views.common.ViewSearch#onAceptar
-             * @author <a href="mailto:mbaez@konecta.com.py">Maximiliano Báez</a>
+             * @author <a href="mailto:mxbg.py@gmail.com">Maximiliano Báez</a>
              */
             onAceptar: function (event) {
                 var data = {};
@@ -227,7 +227,7 @@ define(["jquery-ui", 'selectize', "text!templates/common/search-tmpl.html"],
              * @function
              *
              * @name views.common.ViewSearch#onAceptar
-             * @author <a href="mailto:mbaez@konecta.com.py">Maximiliano Báez</a>
+             * @author <a href="mailto:mxbg.py@gmail.com">Maximiliano Báez</a>
              * @param value{String} el valor del attr del model
              */
             validate: function (value) {
@@ -251,7 +251,7 @@ define(["jquery-ui", 'selectize', "text!templates/common/search-tmpl.html"],
              * @function
              *
              * @name views.common.ViewSearch#setSelected
-             * @author <a href="mailto:mbaez@konecta.com.py">Maximiliano Báez</a>
+             * @author <a href="mailto:mxbg.py@gmail.com">Maximiliano Báez</a>
              * @param {String}value el valor del attr del model
              */
             setSelected: function (value) {
@@ -264,7 +264,7 @@ define(["jquery-ui", 'selectize', "text!templates/common/search-tmpl.html"],
              * @function
              *
              * @name views.common.ViewSearch#initSelectize
-             * @author <a href="mailto:mbaez@konecta.com.py">Maximiliano Báez</a>
+             * @author <a href="mailto:mxbg.py@gmail.com">Maximiliano Báez</a>
              */
             initSelectize: function () {
                 /*se inicializa el config*/

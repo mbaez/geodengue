@@ -1,7 +1,7 @@
 /**
  * Descripción del view
  * @class
- * @author <a href="mailto:correo@autor">Nombre del autor</a>
+ * @author <a href="mailto:mxbg.py@gmail.com">Maximiliano Báez</a>
  * @name nombre del view
  */
 define(["text!templates/procesos/tabla-procesos-muestra-tmpl.html",
@@ -131,7 +131,7 @@ define(["text!templates/procesos/tabla-procesos-muestra-tmpl.html",
                 data.dia = dia.trim();
                 data.id_muestra = this.proceso.id_muestra;
                 data.codigo = this.proceso.codigo;
-
+                this.currentData = data;
                 this.model = new MuestraModel();
                 // se añade el handler del model
                 this.model.on('ready', this.onReadyLayer, this);
@@ -148,6 +148,7 @@ define(["text!templates/procesos/tabla-procesos-muestra-tmpl.html",
             onReadyLayer: function () {
                 $("#calcular-foco").button("reset");
                 this.trigger('on-ready-layer', this.model.toJSON());
+                this.trigger("on-change", this.currentData);
             }
         });
     });

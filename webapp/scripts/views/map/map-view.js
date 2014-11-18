@@ -74,13 +74,14 @@ define(["OpenLayers", "openlayers-layer", "text!templates/map/map-tmpl.html"],
                     maxExtend: maxExtent,
                     //projection: "EPSG:900913",
                     //displayProjection : projection,
-                    projection : projection,
-                    units: 'm'
+                    projection: projection,
+                    //units: 'm',
+                    //fractionalZoom: true
                 };
                 //inicializa el map
                 this.map = new OpenLayers.Map("map", mapOptions);
                 //se construye el base layer
-                var osmLayer = new OpenLayers.Layer.OSM("Simple OSM");
+                //var osmLayer = new OpenLayers.Layer.OSM("Simple OSM");
                 var baseLayer = new Layer.WMS(DataSource.baseLayerConf);
                 //this.map.addLayer(osmLayer);
                 this.map.addLayers(baseLayer);
@@ -89,7 +90,7 @@ define(["OpenLayers", "openlayers-layer", "text!templates/map/map-tmpl.html"],
                 this.map.addControl(new OpenLayers.Control.CacheRead());
                 this.map.addControl(new OpenLayers.Control.CacheWrite());
                 this.map.addControl(new OpenLayers.Control.ScaleLine());
-                this.map.setCenter(center, 12);
+                this.map.setCenter(center.transform(projection, this.map.getProjectionObject()), 12);
             }
         });
     }

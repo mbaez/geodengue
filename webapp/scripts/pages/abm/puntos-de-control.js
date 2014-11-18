@@ -1,24 +1,27 @@
 /**
  * Inicializador de la página de inicio
  * @class
- * @author <a href="mailto:mbaez@konecta.com.py">Maximiliano Báez</a>
+ * @author <a href="mailto:mxbg.py@gmail.com">Maximiliano Báez</a>
  * @name controllers.Inicio
  */
 define(['text!pages/abm/puntos-de-control.html',
         //se incluyen los modulos gis necesarios
         "openlayers-layer",
         "openlayers-control",
+        //models y collections
+        "scripts/models/muestra-collection",
         //se incluyen los views necesarios,
         "scripts/views/common/navbar-view",
         "scripts/views/common/sidebar-view",
+        "scripts/views/common/search-view",
         "scripts/views/map/popup-view",
         "scripts/views/map/map-view",
         "scripts/views/map/toolbar-view"
         ],
     function (template,
-        Layer, Control,
+        Layer, Control, MuestraCollection,
         //Se incluyen los Views
-        NavbarView, SidebarView, PopupView,
+        NavbarView, SidebarView, SearchView, PopupView,
         MapView, ToolbarView
     ) {
         "use strict";
@@ -60,14 +63,13 @@ define(['text!pages/abm/puntos-de-control.html',
                 this.mapPanel = new MapView({
                     el: $("#incioContent")
                 });
-
+                var view = this.getAllMuestras();
                 //se añaden los handlers de los eventos del sidebar
                 sideView.on('on-guardar', this.onGuardar, this);
                 sideView.on('on-instalar', this.onInstalar, this);
                 sideView.on('on-recolectar', this.onRecolectar, this);
+                view.on("on-search", this.initLayers, this);
                 //se retorna la referencia al view.
-                this.initLayers();
-                this.initControls();
                 return this;
             },
 
@@ -77,11 +79,46 @@ define(['text!pages/abm/puntos-de-control.html',
              *
              * @name #initLayers
              */
-            initLayers: function () {
-                this.puntosControl = new Layer.Vector(DataSource.puntosControlLayerConf);
+            initLayers: function (muestra) {
+                var filter = new OpenLayers.Filter.Comparison({
+                    type: OpenLayers.Filter.Comparison.EQUAL_TO,
+                    property: "id_muestras",
+                    value: muestra.id
+                });
+                var config = $.extend({}, DataSource.puntosControlLayerConf);
+                config.filter = filter;
+                if (typeof this.puntosControl != "undefined") {
+                    this.puntosControl.removeAllFeatures();
+                    var tmp = this.mapPanel.map.getLayersByName(config.name);
+                    if (tmp.length > 0) {
+                        this.mapPanel.map.removeLayer(tmp[0]);
+                    }
+                }
+                this.puntosControl = new Layer.Vector(config);
                 this.mapPanel.map.addLayer(this.puntosControl);
-            },
+                var thiz = this;
+                this.puntosControl.events.register('loadend', this.puntosControl, function (evt) {
+                    thiz.mapPanel.map.zoomToExtent(thiz.puntosControl.getDataExtent());
+                })
+                this.initControls();
 
+            },
+            /**
+             * Se ecarga de obtener todas las muestras disponibles
+             * @function
+             *
+             * @name #getAllMuestras
+             */
+            getAllMuestras: function () {
+                this.collection = new MuestraCollection();
+                var view = new SearchView({
+                    el: $("#selector-muestras"),
+                    collection: this.collection,
+                    attr: "descripcion",
+                    placeholder: "Muestras"
+                });
+                return view;
+            },
             /**
              * Inicializa los controladores para la pagina de puntos de
              * control

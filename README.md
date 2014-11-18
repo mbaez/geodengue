@@ -2,10 +2,9 @@ GeoDengue
 ===
 Proyecto de tesis de la carrera de Ingeniería en Informática de la Facultad Politecnica de la Universidad Nacional de Asunción.
 
-Autores
+Autor
 ---
 * [Maximiliano Báez](mailto:maxibaezpy@gmail.com)
-* [Roberto Bañuelos](mailto:robertobanuelos@gmail.com)
 
 Librerías utilizadas
 ---
@@ -29,6 +28,8 @@ sudo easy_install gsconfig
 sudo apt-get install python-psycopg2
 sudo pip install cssselect
 sudo apt-get install python-lxml
+sudo pip install pyproj
+sudo pip install Shapely
 ```
 * **Librerias para PDI** :
 

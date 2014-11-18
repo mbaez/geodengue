@@ -1,4 +1,4 @@
-Configuración de Geoserver
+Configuración de Geoserver [deprecated]
 ===
 Instalar Plugin
 ---
